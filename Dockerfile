@@ -1,5 +1,5 @@
 FROM openjdk:17-jdk-slim
-COPY ./target/seMethods-0.1.0.4-jar-with-dependencies.jar /tmp
+COPY ./target/devops-project-0.1.0.5-jar-with-dependencies.jar /tmp
 WORKDIR /tmp
-ENTRYPOINT ["java", "-jar", "seMethods-0.1.0.4-jar-with-dependencies.jar"]
+ENTRYPOINT ["java", "-jar", "devops-project-0.1.0.5-jar-with-dependencies.jar"]
 

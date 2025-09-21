@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.napier.sem</groupId>
-    <artifactId>seMethods</artifactId>
-    <version>0.1.0.4</version>
+    <artifactId>devops-project</artifactId>
+    <version>0.1.0.5</version>
 
     <dependencies>
         <dependency>
