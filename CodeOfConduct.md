@@ -22,3 +22,12 @@ All team members agree to:
 - All pull requests must be reviewed by **at least three team members** before merging into the develop or main branches.
 - For small or urgent changes, a minimum of **two approvals** may be acceptable if agreed by the Scrum Master.
 - This ensures higher code quality, shared knowledge of changes, and reduces the risk of bugs reaching production.
+
+## Unacceptable Behaviour
+The following will not be tolerated:
+- Harassment, discrimination, or offensive comments in any form.
+- Ignoring agreed workflows or breaking builds/deployments without notice.
+- Sharing confidential credentials or security information irresponsibly.
+- Non-collaborative behaviour (ghosting, spamming, or derailing discussions).
+- Ignoring a failed pipeline or deployment for more than 24 hours without raising a blocker or escalating it to the team.
+
