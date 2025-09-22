@@ -38,3 +38,11 @@ This Code of Conduct applies to all team interactions and tools for this project
 - Online meetings on Microsoft Teams
 - Team emails and any other agreed communication channels
 
+## Reporting
+If you witness or experience a breach of this Code of Conduct, please contact the **Scrum Master** or inform the group privately. Concerns will be discussed and resolved fairly within the team. If the issue cannot be sorted internally, it may be escalated to the **Module Leader** for an impartial review.
+
+## Agreement
+This Code of Conduct has been read and agreed to by all team members of the DevOps coursework project on 27th September 2025.
+By participating in the project, each member commits to adhering to these standards.
+
+
