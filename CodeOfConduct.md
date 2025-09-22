@@ -17,3 +17,8 @@ All team members agree to:
 - Share updates as agreed daily by stating your commitment, what you’ve done, and if you have any blockers in the Microsoft Teams channel.
 - Provide and accept constructive feedback on code, reviews, and documentation.
 - Keep sensitive information secure by maintaining confidentiality of our team’s strategy, project progress, and code base. Team members must not share these details with other groups.
+
+## Code Reviews
+- All pull requests must be reviewed by **at least three team members** before merging into the develop or main branches.
+- For small or urgent changes, a minimum of **two approvals** may be acceptable if agreed by the Scrum Master.
+- This ensures higher code quality, shared knowledge of changes, and reduces the risk of bugs reaching production.
