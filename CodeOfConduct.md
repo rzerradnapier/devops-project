@@ -31,3 +31,10 @@ The following will not be tolerated:
 - Non-collaborative behaviour (ghosting, spamming, or derailing discussions).
 - Ignoring a failed pipeline or deployment for more than 24 hours without raising a blocker or escalating it to the team.
 
+## Scope
+This Code of Conduct applies to all team interactions and tools for this project, including:
+- GitHub repositories, issues, pull requests, and actions
+- Zube.io boards
+- Online meetings on Microsoft Teams
+- Team emails and any other agreed communication channels
+
