@@ -26,10 +26,9 @@ All team members agree to:
 ## Unacceptable Behaviour
 The following will not be tolerated:
 - Harassment, discrimination, or offensive comments in any form.
-- Ignoring agreed workflows or breaking builds/deployments without notice.
+- Ignoring agreed workflows or breaking builds/deployments without notice or raising a blocker or escalating it to the team.
 - Sharing confidential credentials or security information irresponsibly.
 - Non-collaborative behaviour (ghosting, spamming, or derailing discussions).
-- Ignoring a failed pipeline or deployment for more than 24 hours without raising a blocker or escalating it to the team.
 
 ## Scope
 This Code of Conduct applies to all team interactions and tools for this project, including:
@@ -42,7 +41,7 @@ This Code of Conduct applies to all team interactions and tools for this project
 If you witness or experience a breach of this Code of Conduct, please contact the **Scrum Master** or inform the group privately. Concerns will be discussed and resolved fairly within the team. If the issue cannot be sorted internally, it may be escalated to the **Module Leader** for an impartial review.
 
 ## Agreement
-This Code of Conduct has been read and agreed to by all team members of the DevOps coursework project on 27th September 2025.
+This Code of Conduct has been read and agreed to by all team members of the DevOps coursework project on 28th September 2025.
 By participating in the project, each member commits to adhering to these standards.
 
 
