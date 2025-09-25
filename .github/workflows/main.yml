@@ -15,9 +15,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build, Test, Coverage (fail if <80%)
-        run: mvn -B clean verify
       - name: Build with Maven
-        run: mvn package
+        run: mvn verify
       - name: Run docker compose
         run: docker compose up --abort-on-container-exit
