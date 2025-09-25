@@ -44,7 +44,11 @@
 - **Step 3:** Access your app (e.g., `http://localhost:8080/…`) → breakpoints in IntelliJ should trigger.
 
 ---
+### Test Coverage with Jacoco
+	•	Build fails if overall LINE coverage < 80%.
+	•	HTML report: target/site/jacoco/index.html.
 
+---
 ## User Stories
 
 ### Country Reports
