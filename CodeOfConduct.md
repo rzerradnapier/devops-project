@@ -24,7 +24,7 @@ All team members agree to:
 - All commits must have **meaningful commit messages** following the agreed format.
 
 ## Code Reviews
-- All pull requests must be reviewed by **at least three team members** before merging into the develop or main branches.
+- All pull requests must be reviewed by **at least two team members** before merging into the develop or main branches.
 - For small or urgent changes, a minimum of **two approvals** may be acceptable if agreed by the Scrum Master.
 - This ensures higher code quality, shared knowledge of changes, and reduces the risk of bugs reaching production.
 
