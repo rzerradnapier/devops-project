@@ -13,13 +13,18 @@ All team members agree to:
     - **develop** – integration branch for merging completed features.
     - **feature/** – create for each new feature, merge into develop when done.
     - **release/** – prepare a collection of features for release, comes from develop.
-    - **hotfix/** – maintenance branches from master to fix production issues.
-- Share updates as agreed daily by stating your commitment, what you’ve done, and if you have any blockers in the Microsoft Teams channel.
+- Share updates by clearly stating your commitment, what you’ve completed, and if you have any blockers in the Microsoft Teams channel, as frequently as possible.
 - Provide and accept constructive feedback on code, reviews, and documentation.
 - Keep sensitive information secure by maintaining confidentiality of our team’s strategy, project progress, and code base. Team members must not share these details with other groups.
 
+## Technical Standards
+- All code must have unit tests with at least **80% coverage**.
+- Complex code must be clearly commented **at the top of methods and in complex parts of the code** to explain intent and logic.
+- Follow **Java naming conventions** throughout the project.
+- All commits must have **meaningful commit messages** following the agreed format.
+
 ## Code Reviews
-- All pull requests must be reviewed by **at least three team members** before merging into the develop or main branches.
+- All pull requests must be reviewed by **at least two team members** before merging into the develop or main branches.
 - For small or urgent changes, a minimum of **two approvals** may be acceptable if agreed by the Scrum Master.
 - This ensures higher code quality, shared knowledge of changes, and reduces the risk of bugs reaching production.
 
