@@ -8,6 +8,22 @@ public class App {
      */
     private Connection con = null;
 
+    /**
+     * sets the con object of the app, this is usefull for mock testing
+     * @param con
+     */
+    public void setCon(Connection con) {
+        this.con = con;
+    }
+
+    /**
+     * gets the con object of the app, this is usefull for mock testing
+     * @return
+     */
+    public Connection getCon() {
+        return this.con;
+    }
+
 
     public static void main(String[] args)
     {
@@ -148,6 +164,8 @@ public class App {
                             + "Manager: " + emp.manager + "\n");
         }
     }
+
+
 
 
 

@@ -3,10 +3,19 @@ services:
   # Application Dockerfile is in same folder which is .
   app:
     build: .
+    ports:
+      - "8080:8080"
+      - "5005:5005"  # for IntelliJ debugger
+    environment:
+      # 🔧 Enable remote debugging; remove this line to disable
+      JAVA_TOOL_OPTIONS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 
-  # db is is db folder
+    depends_on:
+      - db
+
+  # db is in db folder
   db:
     build: db/.
     restart: always
     ports:
-      - "33060:3306"
+      - "3306:3306"
