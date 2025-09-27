@@ -8,9 +8,17 @@
 
 ---
 
-# develop branch
+# Develop branch
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=develop)
+
+# Release branch
+
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=release)
+
+# Master branch
+
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=master)
 
 ---
 
