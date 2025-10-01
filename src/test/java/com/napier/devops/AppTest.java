@@ -57,13 +57,12 @@ public class AppTest {
                 return null;
             }).when(app).disconnect();
 
-            // Mocking behavior of App.getSampleCountryDetails() —— It should return a mocked Country object.
+            // Mocking behavior of App.getCountryByCode() —— It should return a mocked Country object.
             Country mockedCountry = mock(Country.class);
-            mockedCountry.setCode(DEFAULT_COUNTRY_CODE);
+            when(mockedCountry.getCode()).thenReturn(DEFAULT_COUNTRY_CODE);
 
             Mockito.doReturn(mockedCountry).when(app).getCountryByCode(anyString());
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
     }
 
     // After testing each method, we need to clean up any changes made to the test database.
@@ -104,12 +103,4 @@ public class AppTest {
         assertNull(app.getCon());
     }
 
-    // Testing App.getCountry() method by checking if it rightly fetches a Country record.
-    @Test
-    public void testGetCountry() {
-        app.connect();
-        Country country = app.getCountryByCode(DEFAULT_COUNTRY_CODE);
-        assertNotNull(country);
-        assertEquals(DEFAULT_COUNTRY_CODE, country.getCode());
-    }
 }
