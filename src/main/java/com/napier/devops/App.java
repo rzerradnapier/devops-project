@@ -1,4 +1,5 @@
 package com.napier.devops;
+
 import java.sql.*;
 
 public class App {
@@ -9,77 +10,67 @@ public class App {
     private Connection con = null;
 
     /**
-     * sets the con object of the app, this is usefull for mock testing
-     * @param con
+     * sets the con object of the app, this is useful for mock testing
+     *
+     * @param con Connection con
      */
     public void setCon(Connection con) {
         this.con = con;
     }
 
     /**
-     * gets the con object of the app, this is usefull for mock testing
-     * @return
+     * gets the con object of the app, this is useful for mock testing
+     *
+     * @return Connection con
      */
     public Connection getCon() {
         return this.con;
     }
 
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         // Create new Application
-        App a = new App();
+        App appIns = new App();
 
         // Connect to database
-        a.connect();
+        appIns.connect();
 
-        // Get Employee
-        Employee emp = a.getEmployee(255530);
+        // Get Countries
+        Country sampleCountryDetails = appIns.getSampleCountryDetails();
         // Display results
-        a.displayEmployee(emp);
-
+        System.out.println(sampleCountryDetails != null ? sampleCountryDetails.toString() : "No country details found");
 
         // Disconnect from database
-        a.disconnect();
+        appIns.disconnect();
     }
 
 
     /**
-     * Connect to the MySQL database.
+     * Connecting to the MySQL world database.
      */
-    public void connect()
-    {
-        try
-        {
+    public void connect() {
+        try {
             // Load Database driver
             Class.forName("com.mysql.cj.jdbc.Driver");
-        }
-        catch (ClassNotFoundException e)
-        {
-            System.out.println("Could not load SQL driver");
+        } catch (ClassNotFoundException e) {
+            System.out.println("Could not load SQL driver " + e.getMessage());
             System.exit(-1);
         }
 
         int retries = 10;
-        for (int i = 0; i < retries; ++i)
-        {
-            System.out.println("Connecting to database...");
-            try
-            {
+        for (int i = 0; i < retries; ++i) {
+            System.out.println("Connecting to database....");
+            try {
                 // Wait a bit for db to start
                 Thread.sleep(30000);
                 // Connect to database
-                con = DriverManager.getConnection("jdbc:mysql://db:3306/employees?allowPublicKeyRetrieval=true&useSSL=false", "root", "example");
-                System.out.println("Successfully connected");
+                con = DriverManager.getConnection("jdbc:mysql://db:3306/world?allowPublicKeyRetrieval=true&useSSL=false", "root", "ei:UA@_oSnDZ");
+                System.out.println("Successfully Connected");
                 break;
-            }
-            catch (SQLException sqle)
-            {
-                System.out.println("Failed to connect to database attempt " + Integer.toString(i));
-                System.out.println(sqle.getMessage());
-            }
-            catch (InterruptedException ie)
-            {
+            } catch (SQLException sql) {
+                System.out.println("Failed to connect to database attempt " + i);
+                System.out.println(sql.getMessage());
+            } catch (InterruptedException ie) {
                 System.out.println("Thread interrupted? Should not happen.");
             }
         }
@@ -88,86 +79,45 @@ public class App {
     /**
      * Disconnect from the MySQL database.
      */
-    public void disconnect()
-    {
-        if (con != null)
-        {
-            try
-            {
+    public void disconnect() {
+        if (con != null) {
+            try {
                 // Close connection
                 con.close();
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 System.out.println("Error closing connection to database");
             }
         }
     }
 
-    public Employee getEmployee(int ID)
-    {
-        try
-        {
+    public Country getSampleCountryDetails() {
+        try {
             // Create an SQL statement
             Statement stmt = con.createStatement();
+
             // Create string for SQL statement
-            String strSelect =
-                    "SELECT e.emp_no, e.first_name, e.last_name, d.dept_name, " +
-                            "       CONCAT(m.first_name, ' ', m.last_name) AS manager_name, " +
-                            "       t.title, s.salary " +
-                            "FROM employees e " +
-                            "JOIN titles t       ON t.emp_no = e.emp_no AND CURRENT_DATE() BETWEEN t.from_date AND t.to_date " +
-                            "JOIN salaries s     ON s.emp_no = e.emp_no AND CURRENT_DATE() BETWEEN s.from_date AND s.to_date " +
-                            "JOIN dept_emp de    ON de.emp_no = e.emp_no AND CURRENT_DATE() BETWEEN de.from_date AND de.to_date " +
-                            "JOIN departments d  ON d.dept_no = de.dept_no " +
-                            "JOIN dept_manager dm ON dm.dept_no = d.dept_no AND CURRENT_DATE() BETWEEN dm.from_date AND dm.to_date " +
-                            "JOIN employees m    ON m.emp_no = dm.emp_no " +
-                            "WHERE e.emp_no = " + ID;
+            String strSelect = "SELECT code, name, continent, region, population, capital FROM country LIMIT 5";
+
             // Execute SQL statement
-            ResultSet rset = stmt.executeQuery(strSelect);
-            // Return new employee if valid.
+            ResultSet resultSet = stmt.executeQuery(strSelect);
+            // Return new country if valid.
             // Check one is returned
-            if (rset.next())
-            {
-                Employee emp = new Employee();
-                emp.emp_no = rset.getInt("emp_no");
-                emp.first_name = rset.getString("first_name");
-                emp.last_name = rset.getString("last_name");
-                emp.title = rset.getString("title");
-                emp.salary = rset.getInt("salary");
-                emp.manager = rset.getString("manager_name");
-                emp.dept_name = rset.getString("dept_name");
-                return emp;
-            }
-            else
+            if (resultSet.next()) {
+                Country country = new Country();
+                country.setCode(resultSet.getString("code"));
+                country.setName(resultSet.getString("name"));
+                country.setContinent(resultSet.getString("continent"));
+                country.setRegion(resultSet.getString("region"));
+                country.setPopulation(resultSet.getInt("population"));
+                country.setCapital(resultSet.getInt("capital"));
+                return country;
+            } else
                 return null;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
-            System.out.println("Failed to get employee details");
+            System.out.println("Failed to get country details");
             return null;
         }
     }
-
-    public void displayEmployee(Employee emp)
-    {
-        if (emp != null)
-        {
-            System.out.println(
-                    emp.emp_no + " "
-                            + emp.first_name + " "
-                            + emp.last_name + "\n"
-                            + emp.title + "\n"
-                            + "Salary:" + emp.salary + "\n"
-                            + emp.dept_name + "\n"
-                            + "Manager: " + emp.manager + "\n");
-        }
-    }
-
-
-
-
-
 
 }
