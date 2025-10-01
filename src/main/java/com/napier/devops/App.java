@@ -2,6 +2,11 @@ package com.napier.devops;
 
 import java.sql.*;
 
+import static com.napier.constant.Constant.DEFAULT_COUNTRY_CODE;
+
+/**
+ * Main application class to connect to the database and retrieve country details.
+ */
 public class App {
 
     /**
@@ -36,12 +41,9 @@ public class App {
         appIns.connect();
 
         // Get Countries
-        Country sampleCountryDetails = appIns.getSampleCountryDetails();
+        Country sampleCountryDetails = appIns.getCountryByCode(DEFAULT_COUNTRY_CODE);
         // Display results
         System.out.println(sampleCountryDetails != null ? sampleCountryDetails.toString() : "No country details found");
-
-        // Disconnect from database
-        appIns.disconnect();
     }
 
 
@@ -90,34 +92,36 @@ public class App {
         }
     }
 
-    public Country getSampleCountryDetails() {
-        try {
-            // Create an SQL statement
-            Statement stmt = con.createStatement();
+    /**
+     * Get a country by its code.
+     *
+     * @param countryCode The code of the country to retrieve.
+     * @return A Country object containing details of the country, or null if not found.
+     */
+    public Country getCountryByCode(String countryCode) {
+        Country country = null;
+        String sql = "SELECT code, name, continent, region, population, capital FROM country WHERE code = ?";
 
-            // Create string for SQL statement
-            String strSelect = "SELECT code, name, continent, region, population, capital FROM country LIMIT 5";
 
-            // Execute SQL statement
-            ResultSet resultSet = stmt.executeQuery(strSelect);
-            // Return new country if valid.
-            // Check one is returned
+        // Use PreparedStatement to prevent SQL injection and try-with-resources for automatic closing of resources
+        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, countryCode);  // bind variable safely
+            ResultSet resultSet = pstmt.executeQuery();
+
             if (resultSet.next()) {
-                Country country = new Country();
+                country = new Country();
                 country.setCode(resultSet.getString("code"));
                 country.setName(resultSet.getString("name"));
                 country.setContinent(resultSet.getString("continent"));
                 country.setRegion(resultSet.getString("region"));
                 country.setPopulation(resultSet.getInt("population"));
                 country.setCapital(resultSet.getInt("capital"));
-                return country;
-            } else
-                return null;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("Failed to get country details");
-            return null;
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
         }
+        return country;
     }
+
 
 }

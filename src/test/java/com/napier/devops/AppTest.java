@@ -2,7 +2,6 @@ package com.napier.devops;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -11,14 +10,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
+import static com.napier.constant.Constant.DEFAULT_COUNTRY_CODE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class AppTest {
+
     // We will be testing methods in the App class
     App app;
     // Connection to the test database
@@ -59,19 +59,20 @@ public class AppTest {
 
             // Mocking behavior of App.getSampleCountryDetails() —— It should return a mocked Country object.
             Country mockedCountry = mock(Country.class);
-            Mockito.doReturn(mockedCountry).when(app).getSampleCountryDetails();
+            mockedCountry.setCode(DEFAULT_COUNTRY_CODE);
+
+            Mockito.doReturn(mockedCountry).when(app).getCountryByCode(anyString());
         } catch (Exception ignored) {
         }
     }
 
     // After testing each method, we need to clean up any changes made to the test database.
     @AfterEach
-    @Disabled("Disabled until the method is implemented")
     public void tearDown() {
         try {
-            // Removing the Employee record that was created for testing purpose.
-            PreparedStatement ps = con.prepareStatement("DELETE FROM employees where emp_no = ?");
-            ps.setInt(1, 255530);
+            // Removing the Country record that was created for testing purpose.
+            PreparedStatement ps = con.prepareStatement("DELETE FROM country where Code = ?");
+            ps.setString(1, DEFAULT_COUNTRY_CODE);
             ps.execute();
             // Closing the test database connection.
             con.close();
@@ -90,7 +91,6 @@ public class AppTest {
 
     // Testing App.connect() method by checking if it rightly sets up the connection.
     @Test
-    @Disabled("Disabled until the method is implemented")
     public void testConnect() {
         app.connect();
         assertNotNull(app.getCon());
@@ -98,20 +98,18 @@ public class AppTest {
 
     // Testing App.disconnect() method by checking if it rightly nullifies the connection.
     @Test
-    @Disabled("Disabled until the method is implemented")
     public void testDisconnect() {
         app.connect();
         app.disconnect();
         assertNull(app.getCon());
     }
 
-    // Testing App.getEmployee() method by checking if it rightly fetches an Employee record.
+    // Testing App.getCountry() method by checking if it rightly fetches a Country record.
     @Test
-    @Disabled("Disabled until the method is implemented")
-    public void testGetEmployee() {
-//        app.connect();
-//        Employee e = app.getSampleCountryDetails(255530);
-//        assertNotNull(e);
-//        assertEquals(255530, e.emp_no);
+    public void testGetCountry() {
+        app.connect();
+        Country country = app.getCountryByCode(DEFAULT_COUNTRY_CODE);
+        assertNotNull(country);
+        assertEquals(DEFAULT_COUNTRY_CODE, country.getCode());
     }
 }
