@@ -10,14 +10,15 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
+import static com.napier.constant.Constant.DEFAULT_COUNTRY_CODE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class AppTest {
+
     // We will be testing methods in the App class
     App app;
     // Connection to the test database
@@ -56,21 +57,21 @@ public class AppTest {
                 return null;
             }).when(app).disconnect();
 
-            // Mocking behavior of App.getEmployee() —— It should return a mocked Employee object.
-            Employee mockEmployee = mock(Employee.class);
-            mockEmployee.emp_no = 255530;
-            Mockito.doReturn(mockEmployee).when(app).getEmployee(anyInt());
-        } catch (Exception ignored) {
-        }
+            // Mocking behavior of App.getCountryByCode() —— It should return a mocked Country object.
+            Country mockedCountry = mock(Country.class);
+            when(mockedCountry.getCode()).thenReturn(DEFAULT_COUNTRY_CODE);
+
+            Mockito.doReturn(mockedCountry).when(app).getCountryByCode(anyString());
+        } catch (Exception ignored) {}
     }
 
     // After testing each method, we need to clean up any changes made to the test database.
     @AfterEach
     public void tearDown() {
         try {
-            // Removing the Employee record that was created for testing purpose.
-            PreparedStatement ps = con.prepareStatement("DELETE FROM employees where emp_no = ?");
-            ps.setInt(1, 255530);
+            // Removing the Country record that was created for testing purpose.
+            PreparedStatement ps = con.prepareStatement("DELETE FROM country where Code = ?");
+            ps.setString(1, DEFAULT_COUNTRY_CODE);
             ps.execute();
             // Closing the test database connection.
             con.close();
@@ -102,12 +103,4 @@ public class AppTest {
         assertNull(app.getCon());
     }
 
-    // Testing App.getEmployee() method by checking if it rightly fetches an Employee record.
-    @Test
-    public void testGetEmployee() {
-        app.connect();
-        Employee e = app.getEmployee(255530);
-        assertNotNull(e);
-        assertEquals(255530, e.emp_no);
-    }
 }
