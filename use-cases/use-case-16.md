@@ -42,12 +42,16 @@ Request for this report.
 
 ## EXTENSIONS
 
-  2. Data not found:
-    1. Analyst informed no data exists.
+  1. Data not found:
+    1.1 Analyst informed no data exists.
 
 ## SUB-VARIATIONS
 
 None.
+
+## Use case diagram
+
+![Use Case 16 Diagram](../use-cases-diagram/use-case-16.png)
 
 ## SCHEDULE
 

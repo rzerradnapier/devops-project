@@ -42,8 +42,8 @@ Request for this report.
 
 ## EXTENSIONS
 
-  2. Data not found:
-    1. Analyst informed no data exists.
+  1. Data not found:
+    1.1 Analyst informed no data exists.
 
 ## SUB-VARIATIONS
 
