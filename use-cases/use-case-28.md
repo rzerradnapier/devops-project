@@ -49,6 +49,10 @@ Request for this report.
 
 None.
 
+## Use case diagram
+
+![Use Case 28 Diagram](../use-cases-diagram/use-case-28.png)
+
 ## SCHEDULE
 
 DUE DATE: Release 5.2
