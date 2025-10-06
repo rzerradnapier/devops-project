@@ -51,7 +51,7 @@ None.
 
 ## Use case diagram
 
-![Use Case 22 Diagram](../use-cases-diagram/use-case-22.png)
+![Use Case 23 Diagram](../use-cases-diagram/use-case-23.png)
 
 ## SCHEDULE
 
