@@ -47,6 +47,10 @@ Request for top N countries in continent.
 
 ## SUB-VARIATIONS
 
+## Use case diagram
+
+![use-case-5.png](../use-cases-diagram/use-case-5.png)
+
 None.
 
 ## SCHEDULE
