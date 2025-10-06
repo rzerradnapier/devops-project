@@ -47,6 +47,10 @@ Request for this report.
 
 ## SUB-VARIATIONS
 
+## Use case diagram
+
+![use-case-12.png](../use-cases-diagram/use-case-12.png)
+
 None.
 
 ## SCHEDULE

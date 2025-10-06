@@ -49,6 +49,9 @@ Finance or management request global population comparison.
 ## SUB-VARIATIONS
 
 None.
+## Use case diagram 
+
+![use-case-1.png](../use-cases-diagram/use-case-1.png)
 
 ## SCHEDULE
 

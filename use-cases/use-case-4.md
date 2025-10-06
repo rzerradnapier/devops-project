@@ -47,6 +47,10 @@ Request for top N countries by population.
 
 ## SUB-VARIATIONS
 
+## Use case diagram
+
+![use-case-4.png](../use-cases-diagram/use-case-4.png)
+
 None.
 
 ## SCHEDULE

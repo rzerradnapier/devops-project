@@ -49,6 +49,10 @@ Request for population data by continent.
 
 None.
 
+## Use case diagram
+
+![use-case-2.png](../use-cases-diagram/use-case-2.png)
+
 ## SCHEDULE
 
 DUE DATE: Release 1.1

@@ -47,6 +47,10 @@ Request for top N countries in region.
 
 ## SUB-VARIATIONS
 
+## Use case diagram
+
+![use-case-6.png](../use-cases-diagram/use-case-6.png)
+
 None.
 
 ## SCHEDULE

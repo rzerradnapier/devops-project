@@ -47,6 +47,10 @@ Request for population data by region.
 
 ## SUB-VARIATIONS
 
+## Use case diagram
+
+![use-case-3.png](../use-cases-diagram/use-case-3.png)
+
 None.
 
 ## SCHEDULE
