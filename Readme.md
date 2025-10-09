@@ -8,33 +8,53 @@
 
 ---
 
-# Develop branch
+### Develop branch
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=develop)
 
-# Release branch
+### Release branch
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=release)
 
-# Master branch
+### Master branch
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=master)
 
 ---
 
-## Table of Contents
-1. [IntelliJ Debugger Setup](#intellij-debugger-setup)
-2. [User Stories](#user-stories)
-   - [Country Reports](#country-reports)
-   - [City Reports](#city-reports)
-   - [Capital City Reports](#capital-city-reports)
-   - [Population Reports](#population-reports)
-   - [Population Queries](#population-queries)
-   - [Language Reports](#language-reports)
 
+## 📑 Table of Contents
+
+1. [About the project](#about-the-project)
+2. [Team](#team)
+3. [IntelliJ Debugger Setup](#intellij-debugger-setup)
+    - [Add a Remote JVM Debug Configuration](#add-a-remote-jvm-debug-configuration)
+    - [Debug Workflow](#debug-workflow)
+4. [Test Coverage with Jacoco](#test-coverage-with-jacoco)
+5. [Checklist Submission 1](#checklist-submission-1)
+6. [Requirements Met](#requirements-met)
 ---
 
-## IntelliJ Debugger Setup
+
+## 🚀 About the project
+This project is a submission for coursework assessment of the DevOps module SET09803 at Napier university
+in this assessment we are building a new system that easy access to the population information extracted from
+an existing world database available [here](https://dev.mysql.com/doc/index-other.html).
+
+The requirements for this project can be found
+[here](https://github.com/Kevin-Sim/SET09803-DevOps-Global-Online/blob/master/assessment/README.md).
+
+---
+## 👨‍💻 Team
+1. Dorian Cain
+2. Jeremiah Udoh
+3. Kevron Ferdinand
+4. Nguyen Nguyen
+5. Reda Zerrad `Product Owner`
+6. Yanida Perumal `SCRUM Master`
+
+---
+## 🐞 IntelliJ Debugger Setup
 
 ### Add a Remote JVM Debug Configuration
 1. Go to **Run → Edit Configurations…**
@@ -49,7 +69,7 @@
 ### Debug Workflow
 - **Step 1:** Run your **Docker-Compose Deployment** config → containers start.
 - **Step 2:** Start your **Remote Debug App** config (Debug mode) → IntelliJ attaches to the JVM inside your container.
-- **Step 3:** Access your app (e.g., `http://localhost:8080/…`) → breakpoints in IntelliJ should trigger.
+- **Step 3:** Run the app  → breakpoints in IntelliJ should trigger.
 
 ---
 ### Test Coverage with Jacoco
@@ -57,63 +77,34 @@
 	•	HTML report: target/site/jacoco/index.html.
 
 ---
-## User Stories
+## 📋 Checklist Submission 1 
 
-### Country Reports
-- **US-01**: As an analyst, I want to list all countries worldwide by population (largest → smallest) to compare global populations.
-- **US-02**: As an analyst, I want to list all countries in a continent by population (largest → smallest) to analyze distribution per continent.
-- **US-03**: As an analyst, I want to list all countries in a region by population (largest → smallest) to compare at a regional level.
-- **US-04**: As an analyst, I want to retrieve the top **N** most populated countries worldwide so that I can identify the largest globally.
-- **US-05**: As an analyst, I want to retrieve the top **N** most populated countries per continent to focus on major populations there.
-- **US-06**: As an analyst, I want to retrieve the top **N** most populated countries per region to focus on major populations regionally.
+The following are in place:
 
----
-
-### City Reports
-- **US-07**: Report all cities in the world by population (largest → smallest).
-- **US-08**: Report all cities in a continent by population (largest → smallest).
-- **US-09**: Report all cities in a region by population (largest → smallest).
-- **US-10**: Report all cities in a country by population (largest → smallest).
-- **US-11**: Report all cities in a district by population (largest → smallest).
-- **US-12**: Report the top **N** most populated cities worldwide.
-- **US-13**: Report the top **N** most populated cities per continent.
-- **US-14**: Report the top **N** most populated cities per region.
-- **US-15**: Report the top **N** most populated cities per country.
-- **US-16**: Report the top **N** most populated cities per district.
+- ✅ GitHub project for coursework set-up.
+- ✅ Product Backlog created.
+- ✅ Project builds to self-contained JAR with Maven.
+- ✅ Dockerfile for project set-up and works.
+- ✅ GitHub Actions for project set-up and build is working using JAR, and Docker on GitHub Actions.
+- ✅ Correct branches for GitFlow workflow created - includes `master`, `develop`, and `release` branches.
+- ✅ First release created on GitHub.
+- ✅ Code of Conduct defined.
+- ✅ Issues being used on GitHub.
+- ✅ Tasks defined as user stories.
+- ✅ Project integrated with Zube.io.
+- ✅ Kanban/Project Board being used.
+- ✅ Sprint Boards being used.
+- ✅ Full use cases defined.
+- ✅ Use case diagram created.
 
 ---
+## 🏁 Requirements Met
 
-### Capital City Reports
-- **US-17**: Report all capital cities in the world by population (largest → smallest).
-- **US-18**: Report all capital cities in a continent by population (largest → smallest).
-- **US-19**: Report all capital cities in a region by population (largest → smallest).
-- **US-20**: Report the top **N** most populated capital cities worldwide.
-- **US-21**: Report the top **N** most populated capital cities per continent.
-- **US-22**: Report the top **N** most populated capital cities per region.
 
----
+| ID    | Name | Met  | Screenshot |
+|-------|------|------|------------|
+| 1     |  |  |  |
 
-### Population Reports
-- **US-23**: Produce a report for each continent with:
-   - Total population
-   - Population in cities (with %)
-   - Population not in cities (with %)
-- **US-24**: Same as above, but per region.
-- **US-25**: Same as above, but per country.
 
----
 
-### Population Queries
-- **US-26**: Retrieve the total population of the world.
-- **US-27**: Retrieve the total population of a continent.
-- **US-28**: Retrieve the total population of a region.
-- **US-29**: Retrieve the total population of a country.
-- **US-30**: Retrieve the total population of a district.
-- **US-31**: Retrieve the total population of a city.
 
----
-
-### Language Reports
-- **US-32**: Produce a report of speakers of **Chinese, English, Hindi, Spanish, and Arabic**, ordered from greatest to smallest, including their percentage of the world population.
-
----
