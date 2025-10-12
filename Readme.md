@@ -2,9 +2,9 @@
 
 ![workflow](https://github.com/rzerradnapier/devops-project/actions/workflows/main.yml/badge.svg)  
 
-[![LICENSE](https://img.shields.io/github/license/rzerradnapier/devops.svg?style=flat-square)](https://github.com/rzerradnapier/devops/blob/master/LICENSE)  
+[![LICENSE](https://img.shields.io/github/license/rzerradnapier/devops-project.svg?style=flat-square)](https://github.com/rzerradnapier/devops-project/blob/master/LICENSE)  
 
-[![Releases](https://img.shields.io/github/release/rzerradnapier/devops/all.svg?style=flat-square)](https://github.com/rzerradnapier/devops/releases)
+[![Releases](https://img.shields.io/github/release/rzerradnapier/devops-project/all.svg?style=flat-square)](https://github.com/rzerradnapier/devops-project/releases)
 
 ---
 
