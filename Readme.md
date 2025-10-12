@@ -4,7 +4,7 @@
 
 [![LICENSE](https://img.shields.io/github/license/rzerradnapier/devops.svg?style=flat-square)](https://github.com/rzerradnapier/devops/blob/master/LICENSE)  
 
-[![Releases](https://img.shields.io/github/release/rzerradnapier/devops/all.svg?style=flat-square)](https://github.com/rzerradnapier/devops/releases)
+[![Releases](https://img.shields.io/github/release/rzerradnapier/devops-project/all.svg?style=flat-square)](https://github.com/rzerradnapier/devops-project/releases)
 
 ---
 
