@@ -98,4 +98,25 @@ public class CountryTest extends AppTest{
         country.setCapital(capitalId);
         assertEquals(capitalId, country.getCapital());
     }
+    /**
+     * Test for setAll method.
+     */
+    @Test
+    public void testSetAll() {
+        String code = "CAN";
+        String name = "Canada";
+        String continent = "North America";
+        String region = "Américas";
+        Integer population = 37590000;
+        Integer capital = 456; // Assuming capital is stored as int (FK to city)
+
+        country.setAll(code, name, continent, region, population, capital);
+
+        assertEquals(code, country.getCode());
+        assertEquals(name, country.getName());
+        assertEquals(continent, country.getContinent());
+        assertEquals(region, country.getRegion());
+        assertEquals(population, country.getPopulation());
+        assertEquals(capital, country.getCapital());
+    }
 }
