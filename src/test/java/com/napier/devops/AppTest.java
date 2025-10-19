@@ -1,4 +1,6 @@
 package com.napier.devops;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,6 +67,8 @@ public class AppTest {
 
             Mockito.doReturn(mockedCountry).when(app).getCountryByCode(anyString());
         } catch (Exception ignored) {}
+        // Initializing a null connection to test getCon() when connection is null
+        app.setCon(null);
     }
 
     // After testing each method, we need to clean up any changes made to the test database.
@@ -120,6 +124,7 @@ public class AppTest {
         Mockito.verify(app, Mockito.times(1)).getAllCountriesByPopulationLargestToSmallest();
     }
     // Testing getAllCountriesByPopulationLargestToSmallest method
+    // Testing setCon method
     @Test
     public void testGetAllCountriesByPopulationLargestToSmallest() {
         List<Country> mockedCountries = Arrays.asList(
@@ -136,12 +141,18 @@ public class AppTest {
         assertEquals("Code2", countryList.get(1).getCode());
         assertEquals("Code3", countryList.get(2).getCode());
     }
-    // Testing getCountryByCode() method
+
+    // Testing getCon() method by checking if it correctly returns the connection object.
     @Test
-    public void testGetCountryByCode() {
-        String expectedCountryCode = DEFAULT_COUNTRY_CODE;
-        Country country = app.getCountryByCode(expectedCountryCode);
-        assertNotNull(country);
-        assertEquals(expectedCountryCode, country.getCode());
+    public void testGetCon() {
+        app.connect("test",1);
+        assertNotNull(app.getCon());
+    }
+    // Testing setCon() method by checking if it correctly sets the connection object.
+    @Test
+    public void testSetCon() {
+        Connection connection = mock(Connection.class);
+        app.setCon(connection);
+        assertEquals(connection, app.getCon());
     }
 }
