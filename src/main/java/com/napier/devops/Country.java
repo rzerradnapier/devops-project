@@ -62,6 +62,28 @@ public class Country {
         this.capital = capital;
     }
 
+
+    /**
+     * Sets all the fields of the Country class.
+     * This method is meant to be used for unit testing.
+     *
+     * @param code       the country code
+     * @param name       the country name
+     * @param continent  the continent
+     * @param region     the region
+     * @param population the population
+     * @param capital    the capital
+     */
+    public Country setAll(String code, String name, String continent, String region, Integer population, Integer capital) {
+        this.setCode(code);
+        this.setName(name);
+        this.setContinent(continent);
+        this.setRegion(region);
+        this.setPopulation(population);
+        this.setCapital(capital);
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Country {\n" +

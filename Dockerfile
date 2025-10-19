@@ -1,7 +1,7 @@
 FROM openjdk:17-jdk-slim
-COPY ./target/devops-project-0.1.0-alpha-jar-with-dependencies.jar /tmp
+COPY ./target/devops.jar /tmp
 WORKDIR /tmp
 # exposing port for debugging
 EXPOSE 8080 5005
-ENTRYPOINT ["java", "-jar", "devops-project-0.1.0-alpha-jar-with-dependencies.jar"]
+ENTRYPOINT ["java", "-jar", "devops.jar", "db:3306", "30000"]
 

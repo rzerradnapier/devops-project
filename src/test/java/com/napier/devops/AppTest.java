@@ -1,4 +1,6 @@
 package com.napier.devops;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +38,7 @@ public class AppTest {
             // When DriverManager.getConnection() is called, return the above mocked Connection object.
             mockDriverManager.when(() -> DriverManager.getConnection(anyString(), anyString(), anyString())).thenReturn(mockCon);
 
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/testdb", "user", "password");
+            con = DriverManager.getConnection("jdbc:mysql://db:3306/world?allowPublicKeyRetrieval=true&useSSL=false", "root", "ei:UA@_oSnDZ");
 
             // Mocking PreparedStatement class
             PreparedStatement ps = mock(PreparedStatement.class);
@@ -49,7 +51,7 @@ public class AppTest {
             Mockito.doAnswer(invocation -> {
                 app.setCon(mock(Connection.class));
                 return null;
-            }).when(app).connect();
+            }).when(app).connect(anyString(),anyInt());
 
             // Mocking behavior of App.disconnect() —— It should nullify the connection.
             Mockito.doAnswer(invocation -> {
@@ -91,16 +93,55 @@ public class AppTest {
     // Testing App.connect() method by checking if it rightly sets up the connection.
     @Test
     public void testConnect() {
-        app.connect();
+        app.connect("test",1);
         assertNotNull(app.getCon());
     }
 
     // Testing App.disconnect() method by checking if it rightly nullifies the connection.
     @Test
     public void testDisconnect() {
-        app.connect();
+        app.connect("test",1);
         app.disconnect();
         assertNull(app.getCon());
     }
 
+
+    // Test printAllCountriesByPopulationLargestToSmallest
+    @Test
+    public void testPrintAllCountriesByPopulationLargestToSmallest() {
+        List<Country> mockedCountries = Arrays.asList(
+                new Country().setAll("Code1", "Name1", "Continent1", "Region1", 120, 1),
+                new Country().setAll("Code2", "Name2", "Continent2", "Region2", 100, 2),
+                new Country().setAll("Code3", "Name3", "Continent3", "Region3", 90, 3));
+
+        Mockito.doReturn(mockedCountries).when(app).getAllCountriesByPopulationLargestToSmallest();
+
+        App.printAllCountriesByPopulationLargestToSmallest(app);
+        Mockito.verify(app, Mockito.times(1)).getAllCountriesByPopulationLargestToSmallest();
+    }
+    // Testing getAllCountriesByPopulationLargestToSmallest method
+    @Test
+    public void testGetAllCountriesByPopulationLargestToSmallest() {
+        List<Country> mockedCountries = Arrays.asList(
+            new Country().setAll("Code1", "Name1", "Continent1", "Region1", 120, 1),
+            new Country().setAll("Code2", "Name2", "Continent2", "Region2", 100, 2),
+            new Country().setAll("Code3", "Name3", "Continent3", "Region3", 90, 3));
+
+        Mockito.doReturn(mockedCountries).when(app).getAllCountriesByPopulationLargestToSmallest();
+
+        List<Country> countryList = app.getAllCountriesByPopulationLargestToSmallest();
+        assertNotNull(countryList);
+        assertEquals(3, countryList.size());
+        assertEquals("Code1", countryList.get(0).getCode());
+        assertEquals("Code2", countryList.get(1).getCode());
+        assertEquals("Code3", countryList.get(2).getCode());
+    }
+    // Testing getCountryByCode() method
+    @Test
+    public void testGetCountryByCode() {
+        String expectedCountryCode = DEFAULT_COUNTRY_CODE;
+        Country country = app.getCountryByCode(expectedCountryCode);
+        assertNotNull(country);
+        assertEquals(expectedCountryCode, country.getCode());
+    }
 }

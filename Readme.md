@@ -101,9 +101,9 @@ The following are in place:
 ## 🏁 Requirements Met
 
 
-| ID    | Name | Met  | Screenshot |
-|-------|------|------|------------|
-| 1     |  |  |  |
+| ID    | Name | Met  | Screenshot                                                                                 |
+|-------|------|------|--------------------------------------------------------------------------------------------|
+| 1     |Get all countries organized by population descending  | ✅ | ![all countries organized by population descending](screenshots/use-case-1-screenshot.png) |
 
 
 
