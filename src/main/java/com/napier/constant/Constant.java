@@ -5,4 +5,5 @@ package com.napier.constant;
  */
 public class Constant {
     public static final String DEFAULT_COUNTRY_CODE = "USA";
+    public static final String DEFAULT_CONTINENT = "Africa";
 }

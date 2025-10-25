@@ -84,6 +84,37 @@ public class CountryReportService {
     }
 
     /**
+     * This function retrieves all countries from a specific continent and sorts them by population in
+     * descending order.
+     *
+     * @param continent A String containing the name of the continent from which to retrieve countries.
+     * @return A List of Country objects containing details of all the countries from the specified continent,
+     *         sorted by population in descending order.
+     */
+    public List<Country> getAllCountriesInContinentByPopulationLargestToSmallest(String continent) {
+        List<Country> countries = new ArrayList<>();
+        String sql = "SELECT code, name, continent, region, population, capital FROM country WHERE continent = ? ORDER BY population DESC";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, continent);
+            ResultSet resultSet = pstmt.executeQuery();
+
+            while (resultSet.next()) {
+                Country country = new Country();
+                country.setCode(resultSet.getString("code"));
+                country.setName(resultSet.getString("name"));
+                country.setContinent(resultSet.getString("continent"));
+                country.setRegion(resultSet.getString("region"));
+                country.setPopulation(resultSet.getInt("population"));
+                country.setCapital(resultSet.getInt("capital"));
+                countries.add(country);
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+        return countries;
+    }
+
+    /**
      * Print all countries sorted by population in descending order.
      */
     public void printAllCountriesByPopulationLargestToSmallest() {
@@ -99,4 +130,26 @@ public class CountryReportService {
             }
         }
     }
+
+    /**
+     * This function fetches all the countries that belong to a specified continent and then prints them in descending order
+     * of population size.
+     *
+     * @param continent The name of the continent for which to retrieve and print all countries.
+     */
+        public void printAllCountriesByPopulationInAContinentLargestToSmallest (String continent){
+            // Get list of all countries in the provided continent sorted by population
+            List<Country> countryList = getAllCountriesInContinentByPopulationLargestToSmallest(continent);
+
+            if (countryList == null || countryList.isEmpty()) {
+                System.err.println("Error: No country data found for continent: " + continent);
+            } else {
+                // Print the details of all the countries
+                for (Country country : countryList) {
+                    System.out.println(country.toString());
+                }
+            }
+        }
+
+
 }

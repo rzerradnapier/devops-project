@@ -5,6 +5,7 @@ import com.napier.devops.service.CountryReportService;
 
 import java.sql.*;
 
+import static com.napier.constant.Constant.DEFAULT_CONTINENT;
 import static com.napier.constant.Constant.DEFAULT_COUNTRY_CODE;
 
 /**
@@ -78,15 +79,14 @@ public class App {
             appIns.connect(args[0], Integer.parseInt(args[1]));
         }
 
-        System.out.println("list of all countries sorted by population largest to smallest");
+        System.out.println("\n=== USE CASE 1:list of all countries sorted by population largest to smallest ===");
         // Get list of all countries sorted by population largest to smallest
         appIns.countryReportService.printAllCountriesByPopulationLargestToSmallest();
 
-        System.out.println("Get country by code USA");
-        // Get country by code USA
-        Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);
-        // Display results
-        System.out.println(sampleCountryDetails != null ? sampleCountryDetails.toString() : "No country details found");
+        System.out.println("\n=== USE CASE 2:Produce a Report all countries in a continent organised by largest to smallest population ===");
+        // Get list of all countries sorted by population largest to smallest
+        appIns.countryReportService.printAllCountriesByPopulationInAContinentLargestToSmallest(DEFAULT_CONTINENT);
+
 
         System.out.println("\n=== USE CASE 7: All Cities in the World by Population ===");
         // Get list of all cities sorted by population largest to smallest
@@ -95,6 +95,12 @@ public class App {
         System.out.println("\n=== USE CASE 8: Cities in a Continent by Population ===");
         // Get list of all cities in Asia sorted by population largest to smallest
         appIns.cityReportService.printAllCitiesInContinentByPopulationLargestToSmallest("Asia");
+
+        System.out.println("Get country by code USA");
+        // Get country by code USA
+        Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);
+        // Display results
+        System.out.println(sampleCountryDetails != null ? sampleCountryDetails.toString() : "No country details found");
     }
 
 
