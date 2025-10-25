@@ -1,8 +1,9 @@
 package com.napier.devops;
 
+import com.napier.devops.service.CityReportService;
+import com.napier.devops.service.CountryReportService;
+
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.napier.constant.Constant.DEFAULT_COUNTRY_CODE;
 
@@ -15,6 +16,16 @@ public class App {
      * Connection to MySQL database.
      */
     private Connection con = null;
+    
+    /**
+     * Service for city-related reports.
+     */
+    private CityReportService cityReportService;
+    
+    /**
+     * Service for country-related reports.
+     */
+    private CountryReportService countryReportService;
 
     /**
      * sets the con object of the app, this is useful for mock testing
@@ -23,6 +34,9 @@ public class App {
      */
     public void setCon(Connection con) {
         this.con = con;
+        // Initialize services when connection is set
+        this.cityReportService = new CityReportService(con);
+        this.countryReportService = new CountryReportService(con);
     }
 
     /**
@@ -33,6 +47,24 @@ public class App {
     public Connection getCon() {
         return this.con;
     }
+    
+    /**
+     * Gets the city report service.
+     *
+     * @return CityReportService instance
+     */
+    public CityReportService getCityReportService() {
+        return this.cityReportService;
+    }
+    
+    /**
+     * Gets the country report service.
+     *
+     * @return CountryReportService instance
+     */
+    public CountryReportService getCountryReportService() {
+        return this.countryReportService;
+    }
 
 
     public static void main(String[] args) {
@@ -41,20 +73,28 @@ public class App {
 
         // Connect to database
         if(args.length < 1){
-            appIns.connect("localhost:33060", 30000);
+            appIns.connect("localhost:3306", 30000);
         }else{
             appIns.connect(args[0], Integer.parseInt(args[1]));
         }
 
         System.out.println("list of all countries sorted by population largest to smallest");
         // Get list of all countries sorted by population largest to smallest
-        printAllCountriesByPopulationLargestToSmallest(appIns);
+        appIns.countryReportService.printAllCountriesByPopulationLargestToSmallest();
 
         System.out.println("Get country by code USA");
         // Get country by code USA
-        Country sampleCountryDetails = appIns.getCountryByCode(DEFAULT_COUNTRY_CODE);
+        Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);
         // Display results
         System.out.println(sampleCountryDetails != null ? sampleCountryDetails.toString() : "No country details found");
+
+        System.out.println("\n=== USE CASE 7: All Cities in the World by Population ===");
+        // Get list of all cities sorted by population largest to smallest
+        appIns.cityReportService.printAllCitiesByPopulationLargestToSmallest();
+
+        System.out.println("\n=== USE CASE 8: Cities in a Continent by Population ===");
+        // Get list of all cities in Asia sorted by population largest to smallest
+        appIns.cityReportService.printAllCitiesInContinentByPopulationLargestToSmallest("Asia");
     }
 
 
@@ -81,6 +121,9 @@ public class App {
                                 + "/world?allowPublicKeyRetrieval=true&useSSL=false",
                         "root", "ei:UA@_oSnDZ");
                 System.out.println("Successfully Connected");
+                // Initialize services after successful connection
+                this.cityReportService = new CityReportService(con);
+                this.countryReportService = new CountryReportService(con);
                 break;
             } catch (SQLException sql) {
                 System.out.println("Failed to connect to database attempt " + i);
@@ -105,88 +148,6 @@ public class App {
         }
     }
 
-    /**
-     * Get a country by its code.
-     *
-     * @param countryCode The code of the country to retrieve.
-     * @return A Country object containing details of the country, or null if not found.
-     */
-    public Country getCountryByCode(String countryCode) {
-        Country country = null;
-        String sql = "SELECT code, name, continent, region, population, capital FROM country WHERE code = ?";
-
-
-        // Use PreparedStatement to prevent SQL injection and try-with-resources for automatic closing of resources
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, countryCode);  // bind variable safely
-            ResultSet resultSet = pstmt.executeQuery();
-
-            if (resultSet.next()) {
-                country = new Country();
-                country.setCode(resultSet.getString("code"));
-                country.setName(resultSet.getString("name"));
-                country.setContinent(resultSet.getString("continent"));
-                country.setRegion(resultSet.getString("region"));
-                country.setPopulation(resultSet.getInt("population"));
-                country.setCapital(resultSet.getInt("capital"));
-            }
-        } catch (SQLException e) {
-            System.out.println("Query failed: " + e.getMessage());
-        }
-        return country;
-    }
-
-
-    /**
-     * Get all countries organized by population descending.
-     *
-     * @return A List of Country objects containing details of all the countries, ordered by population descending.
-     */
-    public List<Country> getAllCountriesByPopulationLargestToSmallest() {
-        List<Country> countries = new ArrayList<>();
-        String sql = "SELECT code, name, continent, region, population, capital FROM country ORDER BY population DESC";
-
-        // Use PreparedStatement to prevent SQL injection and try-with-resources for automatic closing of resources
-        try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            ResultSet resultSet = pstmt.executeQuery();
-
-            while (resultSet.next()) {
-                Country country = new Country();
-                country.setCode(resultSet.getString("code"));
-                country.setName(resultSet.getString("name"));
-                country.setContinent(resultSet.getString("continent"));
-                country.setRegion(resultSet.getString("region"));
-                country.setPopulation(resultSet.getInt("population"));
-                country.setCapital(resultSet.getInt("capital"));
-
-                // Add the country to the list
-                countries.add(country);
-            }
-        } catch (SQLException e) {
-            System.out.println("Query failed: " + e.getMessage());
-        }
-
-        return countries;
-    }
-
-    /**
-     * Method to print all countries sorted by population in descending order.
-     *
-     * @return void.
-     */
-    public static void printAllCountriesByPopulationLargestToSmallest(App appIns) {
-        // Get list of all countries sorted by population
-        List<Country> countryList = appIns.getAllCountriesByPopulationLargestToSmallest();
-
-        if (countryList == null || countryList.isEmpty()) {
-            System.err.println("Error: No country data found.");
-        } else {
-            // Print the details of all the countries
-            for (Country country : countryList) {
-                System.out.println(country.toString());
-            }
-        }
-    }
 
 
 }
