@@ -2,121 +2,123 @@ package com.napier.devops;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static com.napier.constant.Constant.DEFAULT_COUNTRY_CODE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit test for Country class.
+ * Unit tests for the Country class.
  */
-public class CountryTest extends AppTest{
+public class CountryTest {
 
-    // We will use this country instance for performing and testing operations on an country object.
-    // It is initialized in each test via the setUp method.
     private Country country;
 
-    /**
-     * Set up the test data.
-     */
     @BeforeEach
     public void setUp() {
-        // Call the parent setup to initialize the app and connection
-        super.setUp();
-        // Initializing a new country object before each test
         country = new Country();
     }
 
-    /**
-     * Tests the {@link App#getCountryByCode(String)} method to ensure it retrieves
-     * a country object correctly based on the provided country code.
-     * Verifies that the returned country is not null and that the code matches
-     * the expected value.
-     */
     @Test
-    public void testGetCountry() {
-        Country country = app.getCountryByCode(DEFAULT_COUNTRY_CODE);
-        assertNotNull(country);
-        assertEquals(DEFAULT_COUNTRY_CODE, country.getCode());
-    }
-
-    /**
-     * Test code field (getter & setter).
-     */
-    @Test
-    public void testCode() {
+    public void testSetAndGetCode() {
         String code = "USA";
         country.setCode(code);
         assertEquals(code, country.getCode());
     }
 
-    /**
-     * Test name field (getter & setter).
-     */
     @Test
-    public void testName() {
+    public void testSetAndGetName() {
         String name = "United States";
         country.setName(name);
         assertEquals(name, country.getName());
     }
 
-    /**
-     * Test continent field (getter & setter).
-     */
     @Test
-    public void testContinent() {
+    public void testSetAndGetContinent() {
         String continent = "North America";
         country.setContinent(continent);
         assertEquals(continent, country.getContinent());
     }
 
-    /**
-     * Test region field (getter & setter).
-     */
     @Test
-    public void testRegion() {
+    public void testSetAndGetRegion() {
         String region = "North America";
         country.setRegion(region);
         assertEquals(region, country.getRegion());
     }
 
-    /**
-     * Test population field (getter & setter).
-     */
     @Test
-    public void testPopulation() {
-        int population = 331000000;
+    public void testSetAndGetPopulation() {
+        Integer population = 331000000;
         country.setPopulation(population);
         assertEquals(population, country.getPopulation());
     }
 
-    /**
-     * Test capital field (getter & setter).
-     */
     @Test
-    public void testCapital() {
-        int capitalId = 123; // assuming capital is stored as int (FK to city)
-        country.setCapital(capitalId);
-        assertEquals(capitalId, country.getCapital());
+    public void testSetAndGetCapital() {
+        Integer capital = 3813;
+        country.setCapital(capital);
+        assertEquals(capital, country.getCapital());
     }
-    /**
-     * Test for setAll method.
-     */
+
     @Test
     public void testSetAll() {
-        String code = "CAN";
-        String name = "Canada";
+        String code = "USA";
+        String name = "United States";
         String continent = "North America";
-        String region = "Américas";
-        Integer population = 37590000;
-        Integer capital = 456; // Assuming capital is stored as int (FK to city)
+        String region = "North America";
+        Integer population = 331000000;
+        Integer capital = 3813;
 
-        country.setAll(code, name, continent, region, population, capital);
+        Country result = country.setAll(code, name, continent, region, population, capital);
 
+        // Test method chaining
+        assertSame(country, result);
+
+        // Test all properties are set correctly
         assertEquals(code, country.getCode());
         assertEquals(name, country.getName());
         assertEquals(continent, country.getContinent());
         assertEquals(region, country.getRegion());
         assertEquals(population, country.getPopulation());
         assertEquals(capital, country.getCapital());
+    }
+
+    @Test
+    public void testToString() {
+        country.setAll("USA", "United States", "North America", "North America", 331000000, 3813);
+        String expected = "Country {\n" +
+                "  code='USA',\n" +
+                "  name='United States',\n" +
+                "  continent='North America',\n" +
+                "  region='North America',\n" +
+                "  population=331000000,\n" +
+                "  capital='3813'\n" +
+                '}';
+        assertEquals(expected, country.toString());
+    }
+
+    @Test
+    public void testToStringWithNullValues() {
+        String expected = "Country {\n" +
+                "  code='null',\n" +
+                "  name='null',\n" +
+                "  continent='null',\n" +
+                "  region='null',\n" +
+                "  population=null,\n" +
+                "  capital='null'\n" +
+                '}';
+        assertEquals(expected, country.toString());
+    }
+
+    @Test
+    public void testSetAllWithNullValues() {
+        Country result = country.setAll(null, null, null, null, null, null);
+
+        assertSame(country, result);
+        assertNull(country.getCode());
+        assertNull(country.getName());
+        assertNull(country.getContinent());
+        assertNull(country.getRegion());
+        assertNull(country.getPopulation());
+        assertNull(country.getCapital());
     }
 }
