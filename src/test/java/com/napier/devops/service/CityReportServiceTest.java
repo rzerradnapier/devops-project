@@ -56,6 +56,10 @@ public class CityReportServiceTest {
         when(mockResultSet.getString("CountryCode")).thenReturn("IND", "KOR", "BRA");
         when(mockResultSet.getString("District")).thenReturn("Maharashtra", "Seoul", "São Paulo");
         when(mockResultSet.getInt("Population")).thenReturn(10500000, 9981619, 9968485);
+        when(mockResultSet.getString("Continent")).thenReturn("Asia", "Asia", "South America");
+
+
+
 
         // Call the method
         List<City> cities = cityReportService.getAllCitiesByPopulationLargestToSmallest();
@@ -143,6 +147,7 @@ public class CityReportServiceTest {
         when(mockResultSet.getString("CountryCode")).thenReturn("IND", "KOR", "CHN");
         when(mockResultSet.getString("District")).thenReturn("Maharashtra", "Seoul", "Shanghai");
         when(mockResultSet.getInt("Population")).thenReturn(10500000, 9981619, 9696300);
+        when(mockResultSet.getString("Continent")).thenReturn("Asia", "Asia", "South America");
 
         // Call the method
         List<City> cities = cityReportService.getAllCitiesInContinentByPopulationLargestToSmallest("Asia");

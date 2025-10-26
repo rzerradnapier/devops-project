@@ -4,9 +4,9 @@ import com.napier.devops.service.CityReportService;
 import com.napier.devops.service.CountryReportService;
 
 import java.sql.*;
+import java.util.List;
 
-import static com.napier.constant.Constant.DEFAULT_CONTINENT;
-import static com.napier.constant.Constant.DEFAULT_COUNTRY_CODE;
+import static com.napier.constant.Constant.*;
 
 /**
  * Main application class to connect to the database and retrieve country details.
@@ -83,10 +83,25 @@ public class App {
         // Get list of all countries sorted by population largest to smallest
         appIns.countryReportService.printAllCountriesByPopulationLargestToSmallest();
 
-        System.out.println("\n=== USE CASE 2:Produce a Report all countries in a continent organised by largest to smallest population ===");
-        // Get list of all countries sorted by population largest to smallest
+        System.out.println("\n=== USE CASE 2:Produce a Report all countries in a continent organised by largest to smallest population Continent : Africa ===");
+        // Get list of all countries in a continent sorted by population largest to smallest
         appIns.countryReportService.printAllCountriesByPopulationInAContinentLargestToSmallest(DEFAULT_CONTINENT);
 
+        System.out.println("\n=== USE CASE 3: Get all countries in a region organised by largest to smallest population so that I can compare populations at a regional level Region : South America ===");
+        // Get list of all countries in a region sorted by population largest to smallest
+        appIns.countryReportService.printAllCountriesByPopulationInARegionLargestToSmallest(DEFAULT_REGION);
+
+        System.out.println("\n=== USE CASE 4: produce a report of the top N most populated countries in the world where N is provided so that I can identify the largest countries globally n : 10 ===");
+        // Get list of the top N most populated countries in the world where N is provided so that I can identify the largest countries globally
+        appIns.countryReportService.printTopNCountriesByPopulation(DEFAULT_N);
+
+        System.out.println("\n=== USE CASE 5: Produce a Report on Top N Countries in a Continent, Continent : Africa and N : 10 ===");
+        // Get list of the Top N Countries in a Continent
+        appIns.countryReportService.printTopNCountriesInContinentByPopulation(DEFAULT_CONTINENT,DEFAULT_N);
+
+        System.out.println("\n=== USE CASE 6: Produce a Report on Top N Countries in a Region, Region : South America and N : 10 ===");
+        // Get list of the Top N Countries in a region
+        appIns.countryReportService.printTopNCountriesInRegionByPopulation(DEFAULT_REGION,DEFAULT_N);
 
         System.out.println("\n=== USE CASE 7: All Cities in the World by Population ===");
         // Get list of all cities sorted by population largest to smallest

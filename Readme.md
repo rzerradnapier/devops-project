@@ -30,6 +30,7 @@
 3. [IntelliJ Debugger Setup](#intellij-debugger-setup)
     - [Add a Remote JVM Debug Configuration](#add-a-remote-jvm-debug-configuration)
     - [Debug Workflow](#debug-workflow)
+    - [Helper Scripts](#helper-scripts)
 4. [Test Coverage with Jacoco](#test-coverage-with-jacoco)
 5. [Checklist Submission 1](#checklist-submission-1)
 6. [Requirements Met](#requirements-met)
@@ -71,6 +72,15 @@ The requirements for this project can be found
 - **Step 2:** Start your **Remote Debug App** config (Debug mode) → IntelliJ attaches to the JVM inside your container.
 - **Step 3:** Run the app  → breakpoints in IntelliJ should trigger.
 
+### Helper Scripts
+We need to always have a test DB up for the tests to work and to package the code for that reason we have created helper scripts that can be found in /helper-scripts/ folder :
+- **Run All tests:** by running  **run_tests.sh** it runs all tests, the script will deploy the test DB run the tests and then destroy the test DB.
+- **Package the code:** by running  **build_package_clean.sh** it sets up the test DB  run all tests, packages the code then destroys the test DB.
+- **Start the test DB:** by running  **start_test_database.sh** it will deploy and start the test DB and keep it running.
+- **stop the test DB:** by running  **stop_test_database.sh** it will stop and destroy the test DB docker container.
+
+
+
 ---
 ### Test Coverage with Jacoco
 	•	Build fails if overall LINE coverage < 80%.
@@ -101,9 +111,14 @@ The following are in place:
 ## 🏁 Requirements Met
 
 
-| ID    | Name | Met  | Screenshot                                                                                 |
-|-------|------|------|--------------------------------------------------------------------------------------------|
-| 1     |Get all countries organized by population descending  | ✅ | ![all countries organized by population descending](screenshots/use-case-1-screenshot.png) |
+| ID | Name | Met  | Screenshot                                                                                 |
+|----|------|------|--------------------------------------------------------------------------------------------|
+| 1  |Get all countries organized by population descending  | ✅ | ![all countries organized by population descending](screenshots/use-case-1-screenshot.png) |
+| 2  |Produce a Report all countries in a continent organised by largest to smallest population Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-2-screenshot.png) |
+| 3  |Produce a Report on Countries in a Region by Population  | ✅ | ![all countries organized by population descending](screenshots/use-case-3-screenshot.png) |
+| 4  |Produce a Report on Top N Countries in the World  | ✅ | ![all countries organized by population descending](screenshots/use-case-4-screenshot.png) |
+| 5  |Produce a Report on Top N Countries in a Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-5-screenshot.png) |
+| 6  |Produce a Report on Top N Countries in a Region  | ✅ | ![all countries organized by population descending](screenshots/use-case-6-screenshot.png) |
 
 
 

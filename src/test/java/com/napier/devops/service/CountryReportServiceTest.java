@@ -187,4 +187,250 @@ public class CountryReportServiceTest {
             countryReportService.printAllCountriesByPopulationLargestToSmallest();
         });
     }
+/**
+ * Test getAllCountriesInContinentByPopulationLargestToSmallest with mock data.
+ */
+@Test
+void testGetAllCountriesInContinentByPopulationLargestToSmallest() throws SQLException {
+    // Setup mock behavior
+    when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+    when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+    when(mockResultSet.next()).thenReturn(true, true, true, false);
+
+    when(mockResultSet.getString("code")).thenReturn("CHN", "JAP", "THA");
+    when(mockResultSet.getString("name")).thenReturn("China", "Japan", "Thailand");
+    when(mockResultSet.getString("continent")).thenReturn("Asia", "Asia", "Asia");
+    when(mockResultSet.getString("region")).thenReturn("Eastern Asia", "Eastern Europe", "North America");
+    when(mockResultSet.getInt("population")).thenReturn(1277558000, 1240216107, 744216107);
+    when(mockResultSet.getInt("capital")).thenReturn(1891, 1444, 3813);
+
+    // Call the method
+    List<Country> countries = countryReportService.getAllCountriesInContinentByPopulationLargestToSmallest("Asia");
+
+    // Verify results
+    assertNotNull(countries);
+    assertEquals(3, countries.size());
+
+    // Verify first country
+    Country firstCountry = countries.get(0);
+    assertEquals("CHN", firstCountry.getCode());
+    assertEquals("China", firstCountry.getName());
+    assertEquals("Asia", firstCountry.getContinent());
+    assertEquals("Eastern Asia", firstCountry.getRegion());
+    assertEquals(1277558000, firstCountry.getPopulation());
+    assertEquals(1891, firstCountry.getCapital());
+
+    // Verify descending order
+    assertTrue(countries.get(0).getPopulation() >= countries.get(1).getPopulation());
+    assertTrue(countries.get(1).getPopulation() >= countries.get(2).getPopulation());
+}
+
+/**
+ * Test getAllCountriesInContinentByPopulationLargestToSmallest with SQL exception.
+ */
+@Test
+void testGetAllCountriesInContinentByPopulationLargestToSmallestWithSQLException() throws SQLException {
+    // Setup mock to throw SQLException
+    when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+    // Call the method
+    List<Country> countries = countryReportService.getAllCountriesInContinentByPopulationLargestToSmallest("Asia");
+
+    // Verify that an empty list is returned when there's an exception
+    assertNotNull(countries);
+    assertTrue(countries.isEmpty());
+}
+
+/**
+ * Test getAllCountriesInContinentByPopulationLargestToSmallest with empty result set.
+ */
+@Test
+void testGetAllCountriesInContinentByPopulationLargestToSmallestWithEmptyResult() throws SQLException {
+    // Setup mock behavior for empty result
+    when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+    when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+    when(mockResultSet.next()).thenReturn(false); // No results
+
+    // Call the method
+    List<Country> countries = countryReportService.getAllCountriesInContinentByPopulationLargestToSmallest("Asia");
+
+    // Verify that an empty list is returned
+    assertNotNull(countries);
+    assertTrue(countries.isEmpty());
+}
+@Test
+    void testPrintAllCountriesByPopulationInAContinentLargestToSmallestWithNullList() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Connection failed"));
+
+        assertDoesNotThrow(() -> {
+            countryReportService.printAllCountriesByPopulationInAContinentLargestToSmallest("Asia");
+        });
+    }
+    /**
+     * Test getAllCountriesInRegionByPopulationLargestToSmallest with mock data.
+     */
+    @Test
+    void testGetAllCountriesInRegionByPopulationLargestToSmallest() throws SQLException {
+        // Setup mock behavior
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, true, true, false);
+
+        when(mockResultSet.getString("code")).thenReturn("USA", "CAN", "MEX");
+        when(mockResultSet.getString("name")).thenReturn("United States", "Mexico", "Canada");
+        when(mockResultSet.getString("continent")).thenReturn("North America", "North America", "North America");
+        when(mockResultSet.getString("region")).thenReturn("North America", "North America", "North America");
+        when(mockResultSet.getInt("population")).thenReturn(331002651,128932753, 37742154);
+        when(mockResultSet.getInt("capital")).thenReturn(3813, 1822, 2514);
+
+        // Call the method
+        List<Country> countries = countryReportService.getAllCountriesInRegionByPopulationLargestToSmallest("North America");
+
+        // Verify results
+        assertNotNull(countries);
+        assertEquals(3, countries.size());
+
+        // Verify first country
+        Country firstCountry = countries.get(0);
+        assertEquals("USA", firstCountry.getCode());
+        assertEquals("United States", firstCountry.getName());
+        assertEquals("North America", firstCountry.getContinent());
+        assertEquals("North America", firstCountry.getRegion());
+        assertEquals(331002651, firstCountry.getPopulation());
+        assertEquals(3813, firstCountry.getCapital());
+
+        // Verify descending order
+        assertTrue(countries.get(0).getPopulation() >= countries.get(1).getPopulation());
+        assertTrue(countries.get(1).getPopulation() >= countries.get(2).getPopulation());
+    }
+
+    /**
+     * Test getAllCountriesInRegionByPopulationLargestToSmallest with SQL exception.
+     */
+    @Test
+    void testGetAllCountriesInRegionByPopulationLargestToSmallestWithSQLException() throws SQLException {
+        // Setup mock to throw SQLException
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        // Call the method
+        List<Country> countries = countryReportService.getAllCountriesInRegionByPopulationLargestToSmallest("North America");
+
+        // Verify that an empty list is returned when there's an exception
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+    }
+
+    /**
+     * Test getAllCountriesInRegionByPopulationLargestToSmallest with empty result set.
+     */
+    @Test
+    void testGetAllCountriesInRegionByPopulationLargestToSmallestWithEmptyResult() throws SQLException {
+        // Setup mock behavior for empty result
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false); // No results
+
+        // Call the method
+        List<Country> countries = countryReportService.getAllCountriesInRegionByPopulationLargestToSmallest("North America");
+
+        // Verify that an empty list is returned
+        assertNotNull(countries);
+        assertTrue(countries.isEmpty());
+    }
+
+    @Test
+    void testPrintAllCountriesByPopulationInARegionLargestToSmallestWithNullList() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Connection failed"));
+
+        assertDoesNotThrow(() -> {
+            countryReportService.printAllCountriesByPopulationInARegionLargestToSmallest("North America");
+        });
+    }
+    /**
+     * Test printTopNCountriesByPopulation with mock data.
+     */
+    @Test
+    void testPrintTopNCountriesByPopulation() throws SQLException {
+        // Setup mock behavior
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, true, false);
+
+        when(mockResultSet.getString("code")).thenReturn("CHN", "IND");
+        when(mockResultSet.getString("name")).thenReturn("China", "India");
+        when(mockResultSet.getString("continent")).thenReturn("Asia", "Asia");
+        when(mockResultSet.getString("region")).thenReturn("Eastern Asia", "Southern and Central Asia");
+        when(mockResultSet.getInt("population")).thenReturn(1277558000, 1013662000);
+        when(mockResultSet.getInt("capital")).thenReturn(1891, 1109);
+
+        // Call the method
+        assertDoesNotThrow(() -> countryReportService.printTopNCountriesByPopulation(2));
+    }
+
+    /**
+     * Test printTopNCountriesInContinentByPopulation with mock data.
+     */
+    @Test
+    void testPrintTopNCountriesInContinentByPopulation() throws SQLException {
+        // Setup mock behavior
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, true, false);
+
+        when(mockResultSet.getString("code")).thenReturn("CHN", "IND");
+        when(mockResultSet.getString("name")).thenReturn("China", "India");
+        when(mockResultSet.getString("continent")).thenReturn("Asia", "Asia");
+        when(mockResultSet.getString("region")).thenReturn("Eastern Asia", "Southern and Central Asia");
+        when(mockResultSet.getInt("population")).thenReturn(1277558000, 1013662000);
+        when(mockResultSet.getInt("capital")).thenReturn(1891, 1109);
+
+        // Call the method
+        assertDoesNotThrow(() -> countryReportService.printTopNCountriesInContinentByPopulation("Asia", 2));
+    }
+
+    /**
+     * Test printTopNCountriesByPopulation with SQL exception.
+     */
+    @Test
+    void testPrintTopNCountriesByPopulationWithSQLException() throws SQLException {
+        // Setup mock to throw SQLException
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        // Call the method and ensure it does not throw an exception
+        assertDoesNotThrow(() -> countryReportService.printTopNCountriesByPopulation(2));
+    }
+
+    /**
+     * Test printTopNCountriesByPopulation with no results.
+     */
+    @Test
+    void testPrintTopNCountriesByPopulationWithNoResults() throws SQLException {
+        // Setup mock behavior for no results
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        // Call the method and ensure it does not throw an exception
+        assertDoesNotThrow(() -> countryReportService.printTopNCountriesByPopulation(2));
+    }
+
+
+    @Test
+    void testPrintTopNCountriesInRegionByPopulationWithMockData() throws SQLException {
+        // Setup mock behavior
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(true, true, false);
+
+        when(mockResultSet.getString("code")).thenReturn("USA", "CAN");
+        when(mockResultSet.getString("name")).thenReturn("United States", "Canada");
+        when(mockResultSet.getString("continent")).thenReturn("North America", "North America");
+        when(mockResultSet.getString("region")).thenReturn("North America", "North America");
+        when(mockResultSet.getInt("population")).thenReturn(331002651, 37742154);
+        when(mockResultSet.getInt("capital")).thenReturn(3813, 2514);
+
+        // Call the method
+        assertDoesNotThrow(() -> countryReportService.printTopNCountriesInRegionByPopulation("North America", 2));
+    }
+
 }
