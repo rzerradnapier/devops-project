@@ -74,7 +74,7 @@ public class App {
 
         // Connect to database
         if(args.length < 1){
-            appIns.connect("localhost:3306", 30000);
+            appIns.connect("localhost:3307", 30000);
         }else{
             appIns.connect(args[0], Integer.parseInt(args[1]));
         }
@@ -87,7 +87,7 @@ public class App {
         // Get list of all countries in a continent sorted by population largest to smallest
         appIns.countryReportService.printAllCountriesByPopulationInAContinentLargestToSmallest(DEFAULT_CONTINENT);
 
-        System.out.println("\n=== USE CASE 3: Get all countries in a region organised by largest to smallest population so that I can compare populations at a regional level Region : South America ===");
+        System.out.println("\n=== USE CASE 3: Countries in a Region by Population (South America) ===");
         // Get list of all countries in a region sorted by population largest to smallest
         appIns.countryReportService.printAllCountriesByPopulationInARegionLargestToSmallest(DEFAULT_REGION);
 
@@ -107,7 +107,25 @@ public class App {
         // Get list of all cities sorted by population largest to smallest
         appIns.cityReportService.printAllCitiesByPopulationLargestToSmallest();
 
-        System.out.println("\n=== USE CASE 8: Cities in a Continent by Population ===");
+        System.out.println("\n=== USE CASE 8: Cities in a Continent by Population (Asia) ===");
+        // Get list of all cities in Asia sorted by population largest to smallest
+        appIns.cityReportService.printAllCitiesInContinentByPopulationLargestToSmallest("Asia");
+
+        System.out.println("\n=== USE CASE 9: Cities in a Region by Population (Western Europe) ===");
+        // Get list of all cities in Western Europe sorted by population largest to smallest
+        appIns.cityReportService.printAllCitiesInRegionByPopulationLargestToSmallest("Western Europe");
+
+        System.out.println("\n=== USE CASE 10: Cities in a Country by Population (USA) ===");
+        // Get list of all cities in USA sorted by population largest to smallest
+        appIns.cityReportService.printAllCitiesInCountryByPopulationLargestToSmallest("USA");
+
+        System.out.println("\n=== USE CASE 11: Cities in a District by Population (California) ===");
+        // Get list of all cities in California sorted by population largest to smallest
+        appIns.cityReportService.printAllCitiesInDistrictByPopulationLargestToSmallest("California");
+
+        System.out.println("\n=== USE CASE 12: Top N Cities in the World by Population (N=10) ===");
+        // Get list of top 10 cities in the world sorted by population largest to smallest
+        appIns.cityReportService.printTopNCitiesByPopulationLargestToSmallest(DEFAULT_N);
         // Get list of all cities in Asia sorted by population largest to smallest
         appIns.cityReportService.printAllCitiesInContinentByPopulationLargestToSmallest("Asia");
 

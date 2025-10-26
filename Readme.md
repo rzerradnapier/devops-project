@@ -119,6 +119,12 @@ The following are in place:
 | 4  |Produce a Report on Top N Countries in the World  | ✅ | ![all countries organized by population descending](screenshots/use-case-4-screenshot.png) |
 | 5  |Produce a Report on Top N Countries in a Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-5-screenshot.png) |
 | 6  |Produce a Report on Top N Countries in a Region  | ✅ | ![all countries organized by population descending](screenshots/use-case-6-screenshot.png) |
+| 7  |All Cities in the World by Population  | ✅ | ![all countries organized by population descending](screenshots/use-case-7.png) |
+| 8  |Cities in a Continent by Population (Asia) | ✅ | ![all countries organized by population descending](screenshots/use-case-8.png) |
+| 9  |Cities in a Region by Population (Western Europe) | ✅ | ![all countries organized by population descending](screenshots/use-case-9.png) |
+| 10  |Cities in a Country by Population (USA) | ✅ | ![all countries organized by population descending](screenshots/use-case-10.png) |
+| 11  |Cities in a District by Population (California) | ✅ | ![all countries organized by population descending](screenshots/use-case-11.png) |
+| 11  |Top N Cities in the World by Population (N=10) | ✅ | ![all countries organized by population descending](screenshots/use-case-12.png) |
 
 
 
