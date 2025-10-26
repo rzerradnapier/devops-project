@@ -1,10 +1,13 @@
-/**
- * Copyright Byteworks Technology Solutions Ltd
- */
 package com.napier.devops.pojo;
 
 import com.napier.devops.City;
 
+/**
+ * City POJO class extending City
+ * @author group 3
+ * @since 26th October 2025
+ * @version 1.0
+ */
 public class CityPojo extends City {
     private String country;
     private String continent;
@@ -42,4 +45,13 @@ public class CityPojo extends City {
     public void setPopulation(Integer population) {
         this.population = population;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "City[name=%s, country=%s, continent=%s, region=%s, district=%s, population=%d]",
+                getName(), country, continent, region, getDistrict(), population
+        );
+    }
+
 }

@@ -74,12 +74,10 @@ public class City {
 
     @Override
     public String toString() {
-        return "City {\n" +
-                "  id=" + id + ",\n" +
-                "  name='" + name + "',\n" +
-                "  countryCode='" + countryCode + "',\n" +
-                "  district='" + district + "',\n" +
-                "  population=" + population + "\n" +
-                '}';
+        return String.format(
+                "City { id=%d, name='%s', countryCode='%s', district='%s', population=%d }",
+                id, name, countryCode, district, population
+        );
     }
+
 }
