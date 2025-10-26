@@ -41,6 +41,9 @@ public class CityReportServiceTest {
         // Setup mock to return empty list
         when(mockConnection.prepareStatement(any(String.class))).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        when(mockConnection.createStatement()).thenReturn(mockStatement);
+        when(mockStatement.executeQuery(any(String.class))).thenReturn(mockResultSet);
     }
 
     /**
@@ -275,104 +278,6 @@ public class CityReportServiceTest {
     }
 
     /**
-     * Test methods with null/empty parameters.
-     */
-    @Test
-    void testMethodsWithInvalidParameters() {
-        // Test USE CASE 8 with null continent
-        List<City> cities = cityReportService.getAllCitiesInContinentByPopulationLargestToSmallest(null);
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        // Test USE CASE 9 with empty region
-        cities = cityReportService.getAllCitiesInRegionByPopulationLargestToSmallest("");
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        // Test USE CASE 10 with null country code
-        cities = cityReportService.getAllCitiesInCountryByPopulationLargestToSmallest(null);
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        // Test USE CASE 11 with empty district
-        cities = cityReportService.getAllCitiesInDistrictByPopulationLargestToSmallest("");
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        // Test USE CASE 12 with invalid N
-        cities = cityReportService.getTopNCitiesByPopulationLargestToSmallest(0);
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        cities = cityReportService.getTopNCitiesByPopulationLargestToSmallest(-1);
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-    }
-
-    /**
-     * Test print methods with null parameters.
-     */
-    @Test
-    void testPrintMethodsWithNullParameters() {
-        // These should not throw exceptions and should handle null gracefully
-        assertDoesNotThrow(() -> {
-            cityReportService.printAllCitiesInContinentByPopulationLargestToSmallest(null);
-        });
-
-        assertDoesNotThrow(() -> {
-            cityReportService.printAllCitiesInRegionByPopulationLargestToSmallest(null);
-        });
-
-        assertDoesNotThrow(() -> {
-            cityReportService.printAllCitiesInCountryByPopulationLargestToSmallest(null);
-        });
-
-        assertDoesNotThrow(() -> {
-            cityReportService.printAllCitiesInDistrictByPopulationLargestToSmallest(null);
-        });
-
-        assertDoesNotThrow(() -> {
-            cityReportService.printTopNCitiesByPopulationLargestToSmallest(0);
-        });
-    }
-
-    /**
-     * Test methods with SQL exceptions.
-     */
-    @Test
-    void testMethodsWithSQLException() throws SQLException {
-        // Setup mock to throw SQLException
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
-
-        // All methods should return empty lists when there's an exception
-        List<City> cities = cityReportService.getAllCitiesByPopulationLargestToSmallest();
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        cities = cityReportService.getAllCitiesInContinentByPopulationLargestToSmallest("Asia");
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        cities = cityReportService.getAllCitiesInRegionByPopulationLargestToSmallest("Western Europe");
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        cities = cityReportService.getAllCitiesInCountryByPopulationLargestToSmallest("USA");
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        cities = cityReportService.getAllCitiesInDistrictByPopulationLargestToSmallest("California");
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-
-        cities = cityReportService.getTopNCitiesByPopulationLargestToSmallest(10);
-        assertNotNull(cities);
-        assertTrue(cities.isEmpty());
-    }
-
-
-
-    /**
      * USE CASE: 13 Produce a Report on Top N Cities in a Continent
      * Method under test:
      * {@link CityReportService#getTopCitiesByContinent(String, int)
@@ -408,6 +313,28 @@ public class CityReportServiceTest {
      * {@link CityReportService#getTopCitiesByContinent(String, int)
      */
     @Test
+    void testGetTopCitiesByCountry_Success() throws SQLException {
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1);
+        when(mockResultSet.getString("CityName")).thenReturn("Lagos");
+        when(mockResultSet.getString("District")).thenReturn("Lagos State");
+        when(mockResultSet.getInt("Population")).thenReturn(15000000);
+        when(mockResultSet.getString("CountryCode")).thenReturn("NGA");
+
+        List<City> result = cityReportService.getTopCitiesByCountry("Nigeria", 5);
+
+        assertEquals(1, result.size());
+        assertEquals("Lagos", result.get(0).getName());
+        assertEquals("NGA", result.get(0).getCountryCode());
+    }
+
+
+    /**
+     * USE CASE: 13 Produce a Report on Top N Cities in a Continent
+     * Method under test:
+     * {@link CityReportService#getTopCitiesByContinent(String, int)
+     */
+    @Test
     void testGetTopCitiesByContinent_EmptyResultSet() throws Exception {
 
         when(mockResultSet.next()).thenReturn(false);
@@ -421,7 +348,7 @@ public class CityReportServiceTest {
      * USE CASE: 14 Produce a Report on Top N Cities in a Region
      * Tests that getTopCitiesByRegion returns a list of cities
      * when valid data is available in the ResultSet.
-
+     * <p>
      * {@link CityReportService#getTopCitiesByRegion(String, int)
      */
     @Test
@@ -447,7 +374,27 @@ public class CityReportServiceTest {
 
     /**
      * USE CASE: 14 Produce a Report on Top N Cities in a Region
+     * Tests that getTopCitiesByRegion returns a list of cities
+     * when valid data is available in the ResultSet.
+     * <p>
+     * {@link CityReportService#getTopCitiesByRegion(String, int)
+     */
+    @Test
+    void testGetTopCitiesByRegion_EmptyResult() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
 
+        List<City> result = cityReportService.getTopCitiesByRegion("Western Europe", 3);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+
+    /**
+     * USE CASE: 14 Produce a Report on Top N Cities in a Region
+     * <p>
      * Tests that getTopCitiesByRegion returns an empty list
      * when no cities are found for the given region.
      * {@link CityReportService#getTopCitiesByRegion(String, int)
@@ -464,10 +411,10 @@ public class CityReportServiceTest {
 
     /**
      * USE CASE: 14 Produce a Report on Top N Cities in a Region
-
+     * <p>
      * Tests that getTopCitiesByRegion handles SQL exceptions gracefully
      * and returns an empty list instead of crashing.
-
+     * <p>
      * {@link CityReportService#getTopCitiesByRegion(String, int)
      */
     @Test
@@ -616,17 +563,26 @@ public class CityReportServiceTest {
     }
 
     /**
-     * USE CASE: 17 Produce a Report on All Capital Cities in the World by Population
+     * USE CASE: 16 Produce a Report on Top N Cities in a District
+     * Tests that {@link CityReportService#getTopCitiesByDistrict(String, int)}
+     *
+     */
+    @Test
+    void testGetTopCitiesByDistrict_NullDistrict() {
+        List<City> result = cityReportService.getTopCitiesByDistrict(null, 10);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
 
+
+    /**
+     * USE CASE: 17 Produce a Report on All Capital Cities in the World by Population
+     * <p>
      * Tests that {@link CityReportService#getAllCapitalCitiesByPopulation()}
      * returns a list of capital cities ordered by population when data exists.
      */
     @Test
     void testGetAllCapitalCitiesByPopulation_ReturnsExpectedCities() throws Exception {
-
-        when(mockConnection.createStatement()).thenReturn(mockStatement);
-        when(mockStatement.executeQuery(any(String.class))).thenReturn(mockResultSet);
-
 
         // Arrange
         when(mockResultSet.next()).thenReturn(true, true, false);
@@ -649,7 +605,7 @@ public class CityReportServiceTest {
 
     /**
      * USE CASE: 17 Produce a Report on All Capital Cities in the World by Population
-
+     * <p>
      * Tests that {@link CityReportService#getAllCapitalCitiesByPopulation()}
      * returns an empty list when no capital cities are found.
      */
@@ -670,7 +626,7 @@ public class CityReportServiceTest {
 
     /**
      * USE CASE: 17 Produce a Report on All Capital Cities in the World by Population
-
+     * <p>
      * Tests that {@link CityReportService#getAllCapitalCitiesByPopulation()}
      * handles SQL exceptions gracefully and returns an empty list.
      */
@@ -686,4 +642,222 @@ public class CityReportServiceTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
+
+    /**
+     * USE CASE: 17 Produce a Report on All Capital Cities in the World by Population
+     * <p>
+     * Tests that {@link CityReportService#getAllCapitalCitiesByPopulation()}
+     * All Capital Cities by Population
+     */
+    @Test
+    void testGetAllCapitalCitiesByPopulation_Success() throws SQLException {
+        Statement mockStatement = mock(Statement.class);
+        when(mockConnection.createStatement()).thenReturn(mockStatement);
+        when(mockStatement.executeQuery(anyString())).thenReturn(mockResultSet);
+
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(101);
+        when(mockResultSet.getString("CityName")).thenReturn("Tokyo");
+        when(mockResultSet.getString("District")).thenReturn("Tokyo Metropolis");
+        when(mockResultSet.getString("CountryCode")).thenReturn("JPN");
+        when(mockResultSet.getInt("Population")).thenReturn(37400068);
+
+        List<City> result = cityReportService.getAllCapitalCitiesByPopulation();
+
+        assertEquals(1, result.size());
+        assertEquals("Tokyo", result.get(0).getName());
+        assertEquals("JPN", result.get(0).getCountryCode());
+        assertEquals(37400068, result.get(0).getPopulation());
+    }
+
+
+    /**
+     * USE CASE: 17 Produce a Report on All Capital Cities in the World by Population
+     * <p>
+     * Tests that {@link CityReportService#getAllCapitalCitiesByPopulation()}
+     * Negative N for Top Cities by Country
+     */
+    @Test
+    void testGetTopCitiesByCountry_InvalidN() {
+        List<City> result = cityReportService.getTopCitiesByCountry("France", -3);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+
+    /**
+     * Test methods with null/empty parameters.
+     */
+    @Test
+    void testMethodsWithInvalidParameters() {
+        // Test USE CASE 8 with null continent
+        List<City> cities = cityReportService.getAllCitiesInContinentByPopulationLargestToSmallest(null);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // Test USE CASE 9 with empty region
+        cities = cityReportService.getAllCitiesInRegionByPopulationLargestToSmallest("");
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // Test USE CASE 10 with null country code
+        cities = cityReportService.getAllCitiesInCountryByPopulationLargestToSmallest(null);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // Test USE CASE 11 with empty district
+        cities = cityReportService.getAllCitiesInDistrictByPopulationLargestToSmallest("");
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // Test USE CASE 12 with invalid N
+        cities = cityReportService.getTopNCitiesByPopulationLargestToSmallest(0);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getTopNCitiesByPopulationLargestToSmallest(-1);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 13: Top N Cities in a Continent
+        cities = cityReportService.getTopCitiesByContinent(null, 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getTopCitiesByContinent("", 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 14: Top N Cities in a Region
+        cities = cityReportService.getTopCitiesByRegion(null, 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getTopCitiesByRegion("", 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 15: Top N Cities in a Country
+        cities = cityReportService.getTopCitiesByCountry(null, 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getTopCitiesByCountry("", 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 16: Top N Cities in a District
+        cities = cityReportService.getTopCitiesByDistrict(null, 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getTopCitiesByDistrict("", 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 17: All Capital Cities by Population (no parameters, so test DB state)
+        List<City> capitals = cityReportService.getAllCapitalCitiesByPopulation();
+        assertNotNull(capitals);
+        assertTrue(capitals.isEmpty());
+    }
+
+    /**
+     * Test print methods with null parameters.
+     */
+    @Test
+    void testPrintMethodsWithNullParameters() {
+        // These should not throw exceptions and should handle null gracefully
+        assertDoesNotThrow(() -> {
+            cityReportService.printAllCitiesInContinentByPopulationLargestToSmallest(null);
+        });
+
+        assertDoesNotThrow(() -> {
+            cityReportService.printAllCitiesInRegionByPopulationLargestToSmallest(null);
+        });
+
+        assertDoesNotThrow(() -> {
+            cityReportService.printAllCitiesInCountryByPopulationLargestToSmallest(null);
+        });
+
+        assertDoesNotThrow(() -> {
+            cityReportService.printAllCitiesInDistrictByPopulationLargestToSmallest(null);
+        });
+
+        assertDoesNotThrow(() -> {
+            cityReportService.printTopNCitiesByPopulationLargestToSmallest(0);
+        });
+
+        assertDoesNotThrow(() -> cityReportService.printTopCitiesByContinent(null, 0));
+
+        assertDoesNotThrow(() -> cityReportService.printTopCitiesByRegion(null, 0));
+
+        assertDoesNotThrow(() -> cityReportService.getTopCitiesByCountry(null, 0));
+
+        assertDoesNotThrow(() -> cityReportService.printTopCitiesByDistrict(null, 0));
+
+        assertDoesNotThrow(() -> cityReportService.printAllCapitalCitiesByPopulation());
+
+    }
+
+    /**
+     * Test methods with SQL exceptions.
+     */
+    @Test
+    void testMethodsWithSQLException() throws SQLException {
+        // Setup mock to throw SQLException
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+        when(mockConnection.createStatement()).thenThrow(new SQLException("Simulated statement failure"));
+
+        // All methods should return empty lists when there's an exception
+        List<City> cities = cityReportService.getAllCitiesByPopulationLargestToSmallest();
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getAllCitiesInContinentByPopulationLargestToSmallest("Asia");
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getAllCitiesInRegionByPopulationLargestToSmallest("Western Europe");
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getAllCitiesInCountryByPopulationLargestToSmallest("USA");
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getAllCitiesInDistrictByPopulationLargestToSmallest("California");
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        cities = cityReportService.getTopNCitiesByPopulationLargestToSmallest(10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 13: Top N Cities in a Continent
+        cities = cityReportService.getTopCitiesByContinent("Asia", 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 14: Top N Cities in a Region
+        cities = cityReportService.getTopCitiesByRegion("Western Europe", 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 15: Top N Cities in a Country
+        cities = cityReportService.getTopCitiesByCountry("United States", 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 16: Top N Cities in a District
+        cities = cityReportService.getTopCitiesByDistrict("California", 10);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+
+        // USE CASE 17: All Capital Cities by Population
+        cities = cityReportService.getAllCapitalCitiesByPopulation();
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+
 }
