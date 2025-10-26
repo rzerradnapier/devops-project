@@ -1,7 +1,6 @@
 package com.napier.devops.service;
 
 import com.napier.devops.City;
-import com.napier.devops.pojo.CityPojo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -290,13 +289,13 @@ public class CityReportServiceTest {
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getInt("ID")).thenReturn(1, 2);
         when(mockResultSet.getString("CityName")).thenReturn("Tokyo", "Shanghai");
-        when(mockResultSet.getString("CountryName")).thenReturn("Japan", "China");
+        when(mockResultSet.getString("CountryCode")).thenReturn("JPN", "CHN");
         when(mockResultSet.getString("Continent")).thenReturn("Asia", "Asia");
         when(mockResultSet.getString("District")).thenReturn("Tokyo", "Shanghai");
         when(mockResultSet.getInt("Population")).thenReturn(37435191, 25582000);
 
         // Act
-        List<CityPojo> result = cityReportService.getTopCitiesByContinent("Asia", DEFAULT_N);
+        List<City> result = cityReportService.getTopCitiesByContinent("Asia", DEFAULT_N);
 
         // Assert
         assertEquals(2, result.size());
@@ -318,7 +317,7 @@ public class CityReportServiceTest {
 
         when(mockResultSet.next()).thenReturn(false);
 
-        List<CityPojo> result = cityReportService.getTopCitiesByContinent("Europe", 5);
+        List<City> result = cityReportService.getTopCitiesByContinent("Europe", 5);
         assertTrue(result.isEmpty());
     }
 
@@ -339,12 +338,11 @@ public class CityReportServiceTest {
         when(mockResultSet.getString("Region")).thenReturn("Western Africa", "Western Africa");
         when(mockResultSet.getInt("Population")).thenReturn(15000000, 4000000);
 
-        List<CityPojo> result = cityReportService.getTopCitiesByRegion("Western Africa", DEFAULT_N);
+        List<City> result = cityReportService.getTopCitiesByRegion("Western Africa", DEFAULT_N);
 
         assertEquals(2, result.size());
         assertEquals("Lagos", result.get(0).getName());
         assertEquals("Kano", result.get(1).getName());
-        assertEquals("Western Africa", result.get(0).getRegion());
         assertTrue(result.get(0).getPopulation() > result.get(1).getPopulation());
 
         verify(mockPreparedStatement).setString(1, "Western Africa");
@@ -363,7 +361,7 @@ public class CityReportServiceTest {
     void testGetTopCitiesByRegion_EmptyResultSet() throws Exception {
         when(mockResultSet.next()).thenReturn(false);
 
-        List<CityPojo> result = cityReportService.getTopCitiesByRegion("Central Europe", 3);
+        List<City> result = cityReportService.getTopCitiesByRegion("Central Europe", 3);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -381,7 +379,7 @@ public class CityReportServiceTest {
     void testGetTopCitiesByRegion_SQLExceptionHandledGracefully() throws Exception {
         when(mockConnection.prepareStatement(any(String.class))).thenThrow(new SQLException("DB failure"));
 
-        List<CityPojo> result = cityReportService.getTopCitiesByRegion("Asia", 5);
+        List<City> result = cityReportService.getTopCitiesByRegion("Asia", 5);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -539,12 +537,12 @@ public class CityReportServiceTest {
         when(mockResultSet.next()).thenReturn(true, true, false);
         when(mockResultSet.getInt("ID")).thenReturn(1, 2);
         when(mockResultSet.getString("CityName")).thenReturn("Tokyo", "London");
-        when(mockResultSet.getString("CountryName")).thenReturn("Japan", "United Kingdom");
+        when(mockResultSet.getString("CountryCode")).thenReturn("JPN", "UK");
         when(mockResultSet.getString("District")).thenReturn("Tokyo-to", "England");
         when(mockResultSet.getInt("Population")).thenReturn(13960000, 8900000);
 
         // Act
-        List<CityPojo> result = cityReportService.getAllCapitalCitiesByPopulation();
+        List<City> result = cityReportService.getAllCapitalCitiesByPopulation();
 
         // Assert
         assertEquals(2, result.size());
@@ -568,7 +566,7 @@ public class CityReportServiceTest {
         when(mockResultSet.next()).thenReturn(false);
 
         // Act
-        List<CityPojo> result = cityReportService.getAllCapitalCitiesByPopulation();
+        List<City> result = cityReportService.getAllCapitalCitiesByPopulation();
 
         // Assert
         assertNotNull(result);
@@ -587,7 +585,7 @@ public class CityReportServiceTest {
         when(mockConnection.createStatement()).thenThrow(new SQLException("Database failure"));
 
         // Act
-        List<CityPojo> result = cityReportService.getAllCapitalCitiesByPopulation();
+        List<City> result = cityReportService.getAllCapitalCitiesByPopulation();
 
         // Assert
         assertNotNull(result);

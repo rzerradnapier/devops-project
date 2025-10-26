@@ -1,8 +1,6 @@
 package com.napier.devops.service;
 
 import com.napier.devops.City;
-import com.napier.devops.pojo.CityPojo;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -152,12 +150,12 @@ public class CityReportService {
      *
      * @param continent The continent to filter cities by.
      * @param limit     The maximum number of cities to return.
-     * @return A List of CityPojo objects containing details of the top N populated cities in the specified continent.
+     * @return A List of City objects containing details of the top N populated cities in the specified continent.
      */
-    public List<CityPojo> getTopCitiesByContinent(String continent, int limit) {
-        List<CityPojo> cities = new ArrayList<>();
+    public List<City> getTopCitiesByContinent(String continent, int limit) {
+        List<City> cities = new ArrayList<>();
         String sql = """
-                    SELECT city.ID, city.Name AS CityName, country.Name AS CountryName, country.Continent, city.District, city.Population
+                    SELECT city.ID, city.Name AS CityName, city.District, city.Population, city.CountryCode
                     FROM City
                     INNER JOIN country ON city.CountryCode = country.Code
                     WHERE country.Continent = ?
@@ -171,11 +169,10 @@ public class CityReportService {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                CityPojo city = new CityPojo();
+                City city = new City();
                 city.setId(rs.getInt("ID"));
                 city.setName(rs.getString("CityName"));
-                city.setCountry(rs.getString("CountryName"));
-                city.setContinent(rs.getString("Continent"));
+                city.setCountryCode(rs.getString("CountryCode"));
                 city.setDistrict(rs.getString("District"));
                 city.setPopulation(rs.getInt("Population"));
                 cities.add(city);
@@ -196,7 +193,7 @@ public class CityReportService {
             return;
         }
 
-        List<CityPojo> cityList = getTopCitiesByContinent(continent, n);
+        List<City> cityList = getTopCitiesByContinent(continent, n);
 
         if (cityList == null || cityList.isEmpty()) {
             System.err.println("Error: No city data found for continent: " + continent);
@@ -213,13 +210,12 @@ public class CityReportService {
      *
      * @param region The region to filter cities by.
      * @param n      The maximum number of cities to return.
-     * @return A List of CityPojo objects containing details of the top N populated cities in the specified region.
+     * @return A List of City objects containing details of the top N populated cities in the specified region.
      */
-    public List<CityPojo> getTopCitiesByRegion(String region, int n) {
-        List<CityPojo> cities = new ArrayList<>();
+    public List<City> getTopCitiesByRegion(String region, int n) {
+        List<City> cities = new ArrayList<>();
         String sql = """
-                    SELECT city.ID, city.Name AS CityName, country.Name AS CountryName, country.Region,
-                           city.District, city.Population
+                    SELECT city.ID, city.Name AS CityName,  city.District, city.Population, city.CountryCode
                     FROM city
                     INNER JOIN country ON city.CountryCode = country.Code
                     WHERE country.Region = ?
@@ -233,11 +229,10 @@ public class CityReportService {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                CityPojo city = new CityPojo();
+                City city = new City();
                 city.setId(rs.getInt("ID"));
                 city.setName(rs.getString("CityName"));
-                city.setCountry(rs.getString("CountryName"));
-                city.setRegion(rs.getString("Region")); // from country
+                city.setCountryCode(rs.getString("CountryCode"));
                 city.setDistrict(rs.getString("District"));
                 city.setPopulation(rs.getInt("Population"));
                 cities.add(city);
@@ -259,7 +254,7 @@ public class CityReportService {
             return;
         }
 
-        List<CityPojo> cityList = getTopCitiesByRegion(region, n);
+        List<City> cityList = getTopCitiesByRegion(region, n);
 
         if (cityList == null || cityList.isEmpty()) {
             System.err.println("Error: No city data found for region: " + region);
@@ -276,13 +271,12 @@ public class CityReportService {
      *
      * @param countryName The country to filter cities by.
      * @param n           The maximum number of cities to return.
-     * @return A List of CityPojo objects containing details of the top N populated cities in the specified country.
+     * @return A List of City objects containing details of the top N populated cities in the specified country.
      */
     public List<City> getTopCitiesByCountry(String countryName, int n) {
         List<City> cities = new ArrayList<>();
         String sql = """
-                    SELECT city.ID, city.Name AS CityName, country.Name AS CountryName,
-                           city.District, city.Population
+                    SELECT city.ID, city.Name AS CityName, city.District, city.Population, city.CountryCode
                     FROM city
                     INNER JOIN country ON city.CountryCode = country.Code
                     WHERE country.Name = ?
@@ -338,13 +332,13 @@ public class CityReportService {
      *
      * @param districtName The district to filter cities by.
      * @param n            The maximum number of cities to return.
-     * @return A List of CityPojo objects containing details of the top N populated cities in the specified district.
+     * @return A List of City objects containing details of the top N populated cities in the specified district.
      */
     public List<City> getTopCitiesByDistrict(String districtName, int n) {
         List<City> cities = new ArrayList<>();
         String sql = """
-                    SELECT city.ID, city.Name AS CityName, country.Name AS CountryName,
-                           city.District, city.Population
+                    SELECT city.ID, city.Name AS CityName,
+                           city.District, city.Population, city.CountryCode
                     FROM city
                     INNER JOIN country ON city.CountryCode = country.Code
                     WHERE city.District = ?
@@ -400,10 +394,10 @@ public class CityReportService {
      *
      * @return A List of City objects containing details of all capital cities ordered by population descending.
      */
-    public List<CityPojo> getAllCapitalCitiesByPopulation() {
-        List<CityPojo> capitals = new ArrayList<>();
+    public List<City> getAllCapitalCitiesByPopulation() {
+        List<City> capitals = new ArrayList<>();
         String sql = """
-                    SELECT city.ID, city.Name AS CityName, city.District, country.Name AS CountryName, city.Population
+                    SELECT city.ID, city.Name AS CityName, city.District, city.CountryCode, city.Population
                     FROM city
                     INNER JOIN country ON country.Capital = city.ID
                     ORDER BY city.Population DESC
@@ -413,11 +407,11 @@ public class CityReportService {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                CityPojo city = new CityPojo();
+                City city = new City();
                 city.setId(rs.getInt("ID"));
                 city.setName(rs.getString("CityName"));
                 city.setDistrict(rs.getString("District"));
-                city.setCountry(rs.getString("CountryName"));
+                city.setCountryCode(rs.getString("CountryCode"));
                 city.setPopulation(rs.getInt("Population"));
                 capitals.add(city);
             }
@@ -435,7 +429,7 @@ public class CityReportService {
      * USE CASE 17: Produce a Report on All Capital Cities in the World by Population
      */
     public void printAllCapitalCitiesByPopulation() {
-        List<CityPojo> cityList = getAllCapitalCitiesByPopulation();
+        List<City> cityList = getAllCapitalCitiesByPopulation();
 
         if (cityList == null || cityList.isEmpty()) {
             System.err.println("Error: No capital city data found.");
