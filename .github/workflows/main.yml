@@ -34,7 +34,7 @@ jobs:
       - name: Integration Tests and CodeCov
         run: |
           docker build -t database ./db 
-          docker run --name countries -dp 3306:3306 database
+          docker run --name countries -dp 33060:3306 database
           mvn -Dtest=com.napier.devops.AppIntegrationTest test
           docker stop countries
           docker rm countries

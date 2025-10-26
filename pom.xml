@@ -6,7 +6,7 @@
 
     <groupId>com.napier.devops</groupId>
     <artifactId>devops-project</artifactId>
-    <version>0.1.0-alpha</version>
+    <version>0.1.1</version>
 
     <dependencies>
             <dependency>
