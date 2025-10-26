@@ -14,13 +14,13 @@ import java.util.List;
  * Handles all country report use cases.
  */
 public class CountryReportService {
-    
+
     private final Connection connection;
-    
+
     public CountryReportService(Connection connection) {
         this.connection = connection;
     }
-    
+
     /**
      * Get a country by its code.
      *
@@ -89,7 +89,7 @@ public class CountryReportService {
      *
      * @param continent A String containing the name of the continent from which to retrieve countries.
      * @return A List of Country objects containing details of all the countries from the specified continent,
-     *         sorted by population in descending order.
+     * sorted by population in descending order.
      */
     public List<Country> getAllCountriesInContinentByPopulationLargestToSmallest(String continent) {
         List<Country> countries = new ArrayList<>();
@@ -137,19 +137,19 @@ public class CountryReportService {
      *
      * @param continent The name of the continent for which to retrieve and print all countries.
      */
-        public void printAllCountriesByPopulationInAContinentLargestToSmallest (String continent){
-            // Get list of all countries in the provided continent sorted by population
-            List<Country> countryList = getAllCountriesInContinentByPopulationLargestToSmallest(continent);
+    public void printAllCountriesByPopulationInAContinentLargestToSmallest(String continent) {
+        // Get list of all countries in the provided continent sorted by population
+        List<Country> countryList = getAllCountriesInContinentByPopulationLargestToSmallest(continent);
 
-            if (countryList == null || countryList.isEmpty()) {
-                System.err.println("Error: No country data found for continent: " + continent);
-            } else {
-                // Print the details of all the countries
-                for (Country country : countryList) {
-                    System.out.println(country.toString());
-                }
+        if (countryList == null || countryList.isEmpty()) {
+            System.err.println("Error: No country data found for continent: " + continent);
+        } else {
+            // Print the details of all the countries
+            for (Country country : countryList) {
+                System.out.println(country.toString());
             }
         }
+    }
 
 
     /**
@@ -158,34 +158,34 @@ public class CountryReportService {
      *
      * @param region A String containing the name of the region from which to retrieve countries.
      * @return A List of Country objects containing details of all the countries from the specified region,
-     *         sorted by population in descending order.
+     * sorted by population in descending order.
      */
-        public List<Country> getAllCountriesInRegionByPopulationLargestToSmallest (String region){
-            List<Country> countries = new ArrayList<>();
-            String sql = "SELECT code, name, continent, region, population, capital FROM country WHERE region = ? ORDER BY population DESC";
+    public List<Country> getAllCountriesInRegionByPopulationLargestToSmallest(String region) {
+        List<Country> countries = new ArrayList<>();
+        String sql = "SELECT code, name, continent, region, population, capital FROM country WHERE region = ? ORDER BY population DESC";
 
-            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                pstmt.setString(1, region);
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, region);
 
-                ResultSet resultSet = pstmt.executeQuery();
+            ResultSet resultSet = pstmt.executeQuery();
 
-                while (resultSet.next()) {
-                    Country country = new Country();
-                    country.setCode(resultSet.getString("code"));
-                    country.setName(resultSet.getString("name"));
-                    country.setContinent(resultSet.getString("continent"));
-                    country.setRegion(resultSet.getString("region"));
-                    country.setPopulation(resultSet.getInt("population"));
-                    country.setCapital(resultSet.getInt("capital"));
+            while (resultSet.next()) {
+                Country country = new Country();
+                country.setCode(resultSet.getString("code"));
+                country.setName(resultSet.getString("name"));
+                country.setContinent(resultSet.getString("continent"));
+                country.setRegion(resultSet.getString("region"));
+                country.setPopulation(resultSet.getInt("population"));
+                country.setCapital(resultSet.getInt("capital"));
 
-                    countries.add(country);
-                }
-            } catch (SQLException e) {
-                System.out.println("Query failed: " + e.getMessage());
+                countries.add(country);
             }
-
-            return countries;
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
         }
+
+        return countries;
+    }
 
 
     /**
@@ -193,19 +193,19 @@ public class CountryReportService {
      *
      * @param region The name of the region for which to retrieve and print all countries.
      */
-        public void printAllCountriesByPopulationInARegionLargestToSmallest (String region){
-            // Get list of all countries in the provided region sorted by population
-            List<Country> countryList = getAllCountriesInRegionByPopulationLargestToSmallest(region);
+    public void printAllCountriesByPopulationInARegionLargestToSmallest(String region) {
+        // Get list of all countries in the provided region sorted by population
+        List<Country> countryList = getAllCountriesInRegionByPopulationLargestToSmallest(region);
 
-            if (countryList == null || countryList.isEmpty()) {
-                System.err.println("Error: No country data found for region: " + region);
-            } else {
-                // Print the details of all the countries
-                for (Country country : countryList) {
-                    System.out.println(country.toString());
-                }
+        if (countryList == null || countryList.isEmpty()) {
+            System.err.println("Error: No country data found for region: " + region);
+        } else {
+            // Print the details of all the countries
+            for (Country country : countryList) {
+                System.out.println(country.toString());
             }
         }
+    }
 
 
     /**
@@ -213,7 +213,7 @@ public class CountryReportService {
      *
      * @param n The number of top countries to print. If the actual number of countries is less than N, it prints details for all countries.
      * @return A List of Country objects containing details of top N countries
-     *       sorted by population in descending order.
+     * sorted by population in descending order.
      */
     public List<Country> printTopNCountriesByPopulation(int n) {
 
@@ -246,7 +246,7 @@ public class CountryReportService {
      * @return A List of Country objects containing details of top N countries from the specified continent,
      * sorted by population in descending order.
      */
-    public List<Country> printTopNCountriesInContinentByPopulation (String continent, int n){
+    public List<Country> printTopNCountriesInContinentByPopulation(String continent, int n) {
         // Get list of all countries in the provided continent sorted by population
         List<Country> countryList = getAllCountriesInContinentByPopulationLargestToSmallest(continent);
         List<Country> topNCountryList = new ArrayList<>();
@@ -271,9 +271,9 @@ public class CountryReportService {
      * Prints details of top N countries by population in a specific region.
      *
      * @param defaultRegion The name of the region for which to retrieve and print top N countries.
-     * @param defaultN The number of top countries in the region to print. If the actual number of countries in the region is less than defaultN, it prints details for all countries.
+     * @param defaultN      The number of top countries in the region to print. If the actual number of countries in the region is less than defaultN, it prints details for all countries.
      * @return A List of Country objects containing details of top N countries from the specified region,
-     *      * sorted by population in descending order.
+     * * sorted by population in descending order.
      */
     public List<Country> printTopNCountriesInRegionByPopulation(String defaultRegion, int defaultN) {
 
