@@ -115,12 +115,12 @@ The following are in place:
 
 | ID | Name | Met  | Screenshot                                                                                 |
 |----|------|------|--------------------------------------------------------------------------------------------|
-| 1  |Get all countries organized by population descending  | ✅ | ![all countries organized by population descending](screenshots/use-case-1-screenshot.png) |
-| 2  |Produce a Report all countries in a continent organised by largest to smallest population Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-2-screenshot.png) |
-| 3  |Produce a Report on Countries in a Region by Population  | ✅ | ![all countries organized by population descending](screenshots/use-case-3-screenshot.png) |
-| 4  |Produce a Report on Top N Countries in the World  | ✅ | ![all countries organized by population descending](screenshots/use-case-4-screenshot.png) |
-| 5  |Produce a Report on Top N Countries in a Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-5-screenshot.png) |
-| 6  |Produce a Report on Top N Countries in a Region  | ✅ | ![all countries organized by population descending](screenshots/use-case-6-screenshot.png) |
+| 1  |Get all countries organized by population descending  | ✅ | ![all countries organized by population descending](screenshots/use-case-1.png) |
+| 2  |Produce a Report all countries in a continent organised by largest to smallest population Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-2.png) |
+| 3  |Produce a Report on Countries in a Region by Population  | ✅ | ![all countries organized by population descending](screenshots/use-case-3.png) |
+| 4  |Produce a Report on Top N Countries in the World  | ✅ | ![all countries organized by population descending](screenshots/use-case-4.png) |
+| 5  |Produce a Report on Top N Countries in a Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-5.png) |
+| 6  |Produce a Report on Top N Countries in a Region  | ✅ | ![all countries organized by population descending](screenshots/use-case-6.png) |
 
 
 
