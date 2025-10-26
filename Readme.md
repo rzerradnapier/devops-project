@@ -124,7 +124,7 @@ The following are in place:
 | 9  |Cities in a Region by Population (Western Europe) | ✅ | ![all countries organized by population descending](screenshots/use-case-9.png) |
 | 10  |Cities in a Country by Population (USA) | ✅ | ![all countries organized by population descending](screenshots/use-case-10.png) |
 | 11  |Cities in a District by Population (California) | ✅ | ![all countries organized by population descending](screenshots/use-case-11.png) |
-| 11  |Top N Cities in the World by Population (N=10) | ✅ | ![all countries organized by population descending](screenshots/use-case-12.png) |
+| 12  |Top N Cities in the World by Population (N=10) | ✅ | ![all countries organized by population descending](screenshots/use-case-12.png) |
 
 
 
