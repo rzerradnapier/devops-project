@@ -74,7 +74,7 @@ public class App {
 
         // Connect to database
         if(args.length < 1){
-            appIns.connect("localhost:3307", 30000);
+            appIns.connect("localhost:3306", 30000);
         }else{
             appIns.connect(args[0], Integer.parseInt(args[1]));
         }
