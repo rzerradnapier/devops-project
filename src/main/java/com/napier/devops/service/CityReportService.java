@@ -429,7 +429,7 @@ public class CityReportService {
         List<City> cities = new ArrayList<>();
         String sql = """
                     SELECT city.ID, city.Name AS CityName, city.District, city.Population, city.CountryCode
-                    FROM City
+                    FROM city
                     INNER JOIN country ON city.CountryCode = country.Code
                     WHERE country.Continent = ?
                     ORDER BY city.Population DESC
@@ -713,5 +713,5 @@ public class CityReportService {
             cityList.forEach(city -> System.out.println(city.toString()));
         }
     }
-    
+
 }

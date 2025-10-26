@@ -4,7 +4,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static com.napier.constant.Constant.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class AppIntegrationTest {
@@ -390,4 +393,267 @@ public class AppIntegrationTest {
         System.out.println("USE CASE 12 - Top city: " + firstCity.getName() + " with population: " + firstCity.getPopulation());
         System.out.println("USE CASE 12 - Top 5 cities found: " + top5Cities.size());
     }
+
+    /**
+     * Integration test for USE CASE 13: Produce a Report on Top N Cities in a Continent
+     * This test verifies that the method correctly retrieves and sorts the top N most populated cities
+     * within a specified continent.
+     */
+    @Test
+    void testGetTopCitiesByContinent_UseCase13() {
+        String continent = DEFAULT_CONTINENT;
+
+        // Test with N = 10
+        List<City> top10Cities = app.getCityReportService().getTopCitiesByContinent(continent, DEFAULT_N);
+
+        // Verify that the list is not null and has exactly 10 cities
+        assertNotNull(top10Cities, "City list should not be null");
+        assertEquals(10, top10Cities.size(), "Should return exactly 10 cities");
+
+        // Verify sorting - each city should have population >= next city
+        for (int i = 0; i < top10Cities.size() - 1; i++) {
+            assertTrue(
+                    top10Cities.get(i).getPopulation() >= top10Cities.get(i + 1).getPopulation(),
+                    "Cities should be sorted in descending order by population"
+            );
+        }
+
+        // Verify that each city has required fields populated
+        City firstCity = top10Cities.get(0);
+        assertNotNull(firstCity.getId());
+        assertNotNull(firstCity.getName());
+        assertNotNull(firstCity.getCountryCode());
+        assertNotNull(firstCity.getPopulation());
+
+        // Test with smaller limits
+        List<City> top5Cities = app.getCityReportService().getTopCitiesByContinent(continent, 5);
+        assertNotNull(top5Cities);
+        assertEquals(5, top5Cities.size(), "Should return exactly 5 cities");
+
+        List<City> top1City = app.getCityReportService().getTopCitiesByContinent(continent, 1);
+        assertNotNull(top1City);
+        assertEquals(1, top1City.size(), "Should return exactly 1 city");
+
+        // Test with invalid N (zero or negative)
+        List<City> invalidCities = app.getCityReportService().getTopCitiesByContinent(continent, 0);
+        assertNotNull(invalidCities, "List should not be null even for invalid input");
+        assertTrue(invalidCities.isEmpty(), "Invalid limit should return an empty list");
+
+        System.out.println("USE CASE 13 - Top 10 cities in " + continent + ": " + top10Cities.size());
+        System.out.println("USE CASE 13 - Largest city: " + firstCity.getName() + " with population: " + firstCity.getPopulation());
+        System.out.println("USE CASE 13 - Top 5 cities in " + continent + ": " + top5Cities.size());
+    }
+
+    /**
+     * Integration test for USE CASE 14: Produce a Report on Top N Cities in a Region
+     * This test verifies that the method correctly retrieves and sorts the top N most populated cities
+     * within a specified region.
+     */
+    @Test
+    void testGetTopCitiesByRegion_UseCase14() {
+        String region = DEFAULT_REGION;
+
+        // Test with N = 10
+        List<City> top10Cities = app.getCityReportService().getTopCitiesByRegion(region, DEFAULT_N);
+
+        // Verify that the list is not null and has exactly 10 cities
+        assertNotNull(top10Cities, "City list should not be null");
+        assertEquals(10, top10Cities.size(), "Should return exactly 10 cities");
+
+        // Verify sorting - each city should have population >= next city
+        for (int i = 0; i < top10Cities.size() - 1; i++) {
+            assertTrue(
+                    top10Cities.get(i).getPopulation() >= top10Cities.get(i + 1).getPopulation(),
+                    "Cities should be sorted in descending order by population"
+            );
+        }
+
+        // Verify that each city has required fields populated
+        City firstCity = top10Cities.get(0);
+        assertNotNull(firstCity.getId());
+        assertNotNull(firstCity.getName());
+        assertNotNull(firstCity.getCountryCode());
+        assertNotNull(firstCity.getPopulation());
+
+        // Test with smaller limits
+        List<City> top5Cities = app.getCityReportService().getTopCitiesByRegion(region, 5);
+        assertNotNull(top5Cities);
+        assertEquals(5, top5Cities.size(), "Should return exactly 5 cities");
+
+        List<City> top1City = app.getCityReportService().getTopCitiesByRegion(region, 1);
+        assertNotNull(top1City);
+        assertEquals(1, top1City.size(), "Should return exactly 1 city");
+
+        // Test with invalid N (zero or negative)
+        List<City> invalidCities = app.getCityReportService().getTopCitiesByRegion(region, 0);
+        assertNotNull(invalidCities, "List should not be null even for invalid input");
+        assertTrue(invalidCities.isEmpty(), "Invalid limit should return an empty list");
+
+        System.out.println("USE CASE 14 - Top 10 cities in region '" + region + "': " + top10Cities.size());
+        System.out.println("USE CASE 14 - Largest city: " + firstCity.getName() + " with population: " + firstCity.getPopulation());
+        System.out.println("USE CASE 14 - Top 5 cities in region '" + region + "': " + top5Cities.size());
+    }
+
+    /**
+     * Integration test for USE CASE 15: Produce a Report on Top N Cities in a Country
+     * This test verifies that the method correctly retrieves and sorts the top N most populated cities
+     * within a specified country.
+     */
+    @Test
+    void testGetTopCitiesByCountry_UseCase15() {
+        String countryName = DEFAULT_COUNTRY_NAME;
+
+        // Test with N = 10
+        List<City> top10Cities = app.getCityReportService().getTopCitiesByCountry(countryName, DEFAULT_N);
+
+        // Verify that the list is not null and has exactly 10 cities
+        assertNotNull(top10Cities, "City list should not be null");
+        assertEquals(10, top10Cities.size(), "Should return exactly 10 cities");
+
+        // Verify sorting - each city should have population >= next city
+        for (int i = 0; i < top10Cities.size() - 1; i++) {
+            assertTrue(
+                    top10Cities.get(i).getPopulation() >= top10Cities.get(i + 1).getPopulation(),
+                    "Cities should be sorted in descending order by population"
+            );
+        }
+
+        // Verify that each city has required fields populated
+        City firstCity = top10Cities.get(0);
+        assertNotNull(firstCity.getId());
+        assertNotNull(firstCity.getName());
+        assertNotNull(firstCity.getCountryCode());
+        assertNotNull(firstCity.getPopulation());
+
+        // Test with smaller limits
+        List<City> top5Cities = app.getCityReportService().getTopCitiesByCountry(countryName, 5);
+        assertNotNull(top5Cities);
+        assertEquals(5, top5Cities.size(), "Should return exactly 5 cities");
+
+        List<City> top1City = app.getCityReportService().getTopCitiesByCountry(countryName, 1);
+        assertNotNull(top1City);
+        assertEquals(1, top1City.size(), "Should return exactly 1 city");
+
+        // Test with invalid N (zero or negative)
+        List<City> invalidCities = app.getCityReportService().getTopCitiesByCountry(countryName, 0);
+        assertNotNull(invalidCities, "List should not be null even for invalid input");
+        assertTrue(invalidCities.isEmpty(), "Invalid limit should return an empty list");
+
+        System.out.println("USE CASE 15 - Top 10 cities in " + countryName + ": " + top10Cities.size());
+        System.out.println("USE CASE 15 - Largest city: " + firstCity.getName() + " with population: " + firstCity.getPopulation());
+        System.out.println("USE CASE 15 - Top 5 cities in " + countryName + ": " + top5Cities.size());
+    }
+
+
+    /**
+     * Integration test for USE CASE 16: Produce a Report on Top N Cities in a District
+     * This test verifies that the method correctly retrieves and sorts the top N most populated cities
+     * within a specified district.
+     */
+    @Test
+    void testGetTopCitiesByDistrict_UseCase16() {
+        String districtName = DEFAULT_DISTRICT;
+
+        // Test with N = 10
+        List<City> top10Cities = app.getCityReportService().getTopCitiesByDistrict(districtName, DEFAULT_N);
+
+        // Verify that the list is not null and has at most 10 cities
+        assertNotNull(top10Cities, "City list should not be null");
+        assertTrue(top10Cities.size() <= 10, "Should return at most 10 cities");
+
+        // Verify sorting — cities should be sorted in descending order by population
+        for (int i = 0; i < top10Cities.size() - 1; i++) {
+            assertTrue(
+                    top10Cities.get(i).getPopulation() >= top10Cities.get(i + 1).getPopulation(),
+                    "Cities should be sorted in descending order by population"
+            );
+        }
+
+        // Verify that each city has required fields populated
+        if (!top10Cities.isEmpty()) {
+            City firstCity = top10Cities.get(0);
+            assertNotNull(firstCity.getId());
+            assertNotNull(firstCity.getName());
+            assertNotNull(firstCity.getCountryCode());
+            assertNotNull(firstCity.getPopulation());
+
+            System.out.println("USE CASE 16 - Top city in district '" + districtName + "': "
+                    + firstCity.getName() + " (" + firstCity.getPopulation() + ")");
+        }
+
+        // Test with smaller N = 5
+        List<City> top5Cities = app.getCityReportService().getTopCitiesByDistrict(districtName, 5);
+        assertNotNull(top5Cities);
+        assertTrue(top5Cities.size() <= 5, "Should return at most 5 cities");
+
+        // Test with N = 1
+        List<City> top1City = app.getCityReportService().getTopCitiesByDistrict(districtName, 1);
+        assertNotNull(top1City);
+        assertTrue(top1City.size() <= 1, "Should return at most 1 city");
+
+        // Test with invalid N (zero or negative)
+        List<City> invalidCities = app.getCityReportService().getTopCitiesByDistrict(districtName, 0);
+        assertNotNull(invalidCities, "List should not be null even for invalid input");
+        assertTrue(invalidCities.isEmpty(), "Invalid limit should return an empty list");
+
+        // Test with non-existent district
+        List<City> noCities = app.getCityReportService().getTopCitiesByDistrict("NonExistentDistrict", 5);
+        assertNotNull(noCities, "List should not be null even for a non-existent district");
+        assertTrue(noCities.isEmpty(), "Should return empty list for a district that doesn't exist");
+
+        System.out.println("USE CASE 16 - Total cities found in district '" + districtName + "': " + top10Cities.size());
+    }
+
+    /**
+     * Integration test for USE CASE 17: Produce a Report on All Capital Cities in the World by Population.
+     *
+     * This test verifies that the method correctly retrieves all capital cities
+     * and orders them in descending order by population.
+     */
+    @Test
+    void testGetAllCapitalCitiesByPopulation_UseCase17() {
+        // Execute method
+        List<City> capitalCities = app.getCityReportService().getAllCapitalCitiesByPopulation();
+
+        // Verify the list is not null or empty
+        assertNotNull(capitalCities, "Capital city list should not be null");
+        assertFalse(capitalCities.isEmpty(), "Capital city list should not be empty");
+
+        // Verify sorting — descending order by population
+        for (int i = 0; i < capitalCities.size() - 1; i++) {
+            int currentPop = capitalCities.get(i).getPopulation();
+            int nextPop = capitalCities.get(i + 1).getPopulation();
+            assertTrue(currentPop >= nextPop, "Capital cities should be sorted in descending order by population");
+        }
+
+        // Verify essential fields for first record
+        City topCapital = capitalCities.get(0);
+        assertNotNull(topCapital.getId(), "City ID should not be null");
+        assertNotNull(topCapital.getName(), "City name should not be null");
+        assertNotNull(topCapital.getCountryCode(), "City country code should not be null");
+        assertTrue(topCapital.getPopulation() > 0, "City population should be greater than zero");
+
+        // Optional: print summary to console
+        System.out.printf(
+                "USE CASE 17 - Total capital cities found: %d%nTop capital city: %s (%d)%n",
+                capitalCities.size(), topCapital.getName(), topCapital.getPopulation()
+        );
+
+        //Test that all results are unique capital cities
+        Set<Integer> cityIds = capitalCities.stream()
+                .map(City::getId)
+                .collect(Collectors.toSet());
+        assertEquals(capitalCities.size(), cityIds.size(), "Each capital city should appear only once");
+
+        // Test that the first few entries have valid, non-null fields
+        capitalCities.stream().limit(5).forEach(city -> {
+            assertNotNull(city.getName(), "Capital name should not be null");
+            assertNotNull(city.getCountryCode(), "Capital country code should not be null");
+            assertTrue(city.getPopulation() >= 0, "Population should be non-negative");
+        });
+    }
+
+
+
+
 }
