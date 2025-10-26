@@ -78,6 +78,8 @@ We need to always have a test DB up for the tests to work and to package the cod
 - **Package the code:** by running  **build_package_clean.sh** it sets up the test DB  run all tests, packages the code then destroys the test DB.
 - **Start the test DB:** by running  **start_test_database.sh** it will deploy and start the test DB and keep it running.
 - **stop the test DB:** by running  **stop_test_database.sh** it will stop and destroy the test DB docker container.
+- **Docker clean up:** by running  **docker_cleanup.sh** it will stop and delete containers as well as the images.
+- **Start and deploy a fresh application:** by running  **build_deploy_fresh.sh** it will run tests and package a new jar, clean up and docker images and stop containers associated to the application, then deploys a new application with docker compose.
 
 
 

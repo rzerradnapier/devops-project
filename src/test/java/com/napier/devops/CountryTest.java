@@ -103,4 +103,59 @@ public class CountryTest {
         assertEquals(population, country.getPopulation());
         assertEquals(capital, country.getCapital());
     }
+
+    /**
+     * Test toString method to make sure it provides the right format.
+     */
+    @Test
+    void toString_formatsAllFields_asExpected() {
+        // Arrange
+        Country c = new Country();
+        // If you use a constructor, replace these with it.
+        c.setCode("US");
+        c.setName("United States");
+        c.setContinent("North America");
+        c.setRegion("Northern America");
+        c.setPopulation(331002651);
+        c.setCapital(33100);
+
+        String expected =
+                "Country {\t" +
+                        "  code='US',\t" +
+                        "  name='United States',\t" +
+                        "  continent='North America',\t" +
+                        "  region='Northern America',\t" +
+                        "  population=331002651,\t" +
+                        "  capital='33100'\t" +
+                        "}";
+
+        // Act
+        String actual = c.toString();
+
+        // Assert
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Test toString method to make sure it provides the right format even if everything is null or zero.
+     */
+    @Test
+    void toString_handlesNulls_consistently() {
+        Country c = new Country();
+        // Leave everything null / zero to ensure consistent rendering
+        c.setPopulation(0);
+
+        String expected =
+                "Country {\t" +
+                        "  code='null',\t" +
+                        "  name='null',\t" +
+                        "  continent='null',\t" +
+                        "  region='null',\t" +
+                        "  population=0,\t" +
+                        "  capital='null'\t" +
+                        "}";
+
+        assertEquals(expected, c.toString());
+    }
+
 }
