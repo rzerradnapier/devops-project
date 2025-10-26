@@ -48,10 +48,23 @@ public class CityPojo extends City {
 
     @Override
     public String toString() {
-        return String.format(
-                "City[name=%s, country=%s, continent=%s, region=%s, district=%s, population=%d]",
-                getName(), country, continent, region, getDistrict(), population
-        );
+        StringBuilder sb = new StringBuilder("City { ");
+
+        if (getId() != null) sb.append("id='").append(getId()).append("', ");
+        if (getName() != null) sb.append("name='").append(getName()).append("', ");
+        if (country != null) sb.append("country='").append(country).append("', ");
+        if (continent != null) sb.append("continent='").append(continent).append("', ");
+        if (region != null) sb.append("region='").append(region).append("', ");
+        if (getDistrict() != null) sb.append("district='").append(getDistrict()).append("', ");
+        if (population != null) sb.append("population=").append(population).append(", ");
+
+        // Remove trailing comma and space if present
+        if (sb.lastIndexOf(", ") == sb.length() - 2) {
+            sb.setLength(sb.length() - 2);
+        }
+
+        sb.append(" }\n");
+        return sb.toString();
     }
 
 }

@@ -288,6 +288,7 @@ public class CityReportServiceTest {
 
         // Arrange
         when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1, 2);
         when(mockResultSet.getString("CityName")).thenReturn("Tokyo", "Shanghai");
         when(mockResultSet.getString("CountryName")).thenReturn("Japan", "China");
         when(mockResultSet.getString("Continent")).thenReturn("Asia", "Asia");
@@ -332,10 +333,10 @@ public class CityReportServiceTest {
     @Test
     void testGetTopCitiesByRegion_ReturnsExpectedCities() throws Exception {
         when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1, 2);
         when(mockResultSet.getString("CityName")).thenReturn("Lagos", "Kano");
         when(mockResultSet.getString("CountryName")).thenReturn("Nigeria", "Nigeria");
         when(mockResultSet.getString("Region")).thenReturn("Western Africa", "Western Africa");
-        when(mockResultSet.getString("District")).thenReturn("Lagos", "Kano");
         when(mockResultSet.getInt("Population")).thenReturn(15000000, 4000000);
 
         List<CityPojo> result = cityReportService.getTopCitiesByRegion("Western Africa", DEFAULT_N);
@@ -395,19 +396,20 @@ public class CityReportServiceTest {
     void testGetTopCitiesByCountry_ReturnsExpectedCities() throws Exception {
         // Arrange
         when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1, 2);
         when(mockResultSet.getString("CityName")).thenReturn("Lagos", "Abuja");
-        when(mockResultSet.getString("CountryName")).thenReturn("Nigeria", "Nigeria");
+        when(mockResultSet.getString("CountryCode")).thenReturn("NG", "NG");
         when(mockResultSet.getString("District")).thenReturn("Lagos", "Abuja");
         when(mockResultSet.getInt("Population")).thenReturn(15000000, 3500000);
 
         // Act
-        List<CityPojo> result = cityReportService.getTopCitiesByCountry("Nigeria", 2);
+        List<City> result = cityReportService.getTopCitiesByCountry("Nigeria", 2);
 
         // Assert
         assertEquals(2, result.size());
         assertEquals("Lagos", result.get(0).getName());
         assertEquals("Abuja", result.get(1).getName());
-        assertEquals("Nigeria", result.get(0).getCountry());
+        assertEquals("NG", result.get(0).getCountryCode());
         assertTrue(result.get(0).getPopulation() > result.get(1).getPopulation());
 
         verify(mockPreparedStatement).setString(1, "Nigeria");
@@ -426,7 +428,7 @@ public class CityReportServiceTest {
         when(mockResultSet.next()).thenReturn(false);
 
         // Act
-        List<CityPojo> result = cityReportService.getTopCitiesByCountry("Atlantis", 5);
+        List<City> result = cityReportService.getTopCitiesByCountry("Atlantis", 5);
 
         // Assert
         assertNotNull(result);
@@ -445,7 +447,7 @@ public class CityReportServiceTest {
         when(mockConnection.prepareStatement(any(String.class))).thenThrow(new SQLException("Database error"));
 
         // Act
-        List<CityPojo> result = cityReportService.getTopCitiesByCountry("Nigeria", 3);
+        List<City> result = cityReportService.getTopCitiesByCountry("Nigeria", 3);
 
         // Assert
         assertNotNull(result);
@@ -462,19 +464,20 @@ public class CityReportServiceTest {
     void testGetTopCitiesByDistrict_ReturnsExpectedCities() throws Exception {
         // Arrange
         when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1, 2);
         when(mockResultSet.getString("CityName")).thenReturn("Ikeja", "Epe");
-        when(mockResultSet.getString("CountryName")).thenReturn("Nigeria", "Nigeria");
+        when(mockResultSet.getString("CountryCode")).thenReturn("NG", "NG");
         when(mockResultSet.getString("District")).thenReturn("Lagos", "Lagos");
         when(mockResultSet.getInt("Population")).thenReturn(500000, 150000);
 
         // Act
-        List<CityPojo> result = cityReportService.getTopCitiesByDistrict("Lagos", DEFAULT_N);
+        List<City> result = cityReportService.getTopCitiesByDistrict("Lagos", DEFAULT_N);
 
         // Assert
         assertEquals(2, result.size());
         assertEquals("Ikeja", result.get(0).getName());
         assertEquals("Epe", result.get(1).getName());
-        assertEquals("Nigeria", result.get(0).getCountry());
+        assertEquals("NG", result.get(0).getCountryCode());
         assertEquals("Lagos", result.get(0).getDistrict());
         assertTrue(result.get(0).getPopulation() > result.get(1).getPopulation());
 
@@ -494,7 +497,7 @@ public class CityReportServiceTest {
         when(mockResultSet.next()).thenReturn(false);
 
         // Act
-        List<CityPojo> result = cityReportService.getTopCitiesByDistrict("UnknownDistrict", 5);
+        List<City> result = cityReportService.getTopCitiesByDistrict("UnknownDistrict", 5);
 
         // Assert
         assertNotNull(result);
@@ -512,7 +515,7 @@ public class CityReportServiceTest {
         when(mockConnection.prepareStatement(any(String.class))).thenThrow(new SQLException("DB Error"));
 
         // Act
-        List<CityPojo> result = cityReportService.getTopCitiesByDistrict("Lagos", 3);
+        List<City> result = cityReportService.getTopCitiesByDistrict("Lagos", 3);
 
         // Assert
         assertNotNull(result);
@@ -534,6 +537,7 @@ public class CityReportServiceTest {
 
         // Arrange
         when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1, 2);
         when(mockResultSet.getString("CityName")).thenReturn("Tokyo", "London");
         when(mockResultSet.getString("CountryName")).thenReturn("Japan", "United Kingdom");
         when(mockResultSet.getString("District")).thenReturn("Tokyo-to", "England");
