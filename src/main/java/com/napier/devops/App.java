@@ -111,6 +111,8 @@ public class App {
         // Get list of all cities in Asia sorted by population largest to smallest
         appIns.cityReportService.printAllCitiesInContinentByPopulationLargestToSmallest("Asia");
 
+        
+
         System.out.println("Get country by code USA");
         // Get country by code USA
         Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);
