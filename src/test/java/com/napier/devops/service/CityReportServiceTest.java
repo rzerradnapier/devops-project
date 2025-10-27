@@ -4,8 +4,12 @@ import com.napier.devops.City;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.sql.*;
 import java.util.List;
 
@@ -29,9 +33,13 @@ public class CityReportServiceTest {
     private ResultSet mockResultSet;
 
     private CityReportService cityReportService;
+    private CityReportService spyService;
 
     @Mock
     private Statement mockStatement;
+
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -44,6 +52,10 @@ public class CityReportServiceTest {
 
         when(mockConnection.createStatement()).thenReturn(mockStatement);
         when(mockStatement.executeQuery(any(String.class))).thenReturn(mockResultSet);
+
+        spyService = Mockito.spy(cityReportService);
+        System.setOut(new PrintStream(outContent));
+        System.setErr(new PrintStream(errContent));
     }
 
     /**
@@ -313,28 +325,6 @@ public class CityReportServiceTest {
      * {@link CityReportService#getTopCitiesByContinent(String, int)
      */
     @Test
-    void testGetTopCitiesByCountry_Success() throws SQLException {
-        when(mockResultSet.next()).thenReturn(true, false);
-        when(mockResultSet.getInt("ID")).thenReturn(1);
-        when(mockResultSet.getString("CityName")).thenReturn("Lagos");
-        when(mockResultSet.getString("District")).thenReturn("Lagos State");
-        when(mockResultSet.getInt("Population")).thenReturn(15000000);
-        when(mockResultSet.getString("CountryCode")).thenReturn("NGA");
-
-        List<City> result = cityReportService.getTopCitiesByCountry("Nigeria", 5);
-
-        assertEquals(1, result.size());
-        assertEquals("Lagos", result.get(0).getName());
-        assertEquals("NGA", result.get(0).getCountryCode());
-    }
-
-
-    /**
-     * USE CASE: 13 Produce a Report on Top N Cities in a Continent
-     * Method under test:
-     * {@link CityReportService#getTopCitiesByContinent(String, int)
-     */
-    @Test
     void testGetTopCitiesByContinent_EmptyResultSet() throws Exception {
 
         when(mockResultSet.next()).thenReturn(false);
@@ -343,6 +333,30 @@ public class CityReportServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    /**
+     * Method under test:
+     * {@link CityReportService#printTopCitiesByContinent(String, int)
+     */
+    @Test
+    public void testPrintTopCitiesByContinent_ValidList() {
+        City city1 = new City();
+        city1.setName("Tokyo");
+        city1.setPopulation(37400068);
+
+        City city2 = new City();
+        city2.setName("Delhi");
+        city2.setPopulation(29399141);
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCitiesByContinent("Asia", 2);
+
+        spyService.printTopCitiesByContinent("Asia", 2);
+
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 2 Cities in Asia by Population"));
+        assertTrue(output.contains("=".repeat(100)));
+        assertTrue(output.contains("Tokyo"));
+        assertTrue(output.contains("Delhi"));
+    }
 
     /**
      * USE CASE: 14 Produce a Report on Top N Cities in a Region
@@ -391,24 +405,6 @@ public class CityReportServiceTest {
         assertTrue(result.isEmpty());
     }
 
-
-    /**
-     * USE CASE: 14 Produce a Report on Top N Cities in a Region
-     * <p>
-     * Tests that getTopCitiesByRegion returns an empty list
-     * when no cities are found for the given region.
-     * {@link CityReportService#getTopCitiesByRegion(String, int)
-     */
-    @Test
-    void testGetTopCitiesByRegion_EmptyResultSet() throws Exception {
-        when(mockResultSet.next()).thenReturn(false);
-
-        List<City> result = cityReportService.getTopCitiesByRegion("Central Europe", 3);
-
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-    }
-
     /**
      * USE CASE: 14 Produce a Report on Top N Cities in a Region
      * <p>
@@ -425,6 +421,30 @@ public class CityReportServiceTest {
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+    /**
+     * Tests that {@link CityReportService#printTopCitiesByRegion(String, int)}
+     */
+    @Test
+    void testPrintTopCitiesByRegion_ValidList() {
+        City city1 = new City();
+        city1.setName("Lagos");
+        city1.setPopulation(21000000);
+
+        City city2 = new City();
+        city2.setName("Kinshasa");
+        city2.setPopulation(15000000);
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCitiesByRegion("Western Africa", 2);
+
+        spyService.printTopCitiesByRegion("Western Africa", 2);
+
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 2 Cities in Western Africa by Population"));
+        assertTrue(output.contains("=".repeat(100)));
+        assertTrue(output.contains("Lagos"));
+        assertTrue(output.contains("Kinshasa"));
     }
 
     /**
@@ -492,6 +512,44 @@ public class CityReportServiceTest {
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
+    }
+
+    /**
+     * USE CASE: 15 Produce a Report on Top N Cities in a Country
+     * Tests that {@link CityReportService#getTopCitiesByCountry(String, int)}
+     * SQLException after Statement Preparation
+     */
+    @Test
+    void testGetTopCitiesByContinent_SQLExceptionOnExecute() throws SQLException {
+        when(mockPreparedStatement.executeQuery()).thenThrow(new SQLException("Execute failed"));
+
+        List<City> result = cityReportService.getTopCitiesByContinent("Asia", 10);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * Tests that {@link CityReportService#printTopCitiesByCountry(String, int)}
+     */
+    @Test
+    void testPrintTopCitiesByCountry_ValidList() {
+        City city1 = new City();
+        city1.setName("New York");
+        city1.setPopulation(8400000);
+
+        City city2 = new City();
+        city2.setName("Los Angeles");
+        city2.setPopulation(4000000);
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCitiesByCountry("USA", 2);
+
+        spyService.printTopCitiesByCountry("USA", 2);
+
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 2 Cities in USA by Population"));
+        assertTrue(output.contains("=".repeat(100)));
+        assertTrue(output.contains("New York"));
+        assertTrue(output.contains("Los Angeles"));
     }
 
 
@@ -574,6 +632,31 @@ public class CityReportServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    /**
+     * Test when valid data is returned and printed successfully.
+     * Method under test:
+     * {@link CityReportService#printTopCitiesByDistrict(String, int)
+     */
+    @Test
+    void testPrintTopCitiesByDistrict_ValidList() {
+        City city1 = new City();
+        city1.setName("San Francisco");
+        city1.setPopulation(870000);
+
+        City city2 = new City();
+        city2.setName("Los Angeles");
+        city2.setPopulation(4000000);
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCitiesByDistrict("California", 2);
+
+        spyService.printTopCitiesByDistrict("California", 2);
+
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 2 Cities in California by Population"));
+        assertTrue(output.contains("=".repeat(100)));
+        assertTrue(output.contains("San Francisco"));
+        assertTrue(output.contains("Los Angeles"));
+    }
 
     /**
      * USE CASE: 17 Produce a Report on All Capital Cities in the World by Population
@@ -684,6 +767,52 @@ public class CityReportServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    /**
+     * USE CASE: 17 Produce a Report on All Capital Cities in the World by Population
+     * <p>
+     * Tests that {@link CityReportService#getAllCapitalCitiesByPopulation()}
+     */
+    @Test
+    void testGetAllCapitalCitiesByPopulation_SQLExceptionOnExecute() throws SQLException {
+        Statement mockStatement = mock(Statement.class);
+        when(mockConnection.createStatement()).thenReturn(mockStatement);
+        when(mockStatement.executeQuery(anyString())).thenThrow(new SQLException("Query failed"));
+
+        List<City> result = cityReportService.getAllCapitalCitiesByPopulation();
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    /**
+     * Test when valid data is returned.
+     * Method under test:
+     * {@link CityReportService#printAllCapitalCitiesByPopulation()
+     */
+    @Test
+    void testPrintAllCapitalCitiesByPopulation_ValidList() {
+        City city1 = new City();
+        city1.setName("Tokyo");
+        city1.setPopulation(37400068);
+        city1.setCountryCode("JPN");
+
+        City city2 = new City();
+        city2.setName("Delhi");
+        city2.setPopulation(28514000);
+        city2.setCountryCode("IND");
+
+        doReturn(List.of(city1, city2)).when(spyService).getAllCapitalCitiesByPopulation();
+
+        spyService.printAllCapitalCitiesByPopulation();
+
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: All Capital Cities in the World by Population"));
+        assertTrue(output.contains("Total capitals found: 2"));
+        assertTrue(output.contains("=".repeat(100)));
+        assertTrue(output.contains("Tokyo"));
+        assertTrue(output.contains("Delhi"));
+
+        verify(spyService, times(1)).getAllCapitalCitiesByPopulation();
+    }
 
     /**
      * Test methods with null/empty parameters.

@@ -2,7 +2,8 @@ package com.napier.devops;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit test for Country class.
@@ -102,5 +103,49 @@ public class CountryTest {
         assertEquals(region, country.getRegion());
         assertEquals(population, country.getPopulation());
         assertEquals(capital, country.getCapital());
+    }
+
+
+    /**
+     * Test toString() with all fields set.
+     */
+    @Test
+    public void testToString_AllFieldsSet() {
+        country.setAll("USA", "United States", "North America", "North America", 331000000, 1);
+        String expected = "Country {\n" +
+                "  code='USA',\n" +
+                "  name='United States',\n" +
+                "  continent='North America',\n" +
+                "  region='North America',\n" +
+                "  population=331000000,\n" +
+                "  capital='1'\n" +
+                '}';
+        assertEquals(expected, country.toString());
+    }
+
+    /**
+     * Test toString() when some fields are null.
+     */
+    @Test
+    public void testToString_WithNullFields() {
+        country.setAll(null, null, "Asia", null, null, null);
+        String output = country.toString();
+
+        assertTrue(output.contains("continent='Asia'"));
+        assertTrue(output.contains("code='null'"));
+        assertTrue(output.contains("population=null"));
+    }
+
+    /**
+     * Test default state of a new Country object.
+     */
+    @Test
+    public void testDefaultConstructorInitialState() {
+        assertNull(country.getCode());
+        assertNull(country.getName());
+        assertNull(country.getContinent());
+        assertNull(country.getRegion());
+        assertNull(country.getPopulation());
+        assertNull(country.getCapital());
     }
 }
