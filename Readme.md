@@ -111,20 +111,25 @@ The following are in place:
 ## 🏁 Requirements Met
 
 
-| ID | Name | Met  | Screenshot                                                                                 |
-|----|------|------|--------------------------------------------------------------------------------------------|
-| 1  |Get all countries organized by population descending  | ✅ | ![all countries organized by population descending](screenshots/use-case-1-screenshot.png) |
-| 2  |Produce a Report all countries in a continent organised by largest to smallest population Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-2-screenshot.png) |
-| 3  |Produce a Report on Countries in a Region by Population  | ✅ | ![all countries organized by population descending](screenshots/use-case-3-screenshot.png) |
-| 4  |Produce a Report on Top N Countries in the World  | ✅ | ![all countries organized by population descending](screenshots/use-case-4-screenshot.png) |
-| 5  |Produce a Report on Top N Countries in a Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-5-screenshot.png) |
-| 6  |Produce a Report on Top N Countries in a Region  | ✅ | ![all countries organized by population descending](screenshots/use-case-6-screenshot.png) |
-| 7  |All Cities in the World by Population  | ✅ | ![all countries organized by population descending](screenshots/use-case-7.png) |
-| 8  |Cities in a Continent by Population (Asia) | ✅ | ![all countries organized by population descending](screenshots/use-case-8.png) |
-| 9  |Cities in a Region by Population (Western Europe) | ✅ | ![all countries organized by population descending](screenshots/use-case-9.png) |
-| 10  |Cities in a Country by Population (USA) | ✅ | ![all countries organized by population descending](screenshots/use-case-10.png) |
-| 11  |Cities in a District by Population (California) | ✅ | ![all countries organized by population descending](screenshots/use-case-11.png) |
-| 12  |Top N Cities in the World by Population (N=10) | ✅ | ![all countries organized by population descending](screenshots/use-case-12.png) |
+| ID | Name                                                                                                | Met  | Screenshot                                                                                 |
+|----|-----------------------------------------------------------------------------------------------------|------|--------------------------------------------------------------------------------------------|
+| 1  | Get all countries organized by population descending                                                | ✅ | ![all countries organized by population descending](screenshots/use-case-1-screenshot.png) |
+| 2  | Produce a Report all countries in a continent organised by largest to smallest population Continent | ✅ | ![all countries organized by population descending](screenshots/use-case-2-screenshot.png) |
+| 3  | Produce a Report on Countries in a Region by Population                                             | ✅ | ![all countries organized by population descending](screenshots/use-case-3-screenshot.png) |
+| 4  | Produce a Report on Top N Countries in the World                                                    | ✅ | ![all countries organized by population descending](screenshots/use-case-4-screenshot.png) |
+| 5  | Produce a Report on Top N Countries in a Continent                                                  | ✅ | ![all countries organized by population descending](screenshots/use-case-5-screenshot.png) |
+| 6  | Produce a Report on Top N Countries in a Region                                                     | ✅ | ![all countries organized by population descending](screenshots/use-case-6-screenshot.png) |
+| 7  | All Cities in the World by Population                                                               | ✅ | ![all countries organized by population descending](screenshots/use-case-7.png)            |
+| 8  | Cities in a Continent by Population (Asia)                                                          | ✅ | ![all countries organized by population descending](screenshots/use-case-8.png)            |
+| 9  | Cities in a Region by Population (Western Europe)                                                   | ✅ | ![all countries organized by population descending](screenshots/use-case-9.png)            |
+| 10 | Cities in a Country by Population (USA)                                                             | ✅ | ![all countries organized by population descending](screenshots/use-case-10.png)           |
+| 11 | Cities in a District by Population (California)                                                     | ✅ | ![all countries organized by population descending](screenshots/use-case-11.png)           |
+| 12 | Top N Cities in the World by Population (N=10)                                                      | ✅ | ![all countries organized by population descending](screenshots/use-case-12.png)           |
+| 13 | Produce a Report on Top N Cities in a Continent (Continent=Africa, N=10)                            | ✅ | ![all countries organized by population descending](screenshots/use-case-13.png)           |
+| 14 | Produce a Report on Top N Cities in a Region (Region=South America, N=10)                           | ✅ | ![all countries organized by population descending](screenshots/use-case-14.png)           |
+| 15 | Produce a Report on Top N Cities in a Country (Country = United States, N=10)                       | ✅ | ![all countries organized by population descending](screenshots/use-case-15.png)           |
+| 16 | Produce a Report on Top N Cities in a District (District = California, N=10)                        | ✅ | ![all countries organized by population descending](screenshots/use-case-16.png)           |
+| 17 | Produce a Report on All Capital Cities in the World by Population                                   | ✅ | ![all countries organized by population descending](screenshots/use-case-17.png)           |
 
 
 
