@@ -86,13 +86,13 @@ public class Country {
 
     @Override
     public String toString() {
-        return "Country {\n" +
-                "  code='" + code + "',\n" +
-                "  name='" + name + "',\n" +
-                "  continent='" + continent + "',\n" +
-                "  region='" + region + "',\n" +
-                "  population=" + population + ",\n" +
-                "  capital='" + capital + "'\n" +
+        return "Country {\t" +
+                "  code='" + code + "',\t" +
+                "  name='" + name + "',\t" +
+                "  continent='" + continent + "',\t" +
+                "  region='" + region + "',\t" +
+                "  population=" + population + ",\t" +
+                "  capital='" + capital + "'\t" +
                 '}';
     }
 

@@ -78,6 +78,8 @@ We need to always have a test DB up for the tests to work and to package the cod
 - **Package the code:** by running  **build_package_clean.sh** it sets up the test DB  run all tests, packages the code then destroys the test DB.
 - **Start the test DB:** by running  **start_test_database.sh** it will deploy and start the test DB and keep it running.
 - **stop the test DB:** by running  **stop_test_database.sh** it will stop and destroy the test DB docker container.
+- **Docker clean up:** by running  **docker_cleanup.sh** it will stop and delete containers as well as the images.
+- **Start and deploy a fresh application:** by running  **build_deploy_fresh.sh** it will run tests and package a new jar, clean up and docker images and stop containers associated to the application, then deploys a new application with docker compose.
 
 
 
@@ -113,18 +115,19 @@ The following are in place:
 
 | ID | Name | Met  | Screenshot                                                                                 |
 |----|------|------|--------------------------------------------------------------------------------------------|
-| 1  |Get all countries organized by population descending  | ✅ | ![all countries organized by population descending](screenshots/use-case-1-screenshot.png) |
-| 2  |Produce a Report all countries in a continent organised by largest to smallest population Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-2-screenshot.png) |
-| 3  |Produce a Report on Countries in a Region by Population  | ✅ | ![all countries organized by population descending](screenshots/use-case-3-screenshot.png) |
-| 4  |Produce a Report on Top N Countries in the World  | ✅ | ![all countries organized by population descending](screenshots/use-case-4-screenshot.png) |
-| 5  |Produce a Report on Top N Countries in a Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-5-screenshot.png) |
-| 6  |Produce a Report on Top N Countries in a Region  | ✅ | ![all countries organized by population descending](screenshots/use-case-6-screenshot.png) |
+| 1  |Get all countries organized by population descending  | ✅ | ![all countries organized by population descending](screenshots/use-case-1.png) |
+| 2  |Produce a Report all countries in a continent organised by largest to smallest population Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-2.png) |
+| 3  |Produce a Report on Countries in a Region by Population  | ✅ | ![all countries organized by population descending](screenshots/use-case-3.png) |
+| 4  |Produce a Report on Top N Countries in the World  | ✅ | ![all countries organized by population descending](screenshots/use-case-4.png) |
+| 5  |Produce a Report on Top N Countries in a Continent  | ✅ | ![all countries organized by population descending](screenshots/use-case-5.png) |
+| 6  |Produce a Report on Top N Countries in a Region  | ✅ | ![all countries organized by population descending](screenshots/use-case-6.png) |
 | 7  |All Cities in the World by Population  | ✅ | ![all countries organized by population descending](screenshots/use-case-7.png) |
 | 8  |Cities in a Continent by Population (Asia) | ✅ | ![all countries organized by population descending](screenshots/use-case-8.png) |
 | 9  |Cities in a Region by Population (Western Europe) | ✅ | ![all countries organized by population descending](screenshots/use-case-9.png) |
 | 10  |Cities in a Country by Population (USA) | ✅ | ![all countries organized by population descending](screenshots/use-case-10.png) |
 | 11  |Cities in a District by Population (California) | ✅ | ![all countries organized by population descending](screenshots/use-case-11.png) |
 | 12  |Top N Cities in the World by Population (N=10) | ✅ | ![all countries organized by population descending](screenshots/use-case-12.png) |
+
 
 
 
