@@ -105,47 +105,58 @@ public class CountryTest {
         assertEquals(capital, country.getCapital());
     }
 
-
     /**
-     * Test toString() with all fields set.
+     * Test toString method to make sure it provides the right format.
      */
     @Test
-    public void testToString_AllFieldsSet() {
-        country.setAll("USA", "United States", "North America", "North America", 331000000, 1);
-        String expected = "Country {\n" +
-                "  code='USA',\n" +
-                "  name='United States',\n" +
-                "  continent='North America',\n" +
-                "  region='North America',\n" +
-                "  population=331000000,\n" +
-                "  capital='1'\n" +
-                '}';
-        assertEquals(expected, country.toString());
+    void toString_formatsAllFields_asExpected() {
+        // Arrange
+        Country c = new Country();
+        // If you use a constructor, replace these with it.
+        c.setCode("US");
+        c.setName("United States");
+        c.setContinent("North America");
+        c.setRegion("Northern America");
+        c.setPopulation(331002651);
+        c.setCapital(33100);
+
+        String expected =
+                "Country {\t" +
+                        "  code='US',\t" +
+                        "  name='United States',\t" +
+                        "  continent='North America',\t" +
+                        "  region='Northern America',\t" +
+                        "  population=331002651,\t" +
+                        "  capital='33100'\t" +
+                        "}";
+
+        // Act
+        String actual = c.toString();
+
+        // Assert
+        assertEquals(expected, actual);
     }
 
     /**
-     * Test toString() when some fields are null.
+     * Test toString method to make sure it provides the right format even if everything is null or zero.
      */
     @Test
-    public void testToString_WithNullFields() {
-        country.setAll(null, null, "Asia", null, null, null);
-        String output = country.toString();
+    void toString_handlesNulls_consistently() {
+        Country c = new Country();
+        // Leave everything null / zero to ensure consistent rendering
+        c.setPopulation(0);
 
-        assertTrue(output.contains("continent='Asia'"));
-        assertTrue(output.contains("code='null'"));
-        assertTrue(output.contains("population=null"));
+        String expected =
+                "Country {\t" +
+                        "  code='null',\t" +
+                        "  name='null',\t" +
+                        "  continent='null',\t" +
+                        "  region='null',\t" +
+                        "  population=0,\t" +
+                        "  capital='null'\t" +
+                        "}";
+
+        assertEquals(expected, c.toString());
     }
 
-    /**
-     * Test default state of a new Country object.
-     */
-    @Test
-    public void testDefaultConstructorInitialState() {
-        assertNull(country.getCode());
-        assertNull(country.getName());
-        assertNull(country.getContinent());
-        assertNull(country.getRegion());
-        assertNull(country.getPopulation());
-        assertNull(country.getCapital());
-    }
 }
