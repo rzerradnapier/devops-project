@@ -2,10 +2,7 @@ package com.napier.devops.service;
 
 import com.napier.devops.City;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -420,4 +417,301 @@ public class CityReportService {
             }
         }
     }
+
+    /**
+     * USE CASE: 13 Produce a Report on Top N Cities in a Continent
+     *
+     * @param continent The continent to filter cities by.
+     * @param limit     The maximum number of cities to return.
+     * @return A List of City objects containing details of the top N populated cities in the specified continent.
+     */
+    public List<City> getTopCitiesByContinent(String continent, int limit) {
+        List<City> cities = new ArrayList<>();
+        String sql = """
+                    SELECT city.ID, city.Name AS CityName, city.District, city.Population, city.CountryCode
+                    FROM city
+                    INNER JOIN country ON city.CountryCode = country.Code
+                    WHERE country.Continent = ?
+                    ORDER BY city.Population DESC
+                    LIMIT ?
+                """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, continent);
+            pstmt.setInt(2, limit);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                City city = new City();
+                city.setId(rs.getInt("ID"));
+                city.setName(rs.getString("CityName"));
+                city.setCountryCode(rs.getString("CountryCode"));
+                city.setDistrict(rs.getString("District"));
+                city.setPopulation(rs.getInt("Population"));
+                cities.add(city);
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+        return cities;
+    }
+
+    /**
+     * Print the top N most populated cities in a given continent.
+     * USE CASE 13: Produce a Report on Top N Cities in a Continent
+     */
+    public void printTopCitiesByContinent(String continent, int n) {
+        if (continent == null || continent.trim().isEmpty()) {
+            System.err.println("Error: Continent parameter cannot be null or empty.");
+            return;
+        }
+
+        List<City> cityList = getTopCitiesByContinent(continent, n);
+
+        if (cityList == null || cityList.isEmpty()) {
+            System.err.println("Error: No city data found for continent: " + continent);
+        } else {
+            System.out.println("Report: Top " + n + " Cities in " + continent + " by Population");
+            System.out.println("=".repeat(100));
+            cityList.forEach(city -> System.out.println(city.toString()));
+        }
+    }
+
+
+    /**
+     * USE CASE: 14 Produce a Report on Top N Cities in a Region
+     *
+     * @param region The region to filter cities by.
+     * @param n      The maximum number of cities to return.
+     * @return A List of City objects containing details of the top N populated cities in the specified region.
+     */
+    public List<City> getTopCitiesByRegion(String region, int n) {
+        List<City> cities = new ArrayList<>();
+        String sql = """
+                    SELECT city.ID, city.Name AS CityName,  city.District, city.Population, city.CountryCode
+                    FROM city
+                    INNER JOIN country ON city.CountryCode = country.Code
+                    WHERE country.Region = ?
+                    ORDER BY city.Population DESC
+                    LIMIT ?
+                """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, region);
+            pstmt.setInt(2, n);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                City city = new City();
+                city.setId(rs.getInt("ID"));
+                city.setName(rs.getString("CityName"));
+                city.setCountryCode(rs.getString("CountryCode"));
+                city.setDistrict(rs.getString("District"));
+                city.setPopulation(rs.getInt("Population"));
+                cities.add(city);
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+
+        return cities;
+    }
+
+    /**
+     * Print the top N most populated cities in a given region.
+     * USE CASE 14: Produce a Report on Top N Cities in a Region
+     */
+    public void printTopCitiesByRegion(String region, int n) {
+        if (region == null || region.trim().isEmpty()) {
+            System.err.println("Error: Region parameter cannot be null or empty.");
+            return;
+        }
+
+        List<City> cityList = getTopCitiesByRegion(region, n);
+
+        if (cityList == null || cityList.isEmpty()) {
+            System.err.println("Error: No city data found for region: " + region);
+        } else {
+            System.out.println("Report: Top " + n + " Cities in " + region + " by Population");
+            System.out.println("=".repeat(100));
+            cityList.forEach(city -> System.out.println(city.toString()));
+        }
+    }
+
+
+    /**
+     * USE CASE: 15 Produce a Report on Top N Cities in a Country
+     *
+     * @param countryName The country to filter cities by.
+     * @param n           The maximum number of cities to return.
+     * @return A List of City objects containing details of the top N populated cities in the specified country.
+     */
+    public List<City> getTopCitiesByCountry(String countryName, int n) {
+        List<City> cities = new ArrayList<>();
+        String sql = """
+                    SELECT city.ID, city.Name AS CityName, city.District, city.Population, city.CountryCode
+                    FROM city
+                    INNER JOIN country ON city.CountryCode = country.Code
+                    WHERE country.Name = ?
+                    ORDER BY city.Population DESC
+                    LIMIT ?
+                """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, countryName);
+            pstmt.setInt(2, n);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                City city = new City();
+                city.setId(rs.getInt("ID"));
+                city.setName(rs.getString("CityName"));
+                city.setCountryCode(rs.getString("CountryCode"));
+                city.setDistrict(rs.getString("District"));
+                city.setPopulation(rs.getInt("Population"));
+                cities.add(city);
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+
+        return cities;
+    }
+
+    /**
+     * Print the top N most populated cities in a given country.
+     * USE CASE 15: Produce a Report on Top N Cities in a Country
+     */
+    public void printTopCitiesByCountry(String country, int n) {
+        if (country == null || country.trim().isEmpty()) {
+            System.err.println("Error: Country parameter cannot be null or empty.");
+            return;
+        }
+
+        List<City> cityList = getTopCitiesByCountry(country, n);
+
+        if (cityList == null || cityList.isEmpty()) {
+            System.err.println("Error: No city data found for country: " + country);
+        } else {
+            System.out.println("Report: Top " + n + " Cities in " + country + " by Population");
+            System.out.println("=".repeat(100));
+            cityList.forEach(city -> System.out.println(city.toString()));
+        }
+    }
+
+
+    /**
+     * USE CASE: 16 Produce a Report on Top N Cities in a District
+     *
+     * @param districtName The district to filter cities by.
+     * @param n            The maximum number of cities to return.
+     * @return A List of City objects containing details of the top N populated cities in the specified district.
+     */
+    public List<City> getTopCitiesByDistrict(String districtName, int n) {
+        List<City> cities = new ArrayList<>();
+        String sql = """
+                    SELECT city.ID, city.Name AS CityName,
+                           city.District, city.Population, city.CountryCode
+                    FROM city
+                    INNER JOIN country ON city.CountryCode = country.Code
+                    WHERE city.District = ?
+                    ORDER BY city.Population DESC
+                    LIMIT ?
+                """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, districtName);
+            pstmt.setInt(2, n);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                City city = new City();
+                city.setId(rs.getInt("ID"));
+                city.setName(rs.getString("CityName"));
+                city.setDistrict(rs.getString("District"));
+                city.setPopulation(rs.getInt("Population"));
+                city.setCountryCode(rs.getString("CountryCode"));
+                cities.add(city);
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+
+        return cities;
+    }
+
+    /**
+     * Print the top N most populated cities in a given district.
+     * USE CASE 16: Produce a Report on Top N Cities in a District
+     */
+    public void printTopCitiesByDistrict(String district, int n) {
+        if (district == null || district.trim().isEmpty()) {
+            System.err.println("Error: District parameter cannot be null or empty.");
+            return;
+        }
+
+        List<City> cityList = getTopCitiesByDistrict(district, n);
+
+        if (cityList == null || cityList.isEmpty()) {
+            System.err.println("Error: No city data found for district: " + district);
+        } else {
+            System.out.println("Report: Top " + n + " Cities in " + district + " by Population");
+            System.out.println("=".repeat(100));
+            cityList.forEach(city -> System.out.println(city.toString()));
+        }
+    }
+
+
+    /**
+     * USE CASE: 17 Produce a Report on All Capital Cities in the World by Population
+     *
+     * @return A List of City objects containing details of all capital cities ordered by population descending.
+     */
+    public List<City> getAllCapitalCitiesByPopulation() {
+        List<City> capitals = new ArrayList<>();
+        String sql = """
+                    SELECT city.ID, city.Name AS CityName, city.District, city.CountryCode, city.Population
+                    FROM city
+                    INNER JOIN country ON country.Capital = city.ID
+                    ORDER BY city.Population DESC
+                """;
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                City city = new City();
+                city.setId(rs.getInt("ID"));
+                city.setName(rs.getString("CityName"));
+                city.setDistrict(rs.getString("District"));
+                city.setCountryCode(rs.getString("CountryCode"));
+                city.setPopulation(rs.getInt("Population"));
+                capitals.add(city);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+
+        return capitals;
+    }
+
+
+    /**
+     * Print all capital cities in the world sorted by population in descending order.
+     * USE CASE 17: Produce a Report on All Capital Cities in the World by Population
+     */
+    public void printAllCapitalCitiesByPopulation() {
+        List<City> cityList = getAllCapitalCitiesByPopulation();
+
+        if (cityList == null || cityList.isEmpty()) {
+            System.err.println("Error: No capital city data found.");
+        } else {
+            System.out.println("Report: All Capital Cities in the World by Population (Largest to Smallest)");
+            System.out.println("Total capitals found: " + cityList.size());
+            System.out.println("=".repeat(100));
+            cityList.forEach(city -> System.out.println(city.toString()));
+        }
+    }
+
 }

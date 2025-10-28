@@ -129,6 +129,21 @@ public class App {
         // Get list of all cities in Asia sorted by population largest to smallest
         appIns.cityReportService.printAllCitiesInContinentByPopulationLargestToSmallest("Asia");
 
+        System.out.println("\n=== USE CASE 13: Produce a Report on Top N Cities in a Continent ===");
+        appIns.cityReportService.printTopCitiesByContinent(DEFAULT_CONTINENT, DEFAULT_N);
+
+        System.out.println("\n=== USE CASE 14: Produce a Report on Top N Cities in a Region ===");
+        appIns.cityReportService.printTopCitiesByRegion(DEFAULT_REGION, DEFAULT_N);
+
+        System.out.println("\n=== USE CASE 15: Produce a Report on Top N Cities in a Country ===");
+        appIns.cityReportService.printTopCitiesByCountry(DEFAULT_COUNTRY_NAME, DEFAULT_N);
+
+        System.out.println("\n=== USE CASE 16: Produce a Report on Top N Cities in a District ===");
+        appIns.cityReportService.printTopCitiesByDistrict(DEFAULT_DISTRICT, DEFAULT_N);
+
+        System.out.println("\n=== USE CASE 17: Produce a Report on All Capital Cities in the World by Population ===");
+        appIns.cityReportService.printAllCapitalCitiesByPopulation();
+
         System.out.println("Get country by code USA");
         // Get country by code USA
         Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);
