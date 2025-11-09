@@ -1,6 +1,7 @@
 package com.napier.devops.service;
 
 import com.napier.devops.Country;
+import com.napier.pojo.PopulationReportPojo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -294,4 +295,144 @@ public class CountryReportService {
         }
         return topNCountryList;
     }
+
+
+    /**
+     * USE CASE 28: Produce a Population Report for a Region.
+     *
+     * @param regionName Name of the region
+     * @return A PopulationReportPojo object containing population breakdown, or null if not found.
+     */
+    public PopulationReportPojo getRegionPopulationReport(String regionName) {
+        long totalPopulation = 0;
+        long cityPopulation = 0;
+
+        if (regionName == null || regionName.trim().isEmpty()) {
+            System.err.println("Error: Region name cannot be null or empty.");
+            return null;
+        }
+
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName(regionName);
+
+        try {
+            // Get total population of the region
+            String totalQuery = "SELECT SUM(population) AS total_population FROM country WHERE region = ?";
+            PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+            stmtTotal.setString(1, regionName);
+            ResultSet rsTotal = stmtTotal.executeQuery();
+
+            if (rsTotal.next()) {
+                totalPopulation = rsTotal.getLong("total_population");
+            }
+
+            // Get population living in cities within the region
+            String cityQuery = """
+                        SELECT SUM(city.population) AS city_population
+                        FROM city
+                        INNER JOIN country ON city.CountryCode = country.Code
+                        WHERE country.Region = ?
+                    """;
+            PreparedStatement stmtCity = connection.prepareStatement(cityQuery);
+            stmtCity.setString(1, regionName);
+            ResultSet rsCity = stmtCity.executeQuery();
+
+            if (rsCity.next()) {
+                cityPopulation = rsCity.getLong("city_population");
+            }
+
+            // Compute derived values
+            long nonCityPopulation = totalPopulation - cityPopulation;
+            double cityPercentage = totalPopulation > 0
+                    ? ((cityPopulation * 100.0) / totalPopulation)
+                    : 0.0;
+
+            // Calculate non-city percentage
+            double nonCityPercentage = 100.0 - cityPercentage;
+
+            // Fill the report
+            report.setTotalPopulation(totalPopulation);
+            report.setPopulationInCities(cityPopulation);
+            report.setPopulationNotInCities(nonCityPopulation);
+            report.setPercentageInCities(cityPercentage);
+            report.setPercentageNotInCities(nonCityPercentage);
+
+            return report;
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error retrieving population report: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+    /**
+     * USE CASE 29: Produce a Population Report for a Country.
+     *
+     * @param countryName Name of the country
+     * @return A PopulationReport object containing population breakdown, or null if not found.
+     */
+    public PopulationReportPojo getCountryPopulationReport(String countryName) {
+        long totalPopulation = 0;
+        long cityPopulation = 0;
+
+        if (countryName == null || countryName.trim().isEmpty()) {
+            System.err.println("Error: Country name cannot be null or empty.");
+            return null;
+        }
+
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName(countryName);
+
+        try {
+            // Get total population
+            String totalQuery = "SELECT population FROM country WHERE name = ?";
+            PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+            stmtTotal.setString(1, countryName);
+            ResultSet rsTotal = stmtTotal.executeQuery();
+
+            if (rsTotal.next()) {
+                totalPopulation = rsTotal.getLong("population");
+            }
+
+            // Get population living in cities
+            String cityQuery = """
+                        SELECT SUM(city.population) AS city_population
+                        FROM city
+                        INNER JOIN country ON city.CountryCode = country.Code
+                        WHERE country.Name = ?
+                    """;
+            PreparedStatement stmtCity = connection.prepareStatement(cityQuery);
+            stmtCity.setString(1, countryName);
+            ResultSet rsCity = stmtCity.executeQuery();
+
+
+            if (rsCity.next()) {
+                cityPopulation = rsCity.getLong("city_population");
+            }
+
+            // Calculate non-city population
+            long nonCityPopulation = totalPopulation - cityPopulation;
+
+            // Calculate percentages safely to avoid division by zero
+            double cityPercentage = totalPopulation > 0
+                    ? ((cityPopulation * 100.0) / totalPopulation)
+                    : 0.0;
+            double nonCityPercentage = 100.0 - cityPercentage;
+
+            report.setTotalPopulation(totalPopulation);
+            report.setPopulationInCities(cityPopulation);
+            report.setPopulationNotInCities(nonCityPopulation);
+            report.setPercentageInCities(cityPercentage);
+            report.setPercentageNotInCities(nonCityPercentage);
+
+            return report;
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error retrieving population report: " + e.getMessage());
+            return null;
+        }
+    }
+
+
 }
