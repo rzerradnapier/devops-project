@@ -53,11 +53,10 @@ public class Region {
     public void setnonCityPopulationPercentage(float nonCityPopulationPercentage) { this.nonCityPopulationPercentage = nonCityPopulationPercentage;}
 
 
-    // The required toString() method for printing the report row
+
     @Override
     public String toString() {
-        // Note: The NameofRegion column is left-justified (using %-s)
-        // All numerical columns are right-justified (using %d)
+
         return String.format(
                 "| %-25s | %16s | %12s (%.2f%%) | %12s (%.2f%%) |",
                 NameofRegion,
