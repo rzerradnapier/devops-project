@@ -38,23 +38,23 @@ public class ContinentReportService {
              ResultSet resultSet = stmt.executeQuery(sql)) {
 
             while (resultSet.next()) {
-                Continent cp = new Continent();
-                cp.setContinent(resultSet.getString("Continent"));
-                cp.setTotalPopulation(resultSet.getLong("TotalPopulation"));
-                cp.setCityPopulation(resultSet.getLong("CityPopulation"));
-                cp.setNonCityPopulation(resultSet.getLong("NonCityPopulation"));
-                cp.setCityPopulationPercentage(resultSet.getDouble("CityPopulationPercentage"));
-                cp.setNonCityPopulationPercentage(resultSet.getDouble("NonCityPopulationPercentage"));
-                report.add(cp);
+                Continent continent = new Continent();
+                continent.setContinent(resultSet.getString("Continent"));
+                continent.setCityPopulationPercentage(resultSet.getDouble("CityPopulationPercentage"));
+                continent.setCityPopulation(resultSet.getLong("CityPopulation"));
+                continent.setTotalPopulation(resultSet.getLong("TotalPopulation"));
+                continent.setNonCityPopulation(resultSet.getLong("NonCityPopulation"));
+                continent.setNonCityPopulationPercentage(resultSet.getDouble("NonCityPopulationPercentage"));
+                report.add(continent);
             }
         } catch (SQLException e) {
-            System.err.println("Error running continent population report query: " + e.getMessage());
+            System.out.println("Query failed: " + e.getMessage());
         }
         return report;
     }
 
     /**
-     * Prints the Continent Population Report (Use Case 23).
+     * Prints the Continent Population Report for Use Case 23.
      */
 
     public void printContinentPopulationReport() {
@@ -71,8 +71,8 @@ public class ContinentReportService {
         System.out.printf("| %-15s | %-22s | %-22s | %-18s |%n", "Continent", "Non-City Population", "City Population", "Total Population");
         System.out.println("-----------------|------------------------|------------------------|--------------------|");
 
-        for (Continent cp : continentList) {
-            System.out.println(cp.toString());
+        for (Continent continent : continentList) {
+            System.out.println(continent.toString());
         }
         System.out.println("==========================================================================================================================");
     }
