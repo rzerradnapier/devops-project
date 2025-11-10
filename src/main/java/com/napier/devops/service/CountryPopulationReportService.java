@@ -72,12 +72,12 @@ public class CountryPopulationReportService {
         System.out.println("=================================================================================================================================================");
         System.out.println("|                                               USE CASE 25: Produce a Population Report for Countries                                            |");
         System.out.println("=================================================================================================================================================");
-        System.out.printf("| %-47s | %-18s | %-18s | %-12s | %-18s | %-12s |%n",
+        System.out.printf("| %-47s | %-18s | %-18s | %-12s | %-18s | %-11s |%n",
                 "Country Name", "Total Population", "City Population", "% City", "Non-City Population", "% Non-City");
         System.out.println("-------------------------------------------------------------------------------------------------------------------------------------------------");
 
         for (CountryPopulation countryPopulation : countryPopulationList) {
-            System.out.printf("| %-47s | %-18s | %-18s | %-12s | %-18s | %-12s |%n",
+            System.out.printf("| %-47s | %-18s | %-18s | %-12s | %-18s | %-11s |%n",
                     countryPopulation.getCountryName(),
                     countryPopulation.getTotalPopulation(),
                     countryPopulation.getCityPopulation(),
