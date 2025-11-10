@@ -62,12 +62,12 @@ public class Region {
     public String toString() {
 
         return String.format(
-                "| %-25s | %16s | %12s (%.2f%%) | %12s (%.2f%%) |",
+                "| %-25s | %,16d | %,18d | %17.2f%% | %,18d | %17.2f%% |",
                 NameofRegion,
-                String.format("%,d", totalPopulation),
-                String.format("%,d", cityPopulation),
+                totalPopulation,
+                cityPopulation,
                 cityPopulationPercentage,
-                String.format("%,d", nonCityPopulation),
+                nonCityPopulation,
                 nonCityPopulationPercentage
         );
     }

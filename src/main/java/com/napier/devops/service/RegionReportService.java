@@ -69,15 +69,12 @@ public class RegionReportService {
         }
 
 
-        System.out.println("==========================================================================================================");
-        System.out.println("|                                  USE CASE: 24 Produce a Population Report for Regions                        |");
-        System.out.println("==========================================================================================================");
-
-
-        System.out.printf("| %-25s | %16s | %22s | %22s |%n", "Region", "Total Population", "City Population", "Non-City Population");
-
-
-        System.out.println("|---------------------------|------------------|------------------------|------------------------|");
+        System.out.println("=================================================================================================================================================");
+        System.out.println("|                                  USE CASE: 24 Produce a Population Report for Regions                                                       |");
+        System.out.println("=================================================================================================================================================");
+        System.out.printf("| %-25s | %16s | %18s | %18s | %18s | %18s |%n",
+                "Region", "Total Population", "City Population", "% City", "Non-City Population", "% Non-City");
+        System.out.println("|---------------------------|------------------|--------------------|--------------------|--------------------|--------------------|");
 
         for (Region rp : regionList) {
 
