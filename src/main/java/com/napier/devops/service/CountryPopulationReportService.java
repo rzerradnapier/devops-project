@@ -56,7 +56,7 @@ public class CountryPopulationReportService {
         return countries;
     }
 
-    // ====================================================================
+
 
     /**
      * Prints the Country Population Report for Use Case 25.
