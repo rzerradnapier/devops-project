@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service class for country population reporting functionality (Use Case 25).
+ * Service class for country population reporting functionality.
  */
 public class CountryPopulationReportService {
 

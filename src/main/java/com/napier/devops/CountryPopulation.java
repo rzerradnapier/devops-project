@@ -2,7 +2,7 @@ package com.napier.devops;
 
 
 /**
- * Represents the population details and urbanisation statistics for a Country.
+ * Represents the population details and urbanisation statistics for a Country Population.
  * <p>
  * Uses getters and setters for encapsulation and data hiding.
  * The {@code toString} method is overridden for easy printing of report details.
