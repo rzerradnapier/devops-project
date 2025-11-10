@@ -119,7 +119,7 @@ public class Continent {
     @Override
     public String toString() {
         return String.format(
-                "| %-15s | %,-12d (%-6.2f%%) | %,-12d (%-6.2f%%) | %,-18d |",
+                "| %-15s | %,-24d | %8.2f%% | %,-24d | %8.2f%% | %,-18d |",
                 Continent,
                 NonCityPopulation,
                 NonCityPopulationPercentage,
