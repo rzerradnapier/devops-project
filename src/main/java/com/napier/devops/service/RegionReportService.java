@@ -41,24 +41,24 @@ public class RegionReportService {
              ResultSet resultSet = stmt.executeQuery(sql)) {
 
             while (resultSet.next()) {
-                Region r = new Region();
+                Region region = new Region();
                 // Using the setter methods from Region class
-                r.setNameofRegion(resultSet.getString("Region"));
-                r.settotalPopulation(resultSet.getLong("TotalPopulation"));
-                r.setcityPopulation(resultSet.getLong("CityPopulation"));
-                r.setnonCityPopulation(resultSet.getLong("NonCityPopulation"));
-                r.setcityPopulationPercentage(resultSet.getFloat("CityPopulationPercentage"));
-                r.setnonCityPopulationPercentage(resultSet.getFloat("NonCityPopulationPercentage"));
-                report.add(r);
+                region.setNameofRegion(resultSet.getString("Region"));
+                region.settotalPopulation(resultSet.getLong("TotalPopulation"));
+                region.setcityPopulation(resultSet.getLong("CityPopulation"));
+                region.setnonCityPopulation(resultSet.getLong("NonCityPopulation"));
+                region.setcityPopulationPercentage(resultSet.getFloat("CityPopulationPercentage"));
+                region.setnonCityPopulationPercentage(resultSet.getFloat("NonCityPopulationPercentage"));
+                report.add(region);
             }
         } catch (SQLException e) {
-            System.err.println("Error running region population report query: " + e.getMessage());
+            System.out.println("Query failed: " + e.getMessage());
         }
         return report;
     }
 
     /**
-     * Prints the population report for all regions.
+     * Prints the population report for all regions Use Case 24.
      */
     public void printRegionPopulationReport() {
         List<Region> regionList = getRegionPopulationReport(); // Call the data getter
@@ -68,21 +68,19 @@ public class RegionReportService {
             return;
         }
 
-        // 1. Adjusted Title width to cover the full table width
+
         System.out.println("==========================================================================================================");
         System.out.println("|                                  USE CASE: 24 Produce a Population Report for Regions                        |");
         System.out.println("==========================================================================================================");
 
-        // 2. IMPORTANT: Column widths in the header must match the widths in Region.toString()
-        // | %-25s | %16s | %12s (%.2f%%) | %12s (%.2f%%) |
-        // The total width of the City/Non-City columns is 12 + 10 = 22 characters
+
         System.out.printf("| %-25s | %16s | %22s | %22s |%n", "Region", "Total Population", "City Population", "Non-City Population");
 
-        // 3. Adjusted separator widths to match the new header and data widths
+
         System.out.println("|---------------------------|------------------|------------------------|------------------------|");
 
         for (Region rp : regionList) {
-            // This relies on the corrected rp.toString() logic
+
             System.out.println(rp.toString());
         }
         System.out.println("==========================================================================================================");
