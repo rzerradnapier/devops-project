@@ -86,6 +86,11 @@ public class App {
         return this.continentReportService;
     }
 
+    /**
+     * Gets the Region report service.
+     *
+     * @return RegionReportService instance
+     */
 
     public RegionReportService getRegionReportService() {
         return this.RegionReportService;
