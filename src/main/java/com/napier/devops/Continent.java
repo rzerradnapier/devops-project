@@ -99,7 +99,6 @@ public class Continent {
      * @param nonCityPopulation the population not in cities
      * @param cityPopulationPercentage the percentage in cities
      * @param nonCityPopulationPercentage the percentage not in cities
-     * @return the ContinentPopulation object
      */
     public Continent setAll(String continent, long totalPopulation, long cityPopulation, long nonCityPopulation,
                             double cityPopulationPercentage, double nonCityPopulationPercentage) {
