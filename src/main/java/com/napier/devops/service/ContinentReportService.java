@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service class for contient-related reporting functionality.
+ * Service class for continent-related reporting functionality.
  * Handles all contient report use cases.
  */
 public class ContinentReportService {
