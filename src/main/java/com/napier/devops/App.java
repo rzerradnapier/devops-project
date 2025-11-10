@@ -5,7 +5,6 @@ import com.napier.devops.service.CountryReportService;
 import com.napier.devops.service.ContinentReportService;
 import com.napier.devops.service.RegionReportService;
 import java.sql.*;
-import java.util.List;
 
 import static com.napier.constant.Constant.*;
 
