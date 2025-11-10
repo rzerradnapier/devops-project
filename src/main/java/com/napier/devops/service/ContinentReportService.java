@@ -35,16 +35,16 @@ public class ContinentReportService {
                 "ON A.Code = B.CountryCode GROUP BY A.Continent ORDER BY TotalPopulation DESC";
 
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet resultSet = stmt.executeQuery(sql)) {
 
-            while (rs.next()) {
+            while (resultSet.next()) {
                 Continent cp = new Continent();
-                cp.setContinent(rs.getString("Continent"));
-                cp.setTotalPopulation(rs.getLong("TotalPopulation"));
-                cp.setCityPopulation(rs.getLong("CityPopulation"));
-                cp.setNonCityPopulation(rs.getLong("NonCityPopulation"));
-                cp.setCityPopulationPercentage(rs.getDouble("CityPopulationPercentage"));
-                cp.setNonCityPopulationPercentage(rs.getDouble("NonCityPopulationPercentage"));
+                cp.setContinent(resultSet.getString("Continent"));
+                cp.setTotalPopulation(resultSet.getLong("TotalPopulation"));
+                cp.setCityPopulation(resultSet.getLong("CityPopulation"));
+                cp.setNonCityPopulation(resultSet.getLong("NonCityPopulation"));
+                cp.setCityPopulationPercentage(resultSet.getDouble("CityPopulationPercentage"));
+                cp.setNonCityPopulationPercentage(resultSet.getDouble("NonCityPopulationPercentage"));
                 report.add(cp);
             }
         } catch (SQLException e) {

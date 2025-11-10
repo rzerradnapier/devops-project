@@ -38,17 +38,17 @@ public class RegionReportService {
                 "ORDER BY TotalPopulation DESC";
 
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet resultSet = stmt.executeQuery(sql)) {
 
-            while (rs.next()) {
+            while (resultSet.next()) {
                 Region r = new Region();
                 // Using the setter methods from Region class
-                r.setNameofRegion(rs.getString("Region"));
-                r.settotalPopulation(rs.getLong("TotalPopulation"));
-                r.setcityPopulation(rs.getLong("CityPopulation"));
-                r.setnonCityPopulation(rs.getLong("NonCityPopulation"));
-                r.setcityPopulationPercentage(rs.getFloat("CityPopulationPercentage"));
-                r.setnonCityPopulationPercentage(rs.getFloat("NonCityPopulationPercentage"));
+                r.setNameofRegion(resultSet.getString("Region"));
+                r.settotalPopulation(resultSet.getLong("TotalPopulation"));
+                r.setcityPopulation(resultSet.getLong("CityPopulation"));
+                r.setnonCityPopulation(resultSet.getLong("NonCityPopulation"));
+                r.setcityPopulationPercentage(resultSet.getFloat("CityPopulationPercentage"));
+                r.setnonCityPopulationPercentage(resultSet.getFloat("NonCityPopulationPercentage"));
                 report.add(r);
             }
         } catch (SQLException e) {
