@@ -182,22 +182,15 @@ public class App {
         Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);
         // Display results
         System.out.println(sampleCountryDetails != null ? sampleCountryDetails.toString() : "No country details found");
-        // --- USE CASE 23: USING CONTINENT SERVICE ---
 
         System.out.println("\n=== USE CASE 23: Produce a Population Report for Continents ===");
-
+        //Gets the population for each continent showing the total population, population living in cities (with
+        // %), and population not living in cities (with %) so that I can understand continental urbanisation.
         appIns.continentReportService.printContinentPopulationReport();
 
-
-
-
-
-        // --- USE CASE 24: USING CONTINENT SERVICE (NEW METHOD) ---
-
         System.out.println("\n=== USE CASE: 24 Produce a Population Report for Regions ===");
-
-        // CHANGE THIS LINE: Call the new method for Region report
-
+        // Gets the population for each region showing the total population, population living in cities (with %), and population
+        // not living in cities (with %) so that I can understand regional urbanisation.
         appIns.RegionReportService.printRegionPopulationReport();
 
     }
