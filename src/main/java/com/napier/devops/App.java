@@ -197,10 +197,6 @@ public class App {
         // population not living in cities (with %) so that I can understand regional urbanisation.
         appIns.RegionReportService.printRegionPopulationReport();
 
-        System.out.println("\n=== USE CASE 25: Produce a Population Report for Countries ===");
-        // Gets the population for each country showing the total population, population living in cities (with %), and population not
-        // living in cities (with %) so that I can understand national urbanisation.
-        appIns.countryReportService.printCountryPopulationReport();
 
     }
 
