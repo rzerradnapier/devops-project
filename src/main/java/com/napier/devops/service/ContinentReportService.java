@@ -65,11 +65,9 @@ public class ContinentReportService {
             return;
         }
 
-        // --- UPDATED REPORT FORMATTING to include ALL retrieved data (Populations + Percentages) ---
         System.out.println("===============================================================================================================================================================================================");
         System.out.println("|                                                                 USE CASE: 23 Produce a Population Report for Continents                                                                   |");
         System.out.println("===============================================================================================================================================================================================");
-        // The header must now match the Continent.toString() output which includes percentages
         System.out.printf("| %-15s | %-24s | %-9s | %-24s | %-9s | %-18s |%n",
                 "Continent", "Non-City Population", "% Non-City", "City Population", "% City", "Total Population");
         System.out.println("-----------------|--------------------------|-----------|--------------------------|-----------|--------------------|");
