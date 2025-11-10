@@ -113,7 +113,6 @@ public class Continent {
 
     /**
      * Returns a formatted string representation of the Continent Population details.
-     * Note: This is designed for report output, not for simple debugging like the City toString().
      *
      * @return a formatted string.
      */

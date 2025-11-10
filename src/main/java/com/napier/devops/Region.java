@@ -52,7 +52,11 @@ public class Region {
 
     public void setnonCityPopulationPercentage(float nonCityPopulationPercentage) { this.nonCityPopulationPercentage = nonCityPopulationPercentage;}
 
-
+    /**
+     * Returns a formatted string representation of the Region Population details.
+     *
+     * @return a formatted string.
+     */
 
     @Override
     public String toString() {
