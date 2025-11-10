@@ -1,5 +1,12 @@
 package com.napier.devops;
 
+/**
+ * Represents the population details and urbanisation statistics for a Region.
+ * <p>
+ * Uses getters and setters for encapsulation and data hiding.
+ * The {@code toString} method is overridden for easy printing of report details.
+ */
+
 public class Region {
     private String NameofRegion;
     private long totalPopulation;
@@ -8,7 +15,7 @@ public class Region {
     private long nonCityPopulation;
     private float nonCityPopulationPercentage;
 
-    // Constructor, Getters, and Setters would go here
+    // Constructor, Getters, and Setters
 
     public String getNameofRegion() { return NameofRegion;}
 
@@ -49,14 +56,15 @@ public class Region {
     // The required toString() method for printing the report row
     @Override
     public String toString() {
-        // Using the standard format from the previous use case
+        // Note: The NameofRegion column is left-justified (using %-s)
+        // All numerical columns are right-justified (using %d)
         return String.format(
-                "| %-15s | %,-18d | %,-12d (%-6.2f%%) | %,-12d (%-6.2f%%) |",
+                "| %-25s | %16s | %12s (%.2f%%) | %12s (%.2f%%) |",
                 NameofRegion,
-                totalPopulation,
-                cityPopulation,
+                String.format("%,d", totalPopulation),
+                String.format("%,d", cityPopulation),
                 cityPopulationPercentage,
-                nonCityPopulation,
+                String.format("%,d", nonCityPopulation),
                 nonCityPopulationPercentage
         );
     }

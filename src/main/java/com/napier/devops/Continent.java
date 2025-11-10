@@ -1,6 +1,5 @@
 package com.napier.devops;
 
-import java.text.DecimalFormat;
 
 /**
  * Represents the population details and urbanisation statistics for a continent.
