@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Service class for continent-related reporting functionality.
- * Handles all contient report use cases.
+ * Handles all continent report use cases.
  */
 public class ContinentReportService {
 
