@@ -72,7 +72,7 @@ public class CountryPopulation {
      */
     @Override
     public String toString() {
-        return String.format("%-45s %-20s %-20s %-12s %-20s %-12s",
+        return String.format("%-47s %-20s %-20s %-12s %-20s %-12s",
                 CountryName,
                 TotalPopulation,
                 CityPopulation,
