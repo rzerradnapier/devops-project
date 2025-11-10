@@ -24,7 +24,7 @@ public class RegionReportService {
      * @return A list of Region objects.
      */
     public List<Region> getRegionPopulationReport() {
-        List<Region> report = new ArrayList<>();
+        List<Region> regions = new ArrayList<>();
 
 
         String sql = "SELECT A.Region, SUM(A.Population) AS TotalPopulation, " +
@@ -49,12 +49,12 @@ public class RegionReportService {
                 region.setnonCityPopulation(resultSet.getLong("NonCityPopulation"));
                 region.setcityPopulationPercentage(resultSet.getFloat("CityPopulationPercentage"));
                 region.setnonCityPopulationPercentage(resultSet.getFloat("NonCityPopulationPercentage"));
-                report.add(region);
+                regions.add(region);
             }
         } catch (SQLException e) {
             System.out.println("Query failed: " + e.getMessage());
         }
-        return report;
+        return regions;
     }
 
     /**

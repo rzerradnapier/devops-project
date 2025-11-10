@@ -25,7 +25,7 @@ public class ContinentReportService {
      * @return A list of ContinentPopulation objects.
      */
     public List<Continent> getContinentPopulationReport() {
-        List<Continent> report = new ArrayList<>();
+        List<Continent> contients = new ArrayList<>();
         String sql = "SELECT A.Continent, SUM(A.Population) AS TotalPopulation, " +
                 "COALESCE(SUM(B.CityPopulation), 0) AS CityPopulation, " +
                 "(SUM(A.Population) - COALESCE(SUM(B.CityPopulation), 0)) AS NonCityPopulation, " +
@@ -45,12 +45,12 @@ public class ContinentReportService {
                 continent.setTotalPopulation(resultSet.getLong("TotalPopulation"));
                 continent.setNonCityPopulation(resultSet.getLong("NonCityPopulation"));
                 continent.setNonCityPopulationPercentage(resultSet.getDouble("NonCityPopulationPercentage"));
-                report.add(continent);
+                contients.add(continent);
             }
         } catch (SQLException e) {
             System.out.println("Query failed: " + e.getMessage());
         }
-        return report;
+        return contients;
     }
 
     /**

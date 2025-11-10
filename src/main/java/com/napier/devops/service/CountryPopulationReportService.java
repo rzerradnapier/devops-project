@@ -23,7 +23,7 @@ public class CountryPopulationReportService {
      * @return A list of CountryPopulation objects.
      */
     public List<CountryPopulation> getCountryPopulationReport() {
-        List<CountryPopulation> report = new ArrayList<>();
+        List<CountryPopulation> countries = new ArrayList<>();
         // SQL query
         String sql = "SELECT A.Name AS CountryName, SUM(A.Population) AS TotalPopulation, " +
                 "COALESCE(SUM(B.CityPopulation), 0) AS CityPopulation, " +
@@ -48,12 +48,12 @@ public class CountryPopulationReportService {
                 countryPopulation.setCityPercent(resultSet.getDouble("CityPopulationPercentage") + "%");
                 countryPopulation.setNonCityPercentage(resultSet.getDouble("NonCityPopulationPercentage") + "%");
 
-                report.add(countryPopulation);
+                countries.add(countryPopulation);
             }
         } catch (SQLException e) {
-            System.out.println("Query failed for Country Population Report: " + e.getMessage());
+            System.out.println("Query failed: " + e.getMessage());
         }
-        return report;
+        return countries;
     }
 
     // ====================================================================
@@ -70,7 +70,7 @@ public class CountryPopulationReportService {
         }
 
         System.out.println("=================================================================================================================================================");
-        System.out.println("|                                               USE CASE: 25 Produce a Population Report for Countries                                            |");
+        System.out.println("|                                               USE CASE 25: Produce a Population Report for Countries                                            |");
         System.out.println("=================================================================================================================================================");
         System.out.printf("| %-45s | %-18s | %-18s | %-12s | %-18s | %-12s |%n",
                 "Country Name", "Total Population", "City Population", "% City", "Non-City Population", "% Non-City");
