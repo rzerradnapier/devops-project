@@ -2,7 +2,8 @@ package com.napier.devops;
 
 import com.napier.devops.service.CityReportService;
 import com.napier.devops.service.CountryReportService;
-
+import com.napier.devops.service.ContinentReportService;
+import com.napier.devops.service.RegionReportService;
 import java.sql.*;
 import java.util.List;
 
@@ -17,16 +18,24 @@ public class App {
      * Connection to MySQL database.
      */
     private Connection con = null;
-    
+
     /**
      * Service for city-related reports.
      */
     private CityReportService cityReportService;
-    
+
     /**
      * Service for country-related reports.
      */
     private CountryReportService countryReportService;
+
+    /**
+     * Service for continent-related reports.
+     */
+    private ContinentReportService continentReportService;
+
+
+    private RegionReportService RegionReportService;
 
     /**
      * sets the con object of the app, this is useful for mock testing
@@ -38,6 +47,8 @@ public class App {
         // Initialize services when connection is set
         this.cityReportService = new CityReportService(con);
         this.countryReportService = new CountryReportService(con);
+        this.continentReportService = new ContinentReportService(con);
+        this.RegionReportService = new RegionReportService(con);
     }
 
     /**
@@ -48,7 +59,7 @@ public class App {
     public Connection getCon() {
         return this.con;
     }
-    
+
     /**
      * Gets the city report service.
      *
@@ -57,7 +68,7 @@ public class App {
     public CityReportService getCityReportService() {
         return this.cityReportService;
     }
-    
+
     /**
      * Gets the country report service.
      *
@@ -67,6 +78,19 @@ public class App {
         return this.countryReportService;
     }
 
+    /**
+     * Gets the continent report service.
+     *
+     * @return ContinentReportService instance
+     */
+    public ContinentReportService getContinentReportService() {
+        return this.continentReportService;
+    }
+
+
+    public RegionReportService getRegionReportService() {
+        return this.RegionReportService;
+    }
 
     public static void main(String[] args) {
         // Create new Application
@@ -158,6 +182,24 @@ public class App {
         Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);
         // Display results
         System.out.println(sampleCountryDetails != null ? sampleCountryDetails.toString() : "No country details found");
+        // --- USE CASE 23: USING CONTINENT SERVICE ---
+
+        System.out.println("\n=== USE CASE 23: Produce a Population Report for Continents ===");
+
+        appIns.continentReportService.printContinentPopulationReport();
+
+
+
+
+
+        // --- USE CASE 24: USING CONTINENT SERVICE (NEW METHOD) ---
+
+        System.out.println("\n=== USE CASE: 24 Produce a Population Report for Regions ===");
+
+        // CHANGE THIS LINE: Call the new method for Region report
+
+        appIns.RegionReportService.printRegionPopulationReport();
+
     }
 
 
@@ -187,6 +229,8 @@ public class App {
                 // Initialize services after successful connection
                 this.cityReportService = new CityReportService(con);
                 this.countryReportService = new CountryReportService(con);
+                this.continentReportService = new ContinentReportService(con);
+                this.RegionReportService = new RegionReportService(con);
                 break;
             } catch (SQLException sql) {
                 System.out.println("Failed to connect to database attempt " + i);
