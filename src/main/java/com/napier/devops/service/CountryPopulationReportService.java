@@ -42,8 +42,8 @@ public class CountryPopulationReportService {
             while (resultSet.next()) {
                 CountryPopulation countryPopulation = new CountryPopulation();
                 countryPopulation.setCountryName(resultSet.getString("CountryName"));
-                countryPopulation.setTotalPopulation(resultSet.getLong("TotalPopulation"));
                 countryPopulation.setCityPopulation(resultSet.getLong("CityPopulation"));
+                countryPopulation.setTotalPopulation(resultSet.getLong("TotalPopulation"));
                 countryPopulation.setNonCityPopulation(resultSet.getLong("NonCityPopulation"));
                 countryPopulation.setCityPercent(resultSet.getDouble("CityPopulationPercentage") + "%");
                 countryPopulation.setNonCityPercentage(resultSet.getDouble("NonCityPopulationPercentage") + "%");
