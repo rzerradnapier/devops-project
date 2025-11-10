@@ -19,9 +19,9 @@ public class RegionReportService {
     }
 
     /**
-     * Executes the query for Use Case 24 and displays the results.
+     * Executes the query for Use Case 24 and display the results.
      *
-     * @return A list of Region objects.
+     * @return A list of Region objects containing the relevant data.
      */
     public List<Region> getRegionPopulationReport() {
         List<Region> regions = new ArrayList<>();

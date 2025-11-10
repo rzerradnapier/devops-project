@@ -20,7 +20,7 @@ public class CountryPopulationReportService {
     /**
      * Executes the query for Use Case 25.
      *
-     * @return A list of CountryPopulation objects.
+     * @return A list of CountryPopulation objects containing the relevant data.
      */
     public List<CountryPopulation> getCountryPopulationReport() {
         List<CountryPopulation> countries = new ArrayList<>();

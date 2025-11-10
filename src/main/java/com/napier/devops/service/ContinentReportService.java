@@ -20,9 +20,9 @@ public class ContinentReportService {
 
 
     /**
-     * Executes the query for Use Case 23 and maps the results.
+     * Executes the query for Use Case 23 and display the results.
      *
-     * @return A list of ContinentPopulation objects.
+     * @return A list of ContinentPopulation objects containing the relevant data.
      */
     public List<Continent> getContinentPopulationReport() {
         List<Continent> contients = new ArrayList<>();
