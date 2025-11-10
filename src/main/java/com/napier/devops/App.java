@@ -3,6 +3,7 @@ package com.napier.devops;
 import com.napier.devops.service.CityReportService;
 import com.napier.devops.service.CountryReportService;
 import com.napier.devops.service.ContinentReportService;
+import com.napier.devops.service.CountryPopulationReportService;
 import com.napier.devops.service.RegionReportService;
 import java.sql.*;
 
@@ -36,6 +37,8 @@ public class App {
 
     private RegionReportService RegionReportService;
 
+    private CountryPopulationReportService CountryPopulationReportService;
+
     /**
      * sets the con object of the app, this is useful for mock testing
      *
@@ -48,6 +51,7 @@ public class App {
         this.countryReportService = new CountryReportService(con);
         this.continentReportService = new ContinentReportService(con);
         this.RegionReportService = new RegionReportService(con);
+        this.CountryPopulationReportService = new CountryPopulationReportService(con);
     }
 
     /**
@@ -94,6 +98,10 @@ public class App {
 
     public RegionReportService getRegionReportService() {
         return this.RegionReportService;
+    }
+
+    public CountryPopulationReportService getCountryPopulationReportService() {
+        return this.CountryPopulationReportService;
     }
 
     public static void main(String[] args) {
@@ -197,6 +205,10 @@ public class App {
         // population not living in cities (with %) so that I can understand regional urbanisation.
         appIns.RegionReportService.printRegionPopulationReport();
 
+        System.out.println("\n=== USE CASE 25: Produce a Population Report for Countries ===");
+        // Gets the population for each country showing the total population, population living in cities (with %), and population not
+        // living in cities (with %) so that I can understand national urbanisation.
+        appIns.CountryPopulationReportService.printCountryPopulationReport();
 
     }
 
@@ -229,6 +241,7 @@ public class App {
                 this.countryReportService = new CountryReportService(con);
                 this.continentReportService = new ContinentReportService(con);
                 this.RegionReportService = new RegionReportService(con);
+                this.CountryPopulationReportService = new CountryPopulationReportService (con);
                 break;
             } catch (SQLException sql) {
                 System.out.println("Failed to connect to database attempt " + i);

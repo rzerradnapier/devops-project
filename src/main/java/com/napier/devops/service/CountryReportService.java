@@ -1,13 +1,16 @@
 package com.napier.devops.service;
 
 import com.napier.devops.Country;
+import com.napier.devops.CountryPopulation;
 
+import java.sql.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Service class for country-related reporting functionality.

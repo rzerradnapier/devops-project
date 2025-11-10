@@ -12,7 +12,7 @@ public class CountryPopulation {
     private long TotalPopulation;
     private long CityPopulation;
     private long NonCityPopulation;
-    private String CityPercentage;
+    private String CityPercent;
     private String NonCityPercentage;
 
     // Getters and Setters
@@ -49,12 +49,12 @@ public class CountryPopulation {
         this.NonCityPopulation = NonCityPopulation;
     }
 
-    public String getCityPercentage() {
-        return CityPercentage;
+    public String getCityPercent() {
+        return CityPercent;
     }
 
-    public void setPercentCity(String CityPercentage) {
-        this.CityPercentage = CityPercentage;
+    public void setCityPercent(String CityPercent) {
+        this.CityPercent = CityPercent;
     }
 
     public String getNonCityPercentage() {
@@ -73,11 +73,11 @@ public class CountryPopulation {
     @Override
     public String toString() {
         return String.format("%-45s %-20s %-20s %-12s %-20s %-12s",
-                countryName,
-                totalPopulation,
-                cityPopulation,
-                percentCity,
-                nonCityPopulation,
-                percentNonCity);
+                CountryName,
+                TotalPopulation,
+                CityPopulation,
+                CityPercent,
+                NonCityPopulation,
+                NonCityPercentage);
     }
 }
