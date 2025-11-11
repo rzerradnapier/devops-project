@@ -1,6 +1,7 @@
 package com.napier.devops.service;
 
 import com.napier.devops.City;
+import com.napier.pojo.PopulationReportPojo;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -713,5 +714,79 @@ public class CityReportService {
             cityList.forEach(city -> System.out.println(city.toString()));
         }
     }
+
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     *
+     * @param districtName Name of the district
+     * @return A PopulationReportPojo object containing population breakdown, or null if not found.
+     */
+    public PopulationReportPojo getDistrictPopulationReport(String districtName) {
+        long totalPopulation = 0;
+        long cityPopulation = 0;
+
+        if (districtName == null || districtName.trim().isEmpty()) {
+            System.err.println("Error: District name cannot be null or empty.");
+            return null;
+        }
+
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName(districtName);
+
+        try {
+            // Get total population of the district
+            String totalQuery = "SELECT SUM(Population) AS population FROM city WHERE district = ?";
+            PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+            stmtTotal.setString(1, districtName);
+            ResultSet rsTotal = stmtTotal.executeQuery();
+
+            if (rsTotal.next()) {
+                totalPopulation = rsTotal.getLong("population");
+            }
+
+            // Get population living in cities (in a district, that’s just total city population)
+            String cityQuery = """
+                        SELECT SUM(Population) AS city_population
+                        FROM city
+                        WHERE district = ?
+                    """;
+            PreparedStatement stmtCity = connection.prepareStatement(cityQuery);
+            stmtCity.setString(1, districtName);
+            ResultSet rsCity = stmtCity.executeQuery();
+
+            if (rsCity.next()) {
+                cityPopulation = rsCity.getLong("city_population");
+            }
+
+            // Calculate non-city population (for a district, this is 0 — all are cities)
+            long nonCityPopulation = totalPopulation - cityPopulation;
+
+            double cityPercentage = totalPopulation > 0
+                    ? ((cityPopulation * 100.0) / totalPopulation)
+                    : 0.0;
+            double nonCityPercentage = 100.0 - cityPercentage;
+
+            report.setTotalPopulation(totalPopulation);
+            report.setPopulationInCities(cityPopulation);
+            report.setPopulationNotInCities(nonCityPopulation);
+            report.setPercentageInCities(cityPercentage);
+            report.setPercentageNotInCities(nonCityPercentage);
+
+            return report;
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error retrieving population report for district: " + e.getMessage());
+            return null;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException closeEx) {
+                    System.err.println("Error closing resources: " + closeEx.getMessage());
+                }
+            }
+        }
+    }
+
 
 }

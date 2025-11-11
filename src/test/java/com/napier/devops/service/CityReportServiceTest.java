@@ -1,6 +1,7 @@
 package com.napier.devops.service;
 
 import com.napier.devops.City;
+import com.napier.pojo.PopulationReportPojo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -13,6 +14,7 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.List;
 
+import static com.napier.constant.Constant.DEFAULT_DISTRICT;
 import static com.napier.constant.Constant.DEFAULT_N;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -813,6 +815,53 @@ public class CityReportServiceTest {
 
         verify(spyService, times(1)).getAllCapitalCitiesByPopulation();
     }
+
+    /**
+     * USE CASE 30 - Retrieve the Population of a District.
+     * Tests valid district input returning correct report.
+     */
+    @Test
+    void testValidDistrictPopulationReport() throws Exception {
+        // Mocks for queries
+        PreparedStatement totalStmt = mock(PreparedStatement.class);
+        PreparedStatement cityStmt = mock(PreparedStatement.class);
+        ResultSet totalRS = mock(ResultSet.class);
+        ResultSet cityRS = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString()))
+                .thenReturn(totalStmt)
+                .thenReturn(cityStmt);
+        when(totalStmt.executeQuery()).thenReturn(totalRS);
+        when(cityStmt.executeQuery()).thenReturn(cityRS);
+
+        // Mock data returned from DB
+        when(totalRS.next()).thenReturn(true);
+        when(totalRS.getLong("population")).thenReturn(500000L);
+        when(cityRS.next()).thenReturn(true);
+        when(cityRS.getLong("city_population")).thenReturn(400000L);
+
+        // Execute
+        PopulationReportPojo report = cityReportService.getDistrictPopulationReport(DEFAULT_DISTRICT);
+
+        // Assertions
+        assertEquals(DEFAULT_DISTRICT, report.getName());
+        assertEquals(500000L, report.getTotalPopulation());
+        assertEquals(400000L, report.getPopulationInCities());
+        assertEquals(100000L, report.getPopulationNotInCities());
+        assertEquals(80.0, report.getPercentageInCities(), 0.01);
+        assertEquals(20.0, report.getPercentageNotInCities(), 0.01);
+    }
+
+    /**
+     * USE CASE 30 - Retrieve the Population of a District.
+     * Tests invalid district input returning null OR empty report.
+     */
+    @Test
+    void testDistrictPopulationReportWithInvalidName() {
+        assertNull(cityReportService.getDistrictPopulationReport(null));
+        assertNull(cityReportService.getDistrictPopulationReport(""));
+    }
+
 
     /**
      * Test methods with null/empty parameters.

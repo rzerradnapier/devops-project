@@ -733,4 +733,48 @@ public class AppIntegrationTest {
     }
 
 
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     * the Population Report for a District including population in cities and not in cities.
+     */
+    @Test
+    void testDistrictPopulationReport_Valid() {
+        PopulationReportPojo report = app.getCityReportService().getDistrictPopulationReport(DEFAULT_DISTRICT);
+
+        assertNotNull(report, "Report should not be null");
+        assertEquals(DEFAULT_DISTRICT, report.getName(), "District name should match");
+
+        // Logical consistency checks
+        assertTrue(report.getTotalPopulation() > 0, "Total population must be greater than 0");
+        assertTrue(report.getPopulationInCities() >= 0, "City population must be non-negative");
+        assertTrue(report.getPopulationNotInCities() >= 0, "Non-city population must be non-negative");
+
+        long sum = report.getPopulationInCities() + report.getPopulationNotInCities();
+        assertEquals(report.getTotalPopulation(), sum, "Sum of city + non-city = total");
+
+        double percentSum = report.getPercentageInCities() + report.getPercentageNotInCities();
+        assertTrue(Math.abs(percentSum - 100.0) < 0.5, "Percentages should roughly add to 100%");
+    }
+
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     * Testing with an invalid district name.
+     */
+    @Test
+    void testDistrictPopulationReport_InvalidDistrict() {
+        PopulationReportPojo report = app.getCityReportService().getDistrictPopulationReport(null);
+        assertNull(report, "Invalid district should return null or empty report");
+    }
+
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     * Testing with an empty district name.
+     */
+    @Test
+    void testDistrictPopulationReport_EmptyDistrict() {
+        PopulationReportPojo report = app.getCityReportService().getDistrictPopulationReport("");
+        assertNull(report, "Empty district should return null");
+    }
+
+
 }
