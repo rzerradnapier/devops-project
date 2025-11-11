@@ -535,27 +535,38 @@ public class CountryReportServiceTest {
      */
     @Test
     void testValidCountryPopulationReport() throws Exception {
-        // Total population query
+        // Mocks
         PreparedStatement totalStmt = mock(PreparedStatement.class);
         ResultSet totalRS = mock(ResultSet.class);
-        when(mockConnection.prepareStatement("SELECT population FROM country WHERE name = ?"))
+        PreparedStatement cityStmt = mock(PreparedStatement.class);
+        ResultSet cityRS = mock(ResultSet.class);
+
+        // Mock total population query
+        when(mockConnection.prepareStatement("SELECT Population FROM country WHERE Name = ?"))
                 .thenReturn(totalStmt);
         when(totalStmt.executeQuery()).thenReturn(totalRS);
         when(totalRS.next()).thenReturn(true);
-        when(totalRS.getLong("population")).thenReturn(1000000L);
+        when(totalRS.getLong("Population")).thenReturn(1000000L);
 
-        // City population query
-        PreparedStatement cityStmt = mock(PreparedStatement.class);
-        ResultSet cityRS = mock(ResultSet.class);
-        when(mockConnection.prepareStatement(anyString())).thenReturn(cityStmt);
+        // Mock city population query
+        String cityQuery = """
+                    SELECT SUM(city.Population) AS city_population
+                    FROM city
+                    INNER JOIN country ON city.CountryCode = country.Code
+                    WHERE country.Name = ?
+                """;
+        when(mockConnection.prepareStatement(cityQuery))
+                .thenReturn(cityStmt);
         when(cityStmt.executeQuery()).thenReturn(cityRS);
         when(cityRS.next()).thenReturn(true);
         when(cityRS.getLong("city_population")).thenReturn(400000L);
 
-        PopulationReportPojo report = countryReportService.getCountryPopulationReport(Constant.DEFAULT_COUNTRY_NAME);
+        // Execute
+        PopulationReportPojo report = countryReportService.getCountryPopulationReport("Testland");
 
+        // Verify
         assertNotNull(report);
-        assertEquals(Constant.DEFAULT_COUNTRY_NAME, report.getName());
+        assertEquals("Testland", report.getName());
         assertEquals(1000000L, report.getTotalPopulation());
         assertEquals(400000L, report.getPopulationInCities());
         assertEquals(600000L, report.getPopulationNotInCities());

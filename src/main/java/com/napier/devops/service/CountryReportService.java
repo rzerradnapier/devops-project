@@ -386,18 +386,18 @@ public class CountryReportService {
 
         try {
             // Get total population
-            String totalQuery = "SELECT population FROM country WHERE name = ?";
+            String totalQuery = "SELECT Population FROM country WHERE Name = ?";
             PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
             stmtTotal.setString(1, countryName);
             ResultSet rsTotal = stmtTotal.executeQuery();
 
             if (rsTotal.next()) {
-                totalPopulation = rsTotal.getLong("population");
+                totalPopulation = rsTotal.getLong("Population");
             }
 
             // Get population living in cities
             String cityQuery = """
-                        SELECT SUM(city.population) AS city_population
+                        SELECT SUM(city.Population) AS city_population
                         FROM city
                         INNER JOIN country ON city.CountryCode = country.Code
                         WHERE country.Name = ?

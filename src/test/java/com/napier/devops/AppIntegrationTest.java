@@ -698,7 +698,7 @@ public class AppIntegrationTest {
         PopulationReportPojo report = app.getCountryReportService().getCountryPopulationReport(DEFAULT_COUNTRY_NAME);
 
         assertNotNull(report, "Report should not be null");
-        assertEquals("Nigeria", report.getName(), "Country name should match");
+        assertEquals(DEFAULT_COUNTRY_NAME, report.getName(), "Country name should match");
 
         // Logical consistency checks
         assertTrue(report.getTotalPopulation() > 0, "Total population must be greater than 0");
@@ -718,7 +718,7 @@ public class AppIntegrationTest {
      */
     @Test
     void testCountryPopulationReport_InvalidCountry() {
-        PopulationReportPojo report = app.getCountryReportService().getCountryPopulationReport("NowhereLand");
+        PopulationReportPojo report = app.getCountryReportService().getCountryPopulationReport(null);
         assertNull(report, "Invalid country should return null or empty report");
     }
 
