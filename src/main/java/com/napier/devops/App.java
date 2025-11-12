@@ -210,6 +210,10 @@ public class App {
         // living in cities (with %) so that I can understand national urbanisation.
         appIns.CountryPopulationReportService.printCountryPopulationReport();
 
+        System.out.println("\n=== USE CASE 26: Retrieve the Population of the World ===");
+        // Gets the total population of the world.
+        appIns.CountryPopulationReportService.printWorldPopulationReport();
+
     }
 
 

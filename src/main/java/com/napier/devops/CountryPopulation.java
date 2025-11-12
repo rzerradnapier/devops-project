@@ -15,6 +15,7 @@ public class CountryPopulation {
     private String CityPercent;
     private String NonCityPercentage;
 
+
     // Getters and Setters
 
     public String getCountryName() {

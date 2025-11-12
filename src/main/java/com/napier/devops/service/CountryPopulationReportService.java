@@ -87,4 +87,63 @@ public class CountryPopulationReportService {
         }
         System.out.println("=================================================================================================================================================");
     }
+
+    /**
+     * Executes the query for Use Case 26.
+     *
+     * @return The total world population.
+     */
+    public long getWorldPopulationReport() {
+
+        // SQL query
+        String sql = "SELECT SUM(Population) AS WorldPopulation FROM country";
+
+        long worldPopulation = -1; // Variable that holds the single result
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet resultSet = stmt.executeQuery(sql)) {
+
+
+            while (resultSet.next()) {
+
+
+                // Gets the value using the alias WorldPopulation
+                worldPopulation = resultSet.getLong("WorldPopulation");
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+
+        }
+
+
+        return worldPopulation;
+    }
+
+    /**
+     * Prints the total population of the world.
+     * Use Case 26.
+     */
+    public void printWorldPopulationReport() {
+        long population = getWorldPopulationReport(); // Calls the method you implemented
+
+        // Define the separator line
+        String separator = "=================================================================================================================================================";
+
+        if (population == -1) {
+            System.out.println("Error: Could not retrieve world population.");
+            return;
+        }
+
+        // Header
+        System.out.println(separator);
+        // Title centered in the 149-character width
+        System.out.println("|                                                         USE CASE 26: World Population Report                                                          |");
+        System.out.println(separator);
+
+        // Data Line
+        System.out.printf("| Total World Population: %-123s |\n", population);
+
+        // Footer
+        System.out.println(separator);
+    }
 }
