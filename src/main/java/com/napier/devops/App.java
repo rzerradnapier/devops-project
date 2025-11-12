@@ -197,7 +197,7 @@ public class App {
 
         System.out.println("\n=== USE CASE 23: Produce a Population Report for Continents ===");
         //Gets the population for each continent showing the total population, population living in cities (with
-        // %), and population not living in cities (with %) so that I can understand continental urbanisation.
+        // %), and population not living in cities (with %).
         appIns.continentReportService.printContinentPopulationReport();
 
         System.out.println("\n=== USE CASE 24: Produce a Population Report for Regions ===");
