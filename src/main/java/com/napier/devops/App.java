@@ -202,12 +202,12 @@ public class App {
 
         System.out.println("\n=== USE CASE 24: Produce a Population Report for Regions ===");
         // Gets the population for each region showing the total population, population living in cities (with %), and
-        // population not living in cities (with %) so that I can understand regional urbanisation.
+        // population not living in cities (with %).
         appIns.RegionReportService.printRegionPopulationReport();
 
         System.out.println("\n=== USE CASE 25: Produce a Population Report for Countries ===");
         // Gets the population for each country showing the total population, population living in cities (with %), and population not
-        // living in cities (with %) so that I can understand national urbanisation.
+        // living in cities (with %).
         appIns.CountryPopulationReportService.printCountryPopulationReport();
 
         System.out.println("\n=== USE CASE 26: Retrieve the Population of the World ===");
