@@ -370,7 +370,7 @@ public class CountryReportService {
     }
 
     /**
-     * USE CASE 28: Produce a Population Report for a Region
+     * USE CASE 28: Produce a Population Report for a Region.
      * Prints and returns the population report for a given region.
      * @param defaultRegion Name of the region
      * @return The PopulationReportPojo containing the population details for the region, or null if not found.
@@ -468,7 +468,7 @@ public class CountryReportService {
     }
 
     /**
-     * USE CASE 29: Produce a Population Report for a Country (Printable Version)
+     * USE CASE 29: Produce a Population Report for a Country.
      * Prints and returns the population report for a given country.
      * @param countryName Name of the country
      * @return The PopulationReportPojo containing the population details for the country, or null if not found.
@@ -563,6 +563,39 @@ public class CountryReportService {
         }
 
         return languageReports;
+    }
+
+
+    /**
+     * USE CASE 32: Produce a Report on Speakers of Major Languages.
+     *
+     * @return A list of LanguageReportPojo objects containing each language, number of speakers,
+     *         and their percentage of the world population.
+     */
+    public List<LanguageReportPojo> printMajorLanguageReport() {
+        List<LanguageReportPojo> reports = getMajorLanguageReport();
+
+        if (reports == null || reports.isEmpty()) {
+            System.err.println("Error: No language report data found.");
+            return Collections.emptyList();
+        }
+
+        System.out.println("===============================================================");
+        System.out.println("           MAJOR LANGUAGES SPEAKERS REPORT                     ");
+        System.out.println("===============================================================");
+        System.out.printf("%-15s %-20s %-15s%n", "Language", "Speakers", "% of World Pop");
+        System.out.println("---------------------------------------------------------------");
+
+        for (LanguageReportPojo report : reports) {
+            System.out.printf("%-15s %-20d %-15.2f%n",
+                    report.getLanguage(),
+                    report.getSpeakers(),
+                    report.getPercentageOfWorld());
+        }
+
+        System.out.println("===============================================================");
+
+        return reports;
     }
 
 

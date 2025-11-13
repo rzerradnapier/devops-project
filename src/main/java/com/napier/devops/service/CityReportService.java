@@ -788,6 +788,33 @@ public class CityReportService {
         }
     }
 
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     * Prints and returns the population report for a given district.
+     * @param districtName Name of the district
+     * @return The PopulationReportPojo containing the population details for the district, or null if not found.
+     */
+    public PopulationReportPojo printDistrictPopulationReport(String districtName) {
+        PopulationReportPojo report = getDistrictPopulationReport(districtName);
+
+        if (report == null) {
+            System.err.println("Error: No population data found for district: " + districtName);
+            return null;
+        }
+
+        System.out.println("========================================");
+        System.out.println("        DISTRICT POPULATION REPORT      ");
+        System.out.println("========================================");
+        System.out.println("District: " + report.getName());
+        System.out.println("Total Population: " + report.getTotalPopulation());
+        System.out.println("Population in Cities: " + report.getPopulationInCities() +
+                " (" + String.format("%.2f", report.getPercentageInCities()) + "%)");
+        System.out.println("Population Not in Cities: " + report.getPopulationNotInCities() +
+                " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
+        System.out.println("========================================");
+
+        return report;
+    }
 
     /**
      * USE CASE 31: Produce a Population Report for a City.
@@ -863,6 +890,35 @@ public class CityReportService {
             }
         }
     }
+
+    /**
+     * USE CASE 31: Produce a Population Report for a City.
+     * Prints and returns the population report for a given city.
+     * @param cityName Name of the city
+     * @return The PopulationReportPojo containing population details for the city, or null if not found.
+     */
+    public PopulationReportPojo printCityPopulationReport(String cityName) {
+        PopulationReportPojo report = getCityPopulationReport(cityName);
+
+        if (report == null) {
+            System.err.println("Error: No population data found for city: " + cityName);
+            return null;
+        }
+
+        System.out.println("=========================================");
+        System.out.println("            CITY POPULATION REPORT       ");
+        System.out.println("=========================================");
+        System.out.println("City: " + report.getName());
+        System.out.println("Total Population: " + report.getTotalPopulation());
+        System.out.println("Population in City: " + report.getPopulationInCities() +
+                " (" + String.format("%.2f", report.getPercentageInCities()) + "%)");
+        System.out.println("Population Not in City: " + report.getPopulationNotInCities() +
+                " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
+        System.out.println("========================================");
+
+        return report;
+    }
+
 
 
 }
