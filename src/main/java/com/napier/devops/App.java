@@ -214,6 +214,10 @@ public class App {
         // Gets the total population of the world.
         appIns.CountryPopulationReportService.printWorldPopulationReport();
 
+        System.out.println("\n=== USE CASE 27: Retrieve the Population of a Continent ===");
+        // Gets the total population of a Continent.
+        appIns.continentReportService.printPopulationContinentReport();
+
     }
 
 

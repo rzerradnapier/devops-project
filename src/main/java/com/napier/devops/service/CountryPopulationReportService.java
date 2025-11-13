@@ -124,7 +124,7 @@ public class CountryPopulationReportService {
      * Use Case 26.
      */
     public void printWorldPopulationReport() {
-        long population = getWorldPopulationReport(); // Calls the method you implemented
+        long population = getWorldPopulationReport(); // Calls the method
 
         // Define the separator line
         String separator = "=================================================================================================================================================";

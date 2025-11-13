@@ -6,6 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * Service class for continent-related reporting functionality.
  * Handles all continent report use cases.
@@ -78,4 +79,85 @@ public class ContinentReportService {
         System.out.println("===============================================================================================================================================================================================");
     }
 
+    /**
+     * Executes the query for Use Case 23 and display the results.
+     * Use Case 27
+     *
+     * @return The total population as a long, or -1 if an error occurs.
+     */
+    public Continent getPopulationContinentReport(String continentName) {
+
+        // SQL Query
+        String sql = "SELECT Continent, SUM(Population) AS TotalPopulation " +
+                "FROM country " +
+                "WHERE Continent = ? " +
+                "GROUP BY Continent";
+
+        Continent continent = null;
+
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
+            // Set the parameter of the PreparedStatement
+            pstmt.setString(1, continentName);
+
+            //  Execute the query and retrieve the ResultSet
+            try (ResultSet resultSet = pstmt.executeQuery()) {
+
+                // Loop
+                while (resultSet.next()) {
+                    continent = new Continent();
+                    continent.setContinent(resultSet.getString("Continent"));
+                    continent.setTotalPopulation(resultSet.getLong("TotalPopulation"));
+
+
+                }
+            }
+        } catch (SQLException e) {
+
+            System.out.println("Query failed: " + e.getMessage());
+            // Return null
+            return null;
+
+        }
+
+       // Return the 'Continent' object
+        return continent;
+    }
+
+    /**
+     * Prints the Population of a Continent.
+     * Use Case 27.
+     *
+     * @param continentName The name of the continent to display.
+     */
+    public void printPopulationContinentReport(String continentName) {
+
+
+        Continent continent = getPopulationContinentReport(continentName);
+
+
+        String separator = "===================================================================================================================================================";
+
+        // Check if the object is null
+        if (continent == null) {
+            System.out.println("Error: Could not retrieve population for continent: " + continentName);
+            return;
+        }
+
+        // Get the population from the object
+        long population = continent.getTotalPopulation();
+
+        // Header
+        System.out.println(separator);
+        System.out.println("|                                               USE CASE 27: Continent Population Report                                                      |");
+        System.out.println(separator);
+
+        // Data Line
+        String output = String.format("Total Population for Continent (%s): %d", continent.getContinent(), population);
+        System.out.printf("| %-149s |\n", output);
+
+        // Footer
+        System.out.println(separator);
+    }
 }
