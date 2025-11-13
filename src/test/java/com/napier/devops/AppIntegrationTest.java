@@ -654,6 +654,159 @@ public class AppIntegrationTest {
     }
 
 
+    /**
+     * Integration test for USE CASE 20: Produce a Report on Top N Capital Cities in the World
+     * This test verifies that the method correctly retrieves and sorts the top N most populated capital cities.
+     */
+    @Test
+    void testGetTopCapitalCitiesByPopulation_UseCase20() {
+
+        // Test parameters
+        int n = 5;  // Number of capital cities to retrieve
+
+        // Execute method
+        List<City> topCapitalCities = app.getCityReportService().getTopCapitalCitiesByPopulation(n);
+
+        // Verify that the list is not null and has exactly N cities
+        assertNotNull(topCapitalCities, "Capital city list should not be null");
+        assertEquals(n, topCapitalCities.size(), "Should return exactly " + n + " cities");
+
+        // Verify sorting — cities should be sorted in descending order by population
+        for (int i = 0; i < topCapitalCities.size() - 1; i++) {
+            assertTrue(
+                    topCapitalCities.get(i).getPopulation() >= topCapitalCities.get(i + 1).getPopulation(),
+                    "Capital cities should be sorted in descending order by population"
+            );
+        }
+
+        // Verify that each city has required fields populated
+        City firstCity = topCapitalCities.get(0);
+        assertNotNull(firstCity.getId(), "City ID should not be null");
+        assertNotNull(firstCity.getName(), "City name should not be null");
+        assertNotNull(firstCity.getCountryCode(), "City country code should not be null");
+        assertTrue(firstCity.getPopulation() > 0, "City population should be greater than zero");
+
+        // Test with different values of N
+        List<City> top10Cities = app.getCityReportService().getTopCapitalCitiesByPopulation(10);
+        assertEquals(10, top10Cities.size(), "Should return exactly 10 cities");
+
+        List<City> topCity = app.getCityReportService().getTopCapitalCitiesByPopulation(1);
+        assertEquals(1, topCity.size(), "Should return exactly 1 city");
+
+        // Test with invalid N (zero or negative)
+        List<City> invalidCities = app.getCityReportService().getTopCapitalCitiesByPopulation(0);
+        assertTrue(invalidCities.isEmpty(), "Invalid limit should return an empty list");
+
+        System.out.println("USE CASE 20 - Top " + n + " capital cities retrieved successfully");
+        System.out.println("USE CASE 20 - Largest capital city: " + firstCity.getName() +
+                " with population: " + firstCity.getPopulation());
+    }
+
+    /**
+     * Integration test for USE CASE 21: Produce a Report on Top N Capital Cities in a Continent
+     * This test verifies that the method correctly retrieves and sorts the top N most populated capital cities
+     * within a specified continent.
+     */
+    @Test
+    void testGetTopCapitalCitiesInContinentByPopulation_UseCase21() {
+        // Test parameters
+        String continent = "Europe";
+        int n = 5;  // Number of capital cities to retrieve
+
+        // Execute method
+        List<City> topCapitalCities = app.getCityReportService().getTopCapitalCitiesByContinent(continent, n);
+
+        // Verify that the list is not null and has exactly N cities
+        assertNotNull(topCapitalCities, "Capital city list should not be null");
+        assertEquals(n, topCapitalCities.size(), "Should return exactly " + n + " cities");
+
+        // Verify sorting — cities should be sorted in descending order by population
+        for (int i = 0; i < topCapitalCities.size() - 1; i++) {
+            assertTrue(
+                    topCapitalCities.get(i).getPopulation() >= topCapitalCities.get(i + 1).getPopulation(),
+                    "Capital cities should be sorted in descending order by population"
+            );
+        }
+
+        // Verify that each city has required fields populated
+        City firstCity = topCapitalCities.get(0);
+        assertNotNull(firstCity.getId(), "City ID should not be null");
+        assertNotNull(firstCity.getName(), "City name should not be null");
+        assertNotNull(firstCity.getCountryCode(), "City country code should not be null");
+        assertTrue(firstCity.getPopulation() > 0, "City population should be greater than zero");
+
+        // Test with different values of N
+        List<City> top10Cities = app.getCityReportService().getTopCapitalCitiesByContinent(continent, 10);
+        assertEquals(10, top10Cities.size(), "Should return exactly 10 cities");
+
+        List<City> topCity = app.getCityReportService().getTopCapitalCitiesByContinent(continent, 1);
+        assertEquals(1, topCity.size(), "Should return exactly 1 city");
+
+        // Test with invalid N (zero or negative)
+        List<City> invalidCities = app.getCityReportService().getTopCapitalCitiesByContinent(continent, 0);
+        assertTrue(invalidCities.isEmpty(), "Invalid limit should return an empty list");
+
+        // Test with invalid continent
+        List<City> invalidContinentCities = app.getCityReportService().getTopCapitalCitiesByContinent("InvalidContinent", n);
+        assertTrue(invalidContinentCities.isEmpty(), "Invalid continent should return an empty list");
+
+        System.out.println("USE CASE 21 - Top " + n + " capital cities in " + continent + " retrieved successfully");
+        System.out.println("USE CASE 21 - Largest capital city in " + continent + ": " + firstCity.getName() +
+                " with population: " + firstCity.getPopulation());
+    }
+
+    /**
+     * Integration test for USE CASE 22: Produce a Report on Top N Capital Cities in a Region
+     * This test verifies that the method correctly retrieves and sorts the top N most populated capital cities
+     * within a specified region.
+     */
+    @Test
+    void testGetTopCapitalCitiesInRegionByPopulation_UseCase22() {
+        // Test parameters
+        String region = "South America";
+        int n = 5;  // Number of capital cities to retrieve
+
+        // Execute method
+        List<City> topCapitalCities = app.getCityReportService().getTopCapitalCitiesByRegion(region, n);
+
+        // Verify that the list is not null and has exactly N cities
+        assertNotNull(topCapitalCities, "Capital city list should not be null");
+        assertEquals(n, topCapitalCities.size(), "Should return exactly " + n + " cities");
+
+        // Verify sorting — cities should be sorted in descending order by population
+        for (int i = 0; i < topCapitalCities.size() - 1; i++) {
+            assertTrue(
+                    topCapitalCities.get(i).getPopulation() >= topCapitalCities.get(i + 1).getPopulation(),
+                    "Capital cities should be sorted in descending order by population"
+            );
+        }
+
+        // Verify that each city has required fields populated
+        City firstCity = topCapitalCities.get(0);
+        assertNotNull(firstCity.getId(), "City ID should not be null");
+        assertNotNull(firstCity.getName(), "City name should not be null");
+        assertNotNull(firstCity.getCountryCode(), "City country code should not be null");
+        assertTrue(firstCity.getPopulation() > 0, "City population should be greater than zero");
+
+        // Test with different values of N
+        List<City> top10Cities = app.getCityReportService().getTopCapitalCitiesByRegion(region, 10);
+        assertEquals(10, top10Cities.size(), "Should return exactly 10 cities");
+
+        List<City> topCity = app.getCityReportService().getTopCapitalCitiesByRegion(region, 1);
+        assertEquals(1, topCity.size(), "Should return exactly 1 city");
+
+        // Test with invalid N (zero or negative)
+        List<City> invalidCities = app.getCityReportService().getTopCapitalCitiesByRegion(region, 0);
+        assertTrue(invalidCities.isEmpty(), "Invalid limit should return an empty list");
+
+        // Test with invalid region
+        List<City> invalidRegionCities = app.getCityReportService().getTopCapitalCitiesByRegion("InvalidRegion", n);
+        assertTrue(invalidRegionCities.isEmpty(), "Invalid region should return an empty list");
+
+        System.out.println("USE CASE 22 - Top " + n + " capital cities in " + region + " retrieved successfully");
+        System.out.println("USE CASE 22 - Largest capital city in " + region + ": " + firstCity.getName() +
+                " with population: " + firstCity.getPopulation());
+    }
 
 
 }

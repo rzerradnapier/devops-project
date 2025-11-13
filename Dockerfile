@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim
+FROM amazoncorretto:17
 COPY ./target/devops.jar /tmp
 WORKDIR /tmp
 # exposing port for debugging
