@@ -43,14 +43,15 @@ public class RegionReportService {
             while (resultSet.next()) {
                 Region region = new Region();
                 // Using the setter methods from Region class
-                region.setNameofRegion(resultSet.getString("Region"));
-                region.settotalPopulation(resultSet.getLong("TotalPopulation"));
-                region.setcityPopulation(resultSet.getLong("CityPopulation"));
-                region.setnonCityPopulation(resultSet.getLong("NonCityPopulation"));
-                region.setcityPopulationPercentage(resultSet.getFloat("CityPopulationPercentage"));
-                region.setnonCityPopulationPercentage(resultSet.getFloat("NonCityPopulationPercentage"));
+                region.setNameOfRegion(resultSet.getString("Region"));
+                region.setTotalPopulation(resultSet.getLong("TotalPopulation"));
+                region.setCityPopulation(resultSet.getLong("CityPopulation"));
+                region.setNonCityPopulation(resultSet.getLong("NonCityPopulation"));
+                region.setCityPopulationPercentage(resultSet.getFloat("CityPopulationPercentage"));
+                region.setNonCityPopulationPercentage(resultSet.getFloat("NonCityPopulationPercentage"));
                 regions.add(region);
             }
+
         } catch (SQLException e) {
             System.out.println("Query failed: " + e.getMessage());
         }
