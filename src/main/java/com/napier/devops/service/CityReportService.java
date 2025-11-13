@@ -789,4 +789,80 @@ public class CityReportService {
     }
 
 
+    /**
+     * USE CASE 31: Produce a Population Report for a City.
+     *
+     * @param cityName Name of the city
+     * @return A PopulationReportPojo containing population breakdown, or null if not found.
+     */
+    public PopulationReportPojo getCityPopulationReport(String cityName) {
+        long totalPopulation = 0;
+        long cityPopulation = 0;
+
+        if (cityName == null || cityName.trim().isEmpty()) {
+            System.err.println("Error: City name cannot be null or empty.");
+            return null;
+        }
+
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName(cityName);
+
+        PreparedStatement stmtTotal = null;
+        PreparedStatement stmtCity = null;
+        ResultSet rsTotal = null;
+        ResultSet rsCity = null;
+
+        try {
+            // Get total population for the city
+            String totalQuery = "SELECT Population FROM city WHERE Name = ?";
+            stmtTotal = connection.prepareStatement(totalQuery);
+            stmtTotal.setString(1, cityName);
+            rsTotal = stmtTotal.executeQuery();
+
+            if (rsTotal.next()) {
+                totalPopulation = rsTotal.getLong("population");
+            }
+
+            // For a single city, the population living in the city *is itself*
+            String cityQuery = """
+                        SELECT Population AS city_population
+                        FROM city
+                        WHERE Name = ?
+                    """;
+            stmtCity = connection.prepareStatement(cityQuery);
+            stmtCity.setString(1, cityName);
+            rsCity = stmtCity.executeQuery();
+
+            if (rsCity.next()) {
+                cityPopulation = rsCity.getLong("city_population");
+            }
+
+            long nonCityPopulation = totalPopulation - cityPopulation;
+            double cityPercentage = totalPopulation > 0
+                    ? ((cityPopulation * 100.0) / totalPopulation)
+                    : 0.0;
+            double nonCityPercentage = 100.0 - cityPercentage;
+
+            report.setTotalPopulation(totalPopulation);
+            report.setPopulationInCities(cityPopulation);
+            report.setPopulationNotInCities(nonCityPopulation);
+            report.setPercentageInCities(cityPercentage);
+            report.setPercentageNotInCities(nonCityPercentage);
+
+            return report;
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error retrieving population report for city: " + e.getMessage());
+            return null;
+        } finally {
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException closeEx) {
+                System.err.println("Error closing resources: " + closeEx.getMessage());
+            }
+        }
+    }
+
+
 }

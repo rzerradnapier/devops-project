@@ -1,7 +1,8 @@
 package com.napier.devops.service;
 
-import com.napier.constant.Constant;
+
 import com.napier.devops.Country;
+import com.napier.pojo.LanguageReportPojo;
 import com.napier.pojo.PopulationReportPojo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -582,5 +583,65 @@ public class CountryReportServiceTest {
     void testSQLException() throws Exception {
         when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
         assertNull(countryReportService.getCountryPopulationReport("Nowhere"));
+    }
+
+    /**
+     * Unit tests for {@link CountryReportService#getMajorLanguageReport()}
+     * USE CASE 32 - Produce a Report on Speakers of Major Languages: Testing valid major language report generation.
+     */
+    @Test
+    void testValidMajorLanguageReport() throws Exception {
+        PreparedStatement stmtWorld = mock(PreparedStatement.class);
+        ResultSet rsWorld = mock(ResultSet.class);
+
+        PreparedStatement stmtLang = mock(PreparedStatement.class);
+        ResultSet rsLang = mock(ResultSet.class);
+
+        // Mock world population query
+        when(mockConnection.prepareStatement("SELECT SUM(Population) AS world_population FROM country"))
+                .thenReturn(stmtWorld);
+        when(stmtWorld.executeQuery()).thenReturn(rsWorld);
+        when(rsWorld.next()).thenReturn(true);
+        when(rsWorld.getLong("world_population")).thenReturn(1_000_000_000L);
+
+        // Mock language query (note: make it match DISTINCTLY)
+        when(mockConnection.prepareStatement(contains("FROM countrylanguage")))
+                .thenReturn(stmtLang);
+        when(stmtLang.executeQuery()).thenReturn(rsLang);
+
+        when(rsLang.next()).thenReturn(true, true, true, true, true, false);
+        when(rsLang.getString("Language"))
+                .thenReturn("Chinese", "English", "Hindi", "Spanish", "Arabic");
+        when(rsLang.getLong("speakers"))
+                .thenReturn(300_000_000L, 200_000_000L, 150_000_000L, 100_000_000L, 50_000_000L);
+
+        // Execute
+        List<LanguageReportPojo> reports = countryReportService.getMajorLanguageReport();
+
+        // Verify
+        assertEquals(5, reports.size());
+        assertEquals("Chinese", reports.get(0).getLanguage());
+        assertTrue(reports.get(0).getPercentageOfWorld() > reports.get(4).getPercentageOfWorld());
+    }
+
+
+    /**
+     * Unit tests for {@link CountryReportService#getMajorLanguageReport()}
+     * USE CASE 32 - Produce a Report on Speakers of Major Languages: Testing valid major language report generation.
+     */
+    @Test
+    void testWorldPopulationZeroReturnsEmptyList() throws Exception {
+        PreparedStatement stmtWorld = mock(PreparedStatement.class);
+        ResultSet rsWorld = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement("SELECT SUM(Population) AS world_population FROM country"))
+                .thenReturn(stmtWorld);
+        when(stmtWorld.executeQuery()).thenReturn(rsWorld);
+        when(rsWorld.next()).thenReturn(true);
+        when(rsWorld.getLong("world_population")).thenReturn(0L);
+
+
+        List<LanguageReportPojo> reports = countryReportService.getMajorLanguageReport();
+        assertTrue(reports.isEmpty());
     }
 }

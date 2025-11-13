@@ -1,6 +1,7 @@
 package com.napier.devops;
 
 import com.napier.constant.Constant;
+import com.napier.pojo.LanguageReportPojo;
 import com.napier.pojo.PopulationReportPojo;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Order;
@@ -776,5 +777,46 @@ public class AppIntegrationTest {
         assertNull(report, "Empty district should return null");
     }
 
+
+    /**
+     * USE CASE 31: Retrieve the Population of a City.
+     * the Population Report for a City including population in cities and not in cities.
+     */
+    @Test
+    void testCityPopulationReport_ValidCity() {
+        PopulationReportPojo report = app.getCityReportService().getCityPopulationReport(DEFAULT_CITY_NAME);
+        assertNotNull(report);
+        assertEquals(DEFAULT_CITY_NAME, report.getName());
+        assertTrue(report.getTotalPopulation() > 0);
+        assertEquals(report.getTotalPopulation(), report.getPopulationInCities());
+        assertEquals(0, report.getPopulationNotInCities());
+        assertEquals(100.0, report.getPercentageInCities(), 0.001);
+    }
+
+    /**
+     * USE CASE 31: Retrieve the Population of a City.
+     */
+    @Test
+    void testCityPopulationReport_InvalidCity() {
+        PopulationReportPojo report = app.getCityReportService().getCityPopulationReport("Nonexistent City");
+        assertNotNull(report);
+        assertEquals("Nonexistent City", report.getName());
+        assertEquals(0, report.getTotalPopulation());
+    }
+
+    /**
+     * USE CASE 32: Produce a Report on Speakers of Major Languages.
+     * This test checks if the method correctly fetches the major languages report.
+     */
+    @Test
+    void testGetMajorLanguageReport() {
+        List<LanguageReportPojo> reports = app.getCountryReportService().getMajorLanguageReport();
+
+        assertNotNull(reports);
+        assertFalse(reports.isEmpty());
+        assertEquals(5, reports.size());
+        assertEquals("Chinese", reports.get(0).getLanguage()); // expected first
+        assertTrue(reports.get(0).getSpeakers() > reports.get(4).getSpeakers());
+    }
 
 }
