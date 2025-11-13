@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -1105,7 +1104,1693 @@ public class CityReportServiceTest {
         cities = cityReportService.getAllCapitalCitiesByPopulation();
         assertNotNull(cities);
         assertTrue(cities.isEmpty());
+
+        // USE CASE: Top N Capital Cities by Population
+        cities = cityReportService.getTopCapitalCitiesByPopulation(5);
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+    /**
+     * USE CASE: Top N Capital Cities by Population
+     */
+    @Test
+    void testGetTopCapitalCitiesByPopulation_ReturnsExpectedCities() throws SQLException {
+        // Arrange
+        when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1, 2);
+        when(mockResultSet.getString("CityName")).thenReturn("Tokyo", "London");
+        when(mockResultSet.getString("District")).thenReturn("Tokyo-to", "England");
+        when(mockResultSet.getString("CountryCode")).thenReturn("JPN", "UK");
+        when(mockResultSet.getInt("Population")).thenReturn(37400000, 8900000);
+
+        // Act
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(2);
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals("Tokyo", result.get(0).getName());
+        assertEquals("London", result.get(1).getName());
+        verify(mockPreparedStatement).setInt(1, 2);
+    }
+
+    @Test
+    void testGetTopCapitalCitiesByPopulation_EmptyResultSet() throws SQLException {
+        // Arrange
+        when(mockResultSet.next()).thenReturn(false);
+
+        // Act
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(3);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetTopCapitalCitiesByPopulation_InvalidN() {
+        // Act
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(0);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetTopCapitalCitiesByPopulation_SQLExceptionHandledGracefully() throws SQLException {
+        // Arrange
+        when(mockConnection.prepareStatement(any(String.class))).thenThrow(new SQLException("Database error"));
+
+        // Act
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(5);
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testPrintTopCapitalCitiesByPopulation_ValidList() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("Tokyo");
+        city1.setPopulation(37400068);
+        city1.setCountryCode("JPN");
+
+        City city2 = new City();
+        city2.setName("London");
+        city2.setPopulation(8900000);
+        city2.setCountryCode("UK");
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCapitalCitiesByPopulation(2);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(2);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 2 Capital Cities in the World by Population"));
+        assertTrue(output.contains("Tokyo"));
+        assertTrue(output.contains("London"));
+    }
+
+    @Test
+    public void testPrintTopCapitalCitiesByPopulation_EmptyList() {
+        // Arrange
+        doReturn(List.of()).when(spyService).getTopCapitalCitiesByPopulation(3);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(3);
+
+        // Assert
+        String output = outContent.toString();
+        assertFalse(output.contains("ERROR"));
+    }
+
+    @Test
+    public void testPrintTopCapitalCitiesByPopulation_InvalidN() {
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(0);
+
+        // Assert
+        String output = outContent.toString();
+        assertFalse(output.contains("ERROR"));
     }
 
 
+    /**
+     * Unit test for USE CASE 20: getTopCapitalCitiesByPopulation
+     * Tests with single capital city result
+     */
+    @Test
+    void testGetTopCapitalCitiesByPopulation_SingleResult() throws SQLException {
+        // Prepare test data
+        int n = 1;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet behavior - simulate 1 capital city
+        when(mockRs.next())
+                .thenReturn(true)
+                .thenReturn(false);
+
+        // Mock data for capital city
+        when(mockRs.getInt("ID")).thenReturn(1);
+        when(mockRs.getString("CityName")).thenReturn("Tokyo");
+        when(mockRs.getString("District")).thenReturn("Tokyo-to");
+        when(mockRs.getString("CountryCode")).thenReturn("JPN");
+        when(mockRs.getInt("Population")).thenReturn(37400000);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(n);
+
+        // Verify the results
+        assertNotNull(result, "Result should not be null");
+        assertEquals(1, result.size(), "Should return exactly 1 city");
+
+        // Verify city details
+        City city = result.get(0);
+        assertEquals(1, city.getId(), "City ID should be 1");
+        assertEquals("Tokyo", city.getName(), "City name should be Tokyo");
+        assertEquals("Tokyo-to", city.getDistrict(), "City district should be Tokyo-to");
+        assertEquals("JPN", city.getCountryCode(), "City country code should be JPN");
+        assertEquals(37400000, city.getPopulation(), "City population should be 37400000");
+
+        // Verify PreparedStatement parameters
+        verify(mockPstmt).setInt(1, n);
+        verify(mockPstmt).executeQuery();
+    }
+
+    /**
+     * Unit test for USE CASE 20: getTopCapitalCitiesByPopulation
+     * Tests with large N value
+     */
+    @Test
+    void testGetTopCapitalCitiesByPopulation_LargeN() throws SQLException {
+        // Prepare test data
+        int n = 1000;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet behavior - simulate only 3 capital cities (less than requested)
+        when(mockRs.next())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+
+        when(mockRs.getInt("ID")).thenReturn(1, 2, 3);
+        when(mockRs.getString("CityName")).thenReturn("Tokyo", "Delhi", "Beijing");
+        when(mockRs.getString("District")).thenReturn("Tokyo-to", "Delhi", "Peking");
+        when(mockRs.getString("CountryCode")).thenReturn("JPN", "IND", "CHN");
+        when(mockRs.getInt("Population")).thenReturn(37400000, 28514000, 21540000);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(n);
+
+        // Verify the results - should return only available cities, not N
+        assertNotNull(result, "Result should not be null");
+        assertEquals(3, result.size(), "Should return exactly 3 cities (available capitals)");
+
+        // Verify PreparedStatement parameters
+        verify(mockPstmt).setInt(1, n);
+        verify(mockPstmt).executeQuery();
+    }
+
+    /**
+     * Unit test for USE CASE 20: getTopCapitalCitiesByPopulation
+     * Tests with negative N value
+     */
+    @Test
+    void testGetTopCapitalCitiesByPopulation_NegativeN() {
+        // Execute with negative n
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(-10);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for negative n");
+    }
+
+    /**
+     * Unit test for USE CASE 20: getTopCapitalCitiesByPopulation
+     * Tests verifying population descending order
+     */
+    @Test
+    void testGetTopCapitalCitiesByPopulation_VerifyPopulationOrder() throws SQLException {
+        // Prepare test data
+        int n = 5;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet with populations in descending order
+        when(mockRs.next())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+
+        when(mockRs.getInt("ID")).thenReturn(1, 2, 3, 4, 5);
+        when(mockRs.getString("CityName")).thenReturn("Tokyo", "Delhi", "Beijing", "Moscow", "London");
+        when(mockRs.getString("District")).thenReturn("Tokyo-to", "Delhi", "Peking", "Moscow", "England");
+        when(mockRs.getString("CountryCode")).thenReturn("JPN", "IND", "CHN", "RUS", "GBR");
+        when(mockRs.getInt("Population")).thenReturn(37400000, 28514000, 21540000, 12506000, 8900000);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(n);
+
+        // Verify results are in descending population order
+        assertNotNull(result, "Result should not be null");
+        assertEquals(5, result.size(), "Should return exactly 5 cities");
+
+        // Verify population descending order
+        for (int i = 0; i < result.size() - 1; i++) {
+            assertTrue(result.get(i).getPopulation() >= result.get(i + 1).getPopulation(),
+                    "Capital cities should be ordered by population in descending order");
+        }
+
+        // Verify first and last cities
+        assertEquals("Tokyo", result.get(0).getName(), "First city should be Tokyo");
+        assertEquals("London", result.get(4).getName(), "Last city should be London");
+    }
+
+    /**
+     * Unit test for USE CASE 20: getTopCapitalCitiesByPopulation
+     * Tests with SQLException during query execution
+     */
+    @Test
+    void testGetTopCapitalCitiesByPopulation_SQLExceptionOnExecute() throws SQLException {
+        // Mock PreparedStatement to throw SQLException on executeQuery
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenThrow(new SQLException("Query execution failed"));
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(5);
+
+        // Verify empty list is returned on exception
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty when SQLException occurs during execution");
+    }
+
+    /**
+     * Unit test for USE CASE 20: getTopCapitalCitiesByPopulation
+     * Tests that all required fields are populated correctly
+     */
+    @Test
+    void testGetTopCapitalCitiesByPopulation_AllFieldsPopulated() throws SQLException {
+        // Prepare test data
+        int n = 2;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet behavior
+        when(mockRs.next())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+
+        when(mockRs.getInt("ID")).thenReturn(100, 200);
+        when(mockRs.getString("CityName")).thenReturn("Paris", "Rome");
+        when(mockRs.getString("District")).thenReturn("Île-de-France", "Lazio");
+        when(mockRs.getString("CountryCode")).thenReturn("FRA", "ITA");
+        when(mockRs.getInt("Population")).thenReturn(2138551, 2643581);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(n);
+
+        // Verify all fields are populated for each city
+        assertNotNull(result, "Result should not be null");
+        assertEquals(2, result.size(), "Should return exactly 2 cities");
+
+        for (City city : result) {
+            assertNotNull(city.getId(), "City ID should not be null");
+            assertNotNull(city.getName(), "City name should not be null");
+            assertNotNull(city.getDistrict(), "City district should not be null");
+            assertNotNull(city.getCountryCode(), "City country code should not be null");
+            assertTrue(city.getPopulation() > 0, "City population should be greater than 0");
+        }
+    }
+
+    /**
+     * Unit test for USE CASE 20: getTopCapitalCitiesByPopulation
+     * Tests with maximum integer value for N
+     */
+    @Test
+    void testGetTopCapitalCitiesByPopulation_MaxIntValue() throws SQLException {
+        // Prepare test data
+        int n = Integer.MAX_VALUE;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet to return one capital
+        when(mockRs.next()).thenReturn(true, false);
+        when(mockRs.getInt("ID")).thenReturn(1);
+        when(mockRs.getString("CityName")).thenReturn("Tokyo");
+        when(mockRs.getString("District")).thenReturn("Tokyo-to");
+        when(mockRs.getString("CountryCode")).thenReturn("JPN");
+        when(mockRs.getInt("Population")).thenReturn(37400000);
+
+        // Execute the method - should not throw exception
+        List<City> result = cityReportService.getTopCapitalCitiesByPopulation(n);
+
+        // Verify result
+        assertNotNull(result, "Result should not be null");
+        assertEquals(1, result.size(), "Should return 1 city");
+
+        // Verify PreparedStatement was called with MAX_VALUE
+        verify(mockPstmt).setInt(1, Integer.MAX_VALUE);
+    }
+
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests printing with null list returned from getTopCapitalCitiesByPopulation
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_NullList() {
+        // Arrange
+        doReturn(null).when(spyService).getTopCapitalCitiesByPopulation(5);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: No capital city data found."));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByPopulation(5);
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests printing with empty list
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_EmptyListDetailed() {
+        // Arrange
+        doReturn(List.of()).when(spyService).getTopCapitalCitiesByPopulation(10);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(10);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: No capital city data found."));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByPopulation(10);
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests error handling with zero N parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_ZeroN() {
+        // Act
+        cityReportService.printTopCapitalCitiesByPopulation(0);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: N parameter must be greater than 0."));
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests error handling with negative N parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_NegativeN() {
+        // Act
+        cityReportService.printTopCapitalCitiesByPopulation(-10);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: N parameter must be greater than 0."));
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests printing with single capital city
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_SingleCity() {
+        // Arrange
+        City city = new City();
+        city.setName("Tokyo");
+        city.setPopulation(37400068);
+        city.setCountryCode("JPN");
+        city.setDistrict("Tokyo-to");
+
+        doReturn(List.of(city)).when(spyService).getTopCapitalCitiesByPopulation(1);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(1);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 1 Capital Cities in the World by Population"));
+        assertTrue(output.contains("Total capitals found: 1"));
+        assertTrue(output.contains("Tokyo"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByPopulation(1);
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests printing with multiple capital cities and verifies all are printed
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_MultipleCities() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("Tokyo");
+        city1.setPopulation(37400068);
+        city1.setCountryCode("JPN");
+
+        City city2 = new City();
+        city2.setName("Delhi");
+        city2.setPopulation(28514000);
+        city2.setCountryCode("IND");
+
+        City city3 = new City();
+        city3.setName("Beijing");
+        city3.setPopulation(21540000);
+        city3.setCountryCode("CHN");
+
+        doReturn(List.of(city1, city2, city3)).when(spyService).getTopCapitalCitiesByPopulation(3);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(3);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 3 Capital Cities in the World by Population"));
+        assertTrue(output.contains("Total capitals found: 3"));
+        assertTrue(output.contains("=".repeat(100)));
+        assertTrue(output.contains("Tokyo"));
+        assertTrue(output.contains("Delhi"));
+        assertTrue(output.contains("Beijing"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByPopulation(3);
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests that method does not throw exception
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_DoesNotThrowException() {
+        // Arrange
+        doReturn(List.of()).when(spyService).getTopCapitalCitiesByPopulation(5);
+
+        // Act & Assert
+        assertDoesNotThrow(() -> spyService.printTopCapitalCitiesByPopulation(5));
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests with large N value
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_LargeN() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("Tokyo");
+        city1.setPopulation(37400068);
+
+        City city2 = new City();
+        city2.setName("Delhi");
+        city2.setPopulation(28514000);
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCapitalCitiesByPopulation(1000);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(1000);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 1000 Capital Cities in the World by Population"));
+        assertTrue(output.contains("Total capitals found: 2"));
+        assertTrue(output.contains("Tokyo"));
+        assertTrue(output.contains("Delhi"));
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests correct format of report output
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_ReportFormat() {
+        // Arrange
+        City city = new City();
+        city.setName("London");
+        city.setPopulation(8900000);
+        city.setCountryCode("GBR");
+
+        doReturn(List.of(city)).when(spyService).getTopCapitalCitiesByPopulation(5);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(5);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 5 Capital Cities in the World by Population"));
+        assertTrue(output.contains("Total capitals found: 1"));
+        assertTrue(output.contains("=".repeat(100)));
+        assertTrue(output.contains("London"));
+
+        // Verify method was called exactly once
+        verify(spyService, times(1)).getTopCapitalCitiesByPopulation(5);
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests that validation is performed before calling getTopCapitalCitiesByPopulation
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_ValidationBeforeQuery() {
+        // Act - with invalid N
+        cityReportService.printTopCapitalCitiesByPopulation(-1);
+
+        // Assert - error message printed
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: N parameter must be greater than 0."));
+
+        // Verify the underlying method was never called because validation failed early
+        verify(spyService, never()).getTopCapitalCitiesByPopulation(-1);
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests with cities containing special characters
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_SpecialCharacters() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("São Paulo");
+        city1.setPopulation(12000000);
+        city1.setCountryCode("BRA");
+
+        City city2 = new City();
+        city2.setName("México");
+        city2.setPopulation(9000000);
+        city2.setCountryCode("MEX");
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCapitalCitiesByPopulation(2);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(2);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("São Paulo"));
+        assertTrue(output.contains("México"));
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests output contains separator line
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_ContainsSeparator() {
+        // Arrange
+        City city = new City();
+        city.setName("Paris");
+        city.setPopulation(2138551);
+        city.setCountryCode("FRA");
+
+        doReturn(List.of(city)).when(spyService).getTopCapitalCitiesByPopulation(1);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(1);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("=".repeat(100)), "Output should contain separator line");
+    }
+
+    /**
+     * Unit test for USE CASE 20: printTopCapitalCitiesByPopulation
+     * Tests that all cities in the list are printed
+     */
+    @Test
+    void testPrintTopCapitalCitiesByPopulation_AllCitiesPrinted() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("City1");
+        city1.setPopulation(10000000);
+
+        City city2 = new City();
+        city2.setName("City2");
+        city2.setPopulation(9000000);
+
+        City city3 = new City();
+        city3.setName("City3");
+        city3.setPopulation(8000000);
+
+        City city4 = new City();
+        city4.setName("City4");
+        city4.setPopulation(7000000);
+
+        City city5 = new City();
+        city5.setName("City5");
+        city5.setPopulation(6000000);
+
+        doReturn(List.of(city1, city2, city3, city4, city5)).when(spyService).getTopCapitalCitiesByPopulation(5);
+
+        // Act
+        spyService.printTopCapitalCitiesByPopulation(5);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("City1"));
+        assertTrue(output.contains("City2"));
+        assertTrue(output.contains("City3"));
+        assertTrue(output.contains("City4"));
+        assertTrue(output.contains("City5"));
+        assertTrue(output.contains("Total capitals found: 5"));
+    }
+
+
+    
+    /**
+     * Unit test for USE CASE 21: getTopCapitalCitiesByContinent
+     * Tests the method that retrieves top N capital cities in a continent by population
+     */
+    @Test
+    void testGetTopCapitalCitiesByContinent() throws SQLException {
+        // Prepare test data
+        String continent = "Europe";
+        int n = 5;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet behavior - simulate 5 capital cities
+        when(mockRs.next())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+
+        // Mock data for capital cities
+        when(mockRs.getInt("ID"))
+                .thenReturn(1)
+                .thenReturn(2)
+                .thenReturn(3)
+                .thenReturn(4)
+                .thenReturn(5);
+
+        when(mockRs.getString("CityName"))
+                .thenReturn("Moscow")
+                .thenReturn("London")
+                .thenReturn("Berlin")
+                .thenReturn("Madrid")
+                .thenReturn("Rome");
+
+        when(mockRs.getString("District"))
+                .thenReturn("Moscow")
+                .thenReturn("England")
+                .thenReturn("Berliini")
+                .thenReturn("Madrid")
+                .thenReturn("Lazio");
+
+        when(mockRs.getString("CountryCode"))
+                .thenReturn("RUS")
+                .thenReturn("GBR")
+                .thenReturn("DEU")
+                .thenReturn("ESP")
+                .thenReturn("ITA");
+
+        when(mockRs.getInt("Population"))
+                .thenReturn(8389200)
+                .thenReturn(7285000)
+                .thenReturn(3386667)
+                .thenReturn(2879052)
+                .thenReturn(2643581);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByContinent(continent, n);
+
+        // Verify the results
+        assertNotNull(result, "Result should not be null");
+        assertEquals(5, result.size(), "Should return exactly 5 cities");
+
+        // Verify first city details
+        City firstCity = result.get(0);
+        assertEquals(1, firstCity.getId(), "First city ID should be 1");
+        assertEquals("Moscow", firstCity.getName(), "First city name should be Moscow");
+        assertEquals("Moscow", firstCity.getDistrict(), "First city district should be Moscow");
+        assertEquals("RUS", firstCity.getCountryCode(), "First city country code should be RUS");
+        assertEquals(8389200, firstCity.getPopulation(), "First city population should be 8389200");
+
+        // Verify PreparedStatement parameters were set correctly
+        verify(mockPstmt).setString(1, continent);
+        verify(mockPstmt).setInt(2, n);
+        verify(mockPstmt).executeQuery();
+    }
+
+    /**
+     * Unit test for USE CASE 21: getTopCapitalCitiesByContinent with null continent
+     */
+    @Test
+    void testGetTopCapitalCitiesByContinent_NullContinent() {
+        // Execute with null continent
+        List<City> result = cityReportService.getTopCapitalCitiesByContinent(null, 5);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for null continent");
+    }
+
+    /**
+     * Unit test for USE CASE 21: getTopCapitalCitiesByContinent with empty continent
+     */
+    @Test
+    void testGetTopCapitalCitiesByContinent_EmptyContinent() {
+        // Execute with empty continent
+        List<City> result = cityReportService.getTopCapitalCitiesByContinent("", 5);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for empty continent");
+    }
+
+    /**
+     * Unit test for USE CASE 21: getTopCapitalCitiesByContinent with zero N
+     */
+    @Test
+    void testGetTopCapitalCitiesByContinent_ZeroN() {
+        // Execute with n = 0
+        List<City> result = cityReportService.getTopCapitalCitiesByContinent("Europe", 0);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for n = 0");
+    }
+
+    /**
+     * Unit test for USE CASE 21: getTopCapitalCitiesByContinent with negative N
+     */
+    @Test
+    void testGetTopCapitalCitiesByContinent_NegativeN() {
+        // Execute with negative n
+        List<City> result = cityReportService.getTopCapitalCitiesByContinent("Europe", -5);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for negative n");
+    }
+
+    /**
+     * Unit test for USE CASE 21: getTopCapitalCitiesByContinent with SQLException
+     */
+    @Test
+    void testGetTopCapitalCitiesByContinent_SQLException() throws SQLException {
+        // Mock PreparedStatement to throw SQLException
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByContinent("Europe", 5);
+
+        // Verify empty list is returned on exception
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty when SQLException occurs");
+    }
+
+    /**
+     * Unit test for USE CASE 21: getTopCapitalCitiesByContinent with no results
+     */
+    @Test
+    void testGetTopCapitalCitiesByContinent_NoResults() throws SQLException {
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet to return no rows
+        when(mockRs.next()).thenReturn(false);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByContinent("InvalidContinent", 5);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty when no data found");
+    }
+    
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests successful printing with valid data
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_ValidList() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("Moscow");
+        city1.setPopulation(8389200);
+        city1.setCountryCode("RUS");
+        city1.setDistrict("Moscow");
+
+        City city2 = new City();
+        city2.setName("London");
+        city2.setPopulation(7285000);
+        city2.setCountryCode("GBR");
+        city2.setDistrict("England");
+
+        City city3 = new City();
+        city3.setName("Berlin");
+        city3.setPopulation(3386667);
+        city3.setCountryCode("DEU");
+        city3.setDistrict("Berliini");
+
+        doReturn(List.of(city1, city2, city3)).when(spyService).getTopCapitalCitiesByContinent("Europe", 3);
+
+        // Act
+        spyService.printTopCapitalCitiesByContinent("Europe", 3);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 3 Capital Cities in Europe by Population"));
+        assertTrue(output.contains("Total capitals found: 3"));
+        assertTrue(output.contains("=".repeat(100)));
+        assertTrue(output.contains("Moscow"));
+        assertTrue(output.contains("London"));
+        assertTrue(output.contains("Berlin"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByContinent("Europe", 3);
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests printing with empty list
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_EmptyList() {
+        // Arrange
+        doReturn(List.of()).when(spyService).getTopCapitalCitiesByContinent("Antarctica", 5);
+
+        // Act
+        spyService.printTopCapitalCitiesByContinent("Antarctica", 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: No capital city data found for continent: Antarctica"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByContinent("Antarctica", 5);
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests printing with null list
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_NullList() {
+        // Arrange
+        doReturn(null).when(spyService).getTopCapitalCitiesByContinent("InvalidContinent", 5);
+
+        // Act
+        spyService.printTopCapitalCitiesByContinent("InvalidContinent", 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: No capital city data found for continent: InvalidContinent"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByContinent("InvalidContinent", 5);
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests error handling with null continent parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_NullContinent() {
+        // Act
+        cityReportService.printTopCapitalCitiesByContinent(null, 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: Continent parameter cannot be null or empty."));
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests error handling with empty continent parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_EmptyContinent() {
+        // Act
+        cityReportService.printTopCapitalCitiesByContinent("", 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: Continent parameter cannot be null or empty."));
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests error handling with whitespace-only continent parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_WhitespaceContinent() {
+        // Act
+        cityReportService.printTopCapitalCitiesByContinent("   ", 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: Continent parameter cannot be null or empty."));
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests error handling with zero N parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_ZeroN() {
+        // Act
+        cityReportService.printTopCapitalCitiesByContinent("Europe", 0);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: N parameter must be greater than 0."));
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests error handling with negative N parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_NegativeN() {
+        // Act
+        cityReportService.printTopCapitalCitiesByContinent("Europe", -5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: N parameter must be greater than 0."));
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests printing with single capital city
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_SingleCity() {
+        // Arrange
+        City city = new City();
+        city.setName("Paris");
+        city.setPopulation(2138551);
+        city.setCountryCode("FRA");
+        city.setDistrict("Île-de-France");
+
+        doReturn(List.of(city)).when(spyService).getTopCapitalCitiesByContinent("Europe", 1);
+
+        // Act
+        spyService.printTopCapitalCitiesByContinent("Europe", 1);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 1 Capital Cities in Europe by Population"));
+        assertTrue(output.contains("Total capitals found: 1"));
+        assertTrue(output.contains("Paris"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByContinent("Europe", 1);
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests that method does not throw exception
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_DoesNotThrowException() {
+        // Arrange
+        doReturn(List.of()).when(spyService).getTopCapitalCitiesByContinent("Asia", 10);
+
+        // Act & Assert
+        assertDoesNotThrow(() -> spyService.printTopCapitalCitiesByContinent("Asia", 10));
+    }
+
+    /**
+     * Unit test for USE CASE 21: printTopCapitalCitiesByContinent
+     * Tests printing with various continent names
+     */
+    @Test
+    void testPrintTopCapitalCitiesByContinent_DifferentContinents() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("Tokyo");
+        city1.setPopulation(13960000);
+        
+        City city2 = new City();
+        city2.setName("Seoul");
+        city2.setPopulation(9981619);
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCapitalCitiesByContinent("Asia", 2);
+
+        // Act
+        spyService.printTopCapitalCitiesByContinent("Asia", 2);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 2 Capital Cities in Asia by Population"));
+        assertTrue(output.contains("Tokyo"));
+        assertTrue(output.contains("Seoul"));
+    }
+    
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion
+     * Tests the method that retrieves top N capital cities in a region by population
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion() throws SQLException {
+        // Prepare test data
+        String region = "Western Europe";
+        int n = 5;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet behavior - simulate 5 capital cities
+        when(mockRs.next())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+
+        // Mock data for capital cities
+        when(mockRs.getInt("ID"))
+                .thenReturn(1)
+                .thenReturn(2)
+                .thenReturn(3)
+                .thenReturn(4)
+                .thenReturn(5);
+
+        when(mockRs.getString("CityName"))
+                .thenReturn("Berlin")
+                .thenReturn("Madrid")
+                .thenReturn("Rome")
+                .thenReturn("Paris")
+                .thenReturn("Amsterdam");
+
+        when(mockRs.getString("District"))
+                .thenReturn("Berliini")
+                .thenReturn("Madrid")
+                .thenReturn("Lazio")
+                .thenReturn("Île-de-France")
+                .thenReturn("Noord-Holland");
+
+        when(mockRs.getString("CountryCode"))
+                .thenReturn("DEU")
+                .thenReturn("ESP")
+                .thenReturn("ITA")
+                .thenReturn("FRA")
+                .thenReturn("NLD");
+
+        when(mockRs.getInt("Population"))
+                .thenReturn(3386667)
+                .thenReturn(2879052)
+                .thenReturn(2643581)
+                .thenReturn(2138551)
+                .thenReturn(731200);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion(region, n);
+
+        // Verify the results
+        assertNotNull(result, "Result should not be null");
+        assertEquals(5, result.size(), "Should return exactly 5 cities");
+
+        // Verify first city details
+        City firstCity = result.get(0);
+        assertEquals(1, firstCity.getId(), "First city ID should be 1");
+        assertEquals("Berlin", firstCity.getName(), "First city name should be Berlin");
+        assertEquals("Berliini", firstCity.getDistrict(), "First city district should be Berliini");
+        assertEquals("DEU", firstCity.getCountryCode(), "First city country code should be DEU");
+        assertEquals(3386667, firstCity.getPopulation(), "First city population should be 3386667");
+
+        // Verify PreparedStatement parameters were set correctly
+        verify(mockPstmt).setString(1, region);
+        verify(mockPstmt).setInt(2, n);
+        verify(mockPstmt).executeQuery();
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion with null region
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_NullRegion() {
+        // Execute with null region
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion(null, 5);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for null region");
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion with empty region
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_EmptyRegion() {
+        // Execute with empty region
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion("", 5);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for empty region");
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion with whitespace region
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_WhitespaceRegion() {
+        // Execute with whitespace-only region
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion("   ", 5);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for whitespace region");
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion with zero N
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_ZeroN() {
+        // Execute with n = 0
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion("Western Europe", 0);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for n = 0");
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion with negative N
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_NegativeN() {
+        // Execute with negative n
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion("Western Europe", -5);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty for negative n");
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion with SQLException
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_SQLException() throws SQLException {
+        // Mock PreparedStatement to throw SQLException
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion("Western Europe", 5);
+
+        // Verify empty list is returned on exception
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty when SQLException occurs");
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion with no results
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_NoResults() throws SQLException {
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet to return no rows
+        when(mockRs.next()).thenReturn(false);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion("InvalidRegion", 5);
+
+        // Verify empty list is returned
+        assertNotNull(result, "Result should not be null");
+        assertTrue(result.isEmpty(), "Result should be empty when no data found");
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion with single result
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_SingleResult() throws SQLException {
+        // Prepare test data
+        String region = "Caribbean";
+        int n = 1;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet behavior - simulate 1 capital city
+        when(mockRs.next())
+                .thenReturn(true)
+                .thenReturn(false);
+
+        // Mock data for capital city
+        when(mockRs.getInt("ID")).thenReturn(100);
+        when(mockRs.getString("CityName")).thenReturn("Havana");
+        when(mockRs.getString("District")).thenReturn("La Habana");
+        when(mockRs.getString("CountryCode")).thenReturn("CUB");
+        when(mockRs.getInt("Population")).thenReturn(2201610);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion(region, n);
+
+        // Verify the results
+        assertNotNull(result, "Result should not be null");
+        assertEquals(1, result.size(), "Should return exactly 1 city");
+
+        // Verify city details
+        City city = result.get(0);
+        assertEquals(100, city.getId(), "City ID should be 100");
+        assertEquals("Havana", city.getName(), "City name should be Havana");
+        assertEquals("La Habana", city.getDistrict(), "City district should be La Habana");
+        assertEquals("CUB", city.getCountryCode(), "City country code should be CUB");
+        assertEquals(2201610, city.getPopulation(), "City population should be 2201610");
+
+        // Verify PreparedStatement parameters
+        verify(mockPstmt).setString(1, region);
+        verify(mockPstmt).setInt(2, n);
+        verify(mockPstmt).executeQuery();
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion with large N value
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_LargeN() throws SQLException {
+        // Prepare test data
+        String region = "Southern Europe";
+        int n = 100;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet behavior - simulate 2 capital cities (less than requested)
+        when(mockRs.next())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+
+        when(mockRs.getInt("ID")).thenReturn(1, 2);
+        when(mockRs.getString("CityName")).thenReturn("Rome", "Athens");
+        when(mockRs.getString("District")).thenReturn("Lazio", "Attika");
+        when(mockRs.getString("CountryCode")).thenReturn("ITA", "GRC");
+        when(mockRs.getInt("Population")).thenReturn(2643581, 772072);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion(region, n);
+
+        // Verify the results - should return only available cities, not N
+        assertNotNull(result, "Result should not be null");
+        assertEquals(2, result.size(), "Should return exactly 2 cities (available in region)");
+
+        // Verify PreparedStatement parameters
+        verify(mockPstmt).setString(1, region);
+        verify(mockPstmt).setInt(2, n);
+        verify(mockPstmt).executeQuery();
+    }
+
+    /**
+     * Unit test for USE CASE 22: getTopCapitalCitiesByRegion verifying population order
+     */
+    @Test
+    void testGetTopCapitalCitiesByRegion_VerifyPopulationOrder() throws SQLException {
+        // Prepare test data
+        String region = "Eastern Europe";
+        int n = 3;
+
+        // Mock the PreparedStatement and ResultSet
+        PreparedStatement mockPstmt = mock(PreparedStatement.class);
+        ResultSet mockRs = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPstmt);
+        when(mockPstmt.executeQuery()).thenReturn(mockRs);
+
+        // Mock ResultSet with populations in descending order
+        when(mockRs.next())
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(true)
+                .thenReturn(false);
+
+        when(mockRs.getInt("ID")).thenReturn(1, 2, 3);
+        when(mockRs.getString("CityName")).thenReturn("Moscow", "Kiev", "Minsk");
+        when(mockRs.getString("District")).thenReturn("Moscow", "Kyiv", "Minsk");
+        when(mockRs.getString("CountryCode")).thenReturn("RUS", "UKR", "BLR");
+        when(mockRs.getInt("Population")).thenReturn(8389200, 2797553, 1674000);
+
+        // Execute the method
+        List<City> result = cityReportService.getTopCapitalCitiesByRegion(region, n);
+
+        // Verify results are in descending population order
+        assertNotNull(result, "Result should not be null");
+        assertEquals(3, result.size(), "Should return exactly 3 cities");
+
+        // Verify population descending order
+        for (int i = 0; i < result.size() - 1; i++) {
+            assertTrue(result.get(i).getPopulation() >= result.get(i + 1).getPopulation(),
+                    "Cities should be ordered by population in descending order");
+        }
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests successful printing with valid data
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_ValidList() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("Berlin");
+        city1.setPopulation(3386667);
+        city1.setCountryCode("DEU");
+        city1.setDistrict("Berliini");
+
+        City city2 = new City();
+        city2.setName("Madrid");
+        city2.setPopulation(2879052);
+        city2.setCountryCode("ESP");
+        city2.setDistrict("Madrid");
+
+        City city3 = new City();
+        city3.setName("Rome");
+        city3.setPopulation(2643581);
+        city3.setCountryCode("ITA");
+        city3.setDistrict("Lazio");
+
+        doReturn(List.of(city1, city2, city3)).when(spyService).getTopCapitalCitiesByRegion("Western Europe", 3);
+
+        // Act
+        spyService.printTopCapitalCitiesByRegion("Western Europe", 3);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 3 Capital Cities in Western Europe by Population"));
+        assertTrue(output.contains("Total capitals found: 3"));
+        assertTrue(output.contains("=".repeat(100)));
+        assertTrue(output.contains("Berlin"));
+        assertTrue(output.contains("Madrid"));
+        assertTrue(output.contains("Rome"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByRegion("Western Europe", 3);
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests printing with empty list
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_EmptyList() {
+        // Arrange
+        doReturn(List.of()).when(spyService).getTopCapitalCitiesByRegion("Polynesia", 5);
+
+        // Act
+        spyService.printTopCapitalCitiesByRegion("Polynesia", 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: No capital city data found for region: Polynesia"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByRegion("Polynesia", 5);
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests printing with null list
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_NullList() {
+        // Arrange
+        doReturn(null).when(spyService).getTopCapitalCitiesByRegion("InvalidRegion", 5);
+
+        // Act
+        spyService.printTopCapitalCitiesByRegion("InvalidRegion", 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: No capital city data found for region: InvalidRegion"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByRegion("InvalidRegion", 5);
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests error handling with null region parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_NullRegion() {
+        // Act
+        cityReportService.printTopCapitalCitiesByRegion(null, 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: Region parameter cannot be null or empty."));
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests error handling with empty region parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_EmptyRegion() {
+        // Act
+        cityReportService.printTopCapitalCitiesByRegion("", 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: Region parameter cannot be null or empty."));
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests error handling with whitespace-only region parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_WhitespaceRegion() {
+        // Act
+        cityReportService.printTopCapitalCitiesByRegion("   ", 5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: Region parameter cannot be null or empty."));
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests error handling with zero N parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_ZeroN() {
+        // Act
+        cityReportService.printTopCapitalCitiesByRegion("Western Europe", 0);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: N parameter must be greater than 0."));
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests error handling with negative N parameter
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_NegativeN() {
+        // Act
+        cityReportService.printTopCapitalCitiesByRegion("Western Europe", -5);
+
+        // Assert
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: N parameter must be greater than 0."));
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests printing with single capital city
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_SingleCity() {
+        // Arrange
+        City city = new City();
+        city.setName("Havana");
+        city.setPopulation(2201610);
+        city.setCountryCode("CUB");
+        city.setDistrict("La Habana");
+
+        doReturn(List.of(city)).when(spyService).getTopCapitalCitiesByRegion("Caribbean", 1);
+
+        // Act
+        spyService.printTopCapitalCitiesByRegion("Caribbean", 1);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 1 Capital Cities in Caribbean by Population"));
+        assertTrue(output.contains("Total capitals found: 1"));
+        assertTrue(output.contains("Havana"));
+
+        verify(spyService, times(1)).getTopCapitalCitiesByRegion("Caribbean", 1);
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests that method does not throw exception
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_DoesNotThrowException() {
+        // Arrange
+        doReturn(List.of()).when(spyService).getTopCapitalCitiesByRegion("Eastern Asia", 10);
+
+        // Act & Assert
+        assertDoesNotThrow(() -> spyService.printTopCapitalCitiesByRegion("Eastern Asia", 10));
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests printing with various region names
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_DifferentRegions() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("Tokyo");
+        city1.setPopulation(13960000);
+        city1.setCountryCode("JPN");
+        
+        City city2 = new City();
+        city2.setName("Seoul");
+        city2.setPopulation(9981619);
+        city2.setCountryCode("KOR");
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCapitalCitiesByRegion("Eastern Asia", 2);
+
+        // Act
+        spyService.printTopCapitalCitiesByRegion("Eastern Asia", 2);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 2 Capital Cities in Eastern Asia by Population"));
+        assertTrue(output.contains("Tokyo"));
+        assertTrue(output.contains("Seoul"));
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests printing with large N value
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_LargeN() {
+        // Arrange
+        City city1 = new City();
+        city1.setName("Cairo");
+        city1.setPopulation(6789479);
+
+        City city2 = new City();
+        city2.setName("Nairobi");
+        city2.setPopulation(2750547);
+
+        doReturn(List.of(city1, city2)).when(spyService).getTopCapitalCitiesByRegion("Eastern Africa", 100);
+
+        // Act
+        spyService.printTopCapitalCitiesByRegion("Eastern Africa", 100);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 100 Capital Cities in Eastern Africa by Population"));
+        assertTrue(output.contains("Total capitals found: 2"));
+        assertTrue(output.contains("Cairo"));
+        assertTrue(output.contains("Nairobi"));
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests printing with region containing special characters
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_SpecialCharactersInRegion() {
+        // Arrange
+        City city = new City();
+        city.setName("São Paulo");
+        city.setPopulation(10021295);
+        city.setCountryCode("BRA");
+
+        doReturn(List.of(city)).when(spyService).getTopCapitalCitiesByRegion("South America", 1);
+
+        // Act
+        spyService.printTopCapitalCitiesByRegion("South America", 1);
+
+        // Assert
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: Top 1 Capital Cities in South America by Population"));
+        assertTrue(output.contains("São Paulo"));
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests validation is performed before calling getTopCapitalCitiesByRegion
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_ValidationBeforeQuery() {
+        // Act - with null region
+        cityReportService.printTopCapitalCitiesByRegion(null, 5);
+
+        // Assert - error message printed, but getTopCapitalCitiesByRegion not called
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: Region parameter cannot be null or empty."));
+
+        // Verify the spy was never called because validation failed early
+        verify(spyService, never()).getTopCapitalCitiesByRegion(null, 5);
+    }
+
+    /**
+     * Unit test for USE CASE 22: printTopCapitalCitiesByRegion
+     * Tests with both parameters invalid
+     */
+    @Test
+    void testPrintTopCapitalCitiesByRegion_BothParametersInvalid() {
+        // Act
+        cityReportService.printTopCapitalCitiesByRegion("", -1);
+
+        // Assert - should catch region error first
+        String errorOutput = errContent.toString();
+        assertTrue(errorOutput.contains("Error: Region parameter cannot be null or empty."));
+    }
 }

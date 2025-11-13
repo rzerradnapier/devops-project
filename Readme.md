@@ -146,6 +146,10 @@ The following are in place:
 | 15 | Produce a Report on Top N Cities in a Country (Country = United States, N=10)                       | ✅   | ![all countries organized by population descending](screenshots/use-case-15.png) |
 | 16 | Produce a Report on Top N Cities in a District (District = California, N=10)                        | ✅   | ![all countries organized by population descending](screenshots/use-case-16.png) |
 | 17 | Produce a Report on All Capital Cities in the World by Population                                   | ✅   | ![all countries organized by population descending](screenshots/use-case-17.png) |
+| 20 | produce a report of the top N most populated capital cities in the world where N is provided        | ✅   | ![all countries organized by population descending](screenshots/use-case-20.png) |
+| 21 | produce a report of the top N most populated capital cities in a continent where N is provided      | ✅   | ![all countries organized by population descending](screenshots/use-case-21.png) |
+| 22 | produce a report of the top N most populated capital cities in a region where N is provided         | ✅   | ![all countries organized by population descending](screenshots/use-case-22.png) |
+
 
 
 
