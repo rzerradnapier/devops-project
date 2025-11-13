@@ -216,7 +216,7 @@ public class App {
 
         System.out.println("\n=== USE CASE 27: Retrieve the Population of a Continent ===");
         // Gets the total population of a Continent.
-        appIns.continentReportService.printPopulationContinentReport();
+        appIns.continentReportService.printPopulationContinentReport("Asia");
 
     }
 

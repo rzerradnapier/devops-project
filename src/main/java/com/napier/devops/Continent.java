@@ -8,85 +8,85 @@ package com.napier.devops;
  * The {@code toString} method is overridden for easy printing of report details.
  */
 public class Continent {
-    private String Continent;
-    private long TotalPopulation;
-    private long CityPopulation;
-    private long NonCityPopulation;
-    private double CityPopulationPercentage;
-    private double NonCityPopulationPercentage;
+    private String continent;
+    private long totalPopulation;
+    private long cityPopulation;
+    private long nonCityPopulation;
+    private double cityPopulationPercentage;
+    private double nonCityPopulationPercentage;
 
 
     /**
      * Gets the name of the continent.
      * @return the continent name
      */
-    public String getContinent() { return Continent;}
+    public String getContinent() { return continent;}
 
     /**
      * Sets the name of the continent.
-     * @param Continent the continent name
+     * @param continent the continent name
      */
-    public void setContinent(String Continent) { this.Continent = Continent;}
+    public void setContinent(String continent) { this.continent = continent;}
 
     /**
      * Gets the total population of the continent.
      * @return the total population
      */
-    public long getTotalPopulation() { return TotalPopulation;}
+    public long getTotalPopulation() { return totalPopulation;}
 
     /**
      * Sets the total population of the continent.
-     * @param TotalPopulation the total population
+     * @param totalPopulation the total population
      */
-    public void setTotalPopulation(long TotalPopulation) { this.TotalPopulation = TotalPopulation; }
+    public void setTotalPopulation(long totalPopulation) { this.totalPopulation = totalPopulation; }
 
     /**
      * Gets the population living in cities within the continent.
      * @return the city population
      */
-    public long getCityPopulation() { return CityPopulation; }
+    public long getCityPopulation() { return cityPopulation; }
 
     /**
      * Sets the population living in cities within the continent.
-     * @param CityPopulation the city population
+     * @param cityPopulation the city population
      */
-    public void setCityPopulation(long CityPopulation) { this.CityPopulation = CityPopulation;}
+    public void setCityPopulation(long cityPopulation) { this.cityPopulation = cityPopulation;}
 
     /**
      * Gets the population NOT living in cities within the continent.
      * @return the non-city population
      */
-    public long getNonCityPopulation() { return NonCityPopulation;}
+    public long getNonCityPopulation() { return nonCityPopulation;}
 
     /**
      * Sets the population NOT living in cities within the continent.
-     * @param NonCityPopulation the non-city population
+     * @param nonCityPopulation the non-city population
      */
-    public void setNonCityPopulation(long NonCityPopulation) { this.NonCityPopulation = NonCityPopulation;}
+    public void setNonCityPopulation(long nonCityPopulation) { this.nonCityPopulation = nonCityPopulation;}
 
     /**
      * Gets the percentage of the population living in cities.
      * @return the city population percentage
      */
-    public double getCityPopulationPercentage() { return CityPopulationPercentage;}
+    public double getCityPopulationPercentage() { return cityPopulationPercentage;}
 
     /**
      * Sets the percentage of the population living in cities.
-     * @param CityPopulationPercentage the city population percentage
+     * @param cityPopulationPercentage the city population percentage
      */
-    public void setCityPopulationPercentage(double CityPopulationPercentage) { this.CityPopulationPercentage = CityPopulationPercentage;}
+    public void setCityPopulationPercentage(double cityPopulationPercentage) { this.cityPopulationPercentage = cityPopulationPercentage;}
 
     /**
      * Gets the percentage of the population NOT living in cities.
      * @return the non-city population percentage
      */
-    public double getNonCityPopulationPercentage() {return NonCityPopulationPercentage;}
+    public double getNonCityPopulationPercentage() {return nonCityPopulationPercentage;}
 
     /**
      * Sets the percentage of the population NOT living in cities.
-     * @param NonCityPopulationPercentage the non-city population percentage
+     * @param nonCityPopulationPercentage the non-city population percentage
      */
-    public void setNonCityPopulationPercentage(double NonCityPopulationPercentage) {this.NonCityPopulationPercentage = NonCityPopulationPercentage;}
+    public void setNonCityPopulationPercentage(double nonCityPopulationPercentage) {this.nonCityPopulationPercentage = nonCityPopulationPercentage;}
 
     /**
      * Sets all the fields of the ContinentPopulation class.
@@ -120,12 +120,12 @@ public class Continent {
     public String toString() {
         return String.format(
                 "| %-15s | %,-24d | %8.2f%% | %,-24d | %8.2f%% | %,-18d |",
-                Continent,
-                NonCityPopulation,
-                NonCityPopulationPercentage,
-                CityPopulation,
-                CityPopulationPercentage,
-                TotalPopulation
+                continent,
+                nonCityPopulation,
+                nonCityPopulationPercentage,
+                cityPopulation,
+                cityPopulationPercentage,
+                totalPopulation
         );
     }
 }
