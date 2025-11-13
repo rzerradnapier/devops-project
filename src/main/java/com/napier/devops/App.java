@@ -144,6 +144,15 @@ public class App {
         System.out.println("\n=== USE CASE 17: Produce a Report on All Capital Cities in the World by Population ===");
         appIns.cityReportService.printAllCapitalCitiesByPopulation();
 
+        System.out.println("\n=== USE CASE 20: produce a report of the top N most populated capital cities in the world where N is provided so that I can identify the most populated capitals globally ===");
+        appIns.cityReportService.printTopCapitalCitiesByPopulation(DEFAULT_N);
+
+        System.out.println("\n=== USE CASE 21: produce a report of the top N most populated capital cities in a continent where N is provided so that I can identify the largest capitals within a continent. ===");
+        appIns.cityReportService.printTopCapitalCitiesByContinent(DEFAULT_CONTINENT, DEFAULT_N);
+
+        System.out.println("\n=== USE CASE 22: produce a report of the top N most populated capital cities in a region where N is provided ===");
+        appIns.cityReportService.printTopCapitalCitiesByRegion(DEFAULT_REGION, DEFAULT_N);
+
         System.out.println("Get country by code USA");
         // Get country by code USA
         Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);
