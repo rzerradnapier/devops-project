@@ -8,62 +8,62 @@ package com.napier.devops;
  * The {@code toString} method is overridden for easy printing of report details.
  */
 public class CountryPopulation {
-    private String CountryName;
-    private long TotalPopulation;
-    private long CityPopulation;
-    private long NonCityPopulation;
-    private String CityPercent;
-    private String NonCityPercentage;
+    private String countryName;
+    private long totalPopulation;
+    private long cityPopulation;
+    private long nonCityPopulation;
+    private String cityPercent;
+    private String nonCityPercentage;
 
 
     // Getters and Setters
 
     public String getCountryName() {
-        return CountryName;
+        return countryName;
     }
 
-    public void setCountryName(String CountryName) {
-        this.CountryName = CountryName;
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
     }
 
     public long getTotalPopulation() {
-        return TotalPopulation;
+        return totalPopulation;
     }
 
-    public void setTotalPopulation(long TotalPopulation) {
-        this.TotalPopulation = TotalPopulation;
+    public void setTotalPopulation(long totalPopulation) {
+        this.totalPopulation = totalPopulation;
     }
 
     public long getCityPopulation() {
-        return CityPopulation;
+        return cityPopulation;
     }
 
-    public void setCityPopulation(long CityPopulation) {
-        this.CityPopulation = CityPopulation;
+    public void setCityPopulation(long cityPopulation) {
+        this.cityPopulation = cityPopulation;
     }
 
     public long getNonCityPopulation() {
-        return NonCityPopulation;
+        return nonCityPopulation;
     }
 
-    public void setNonCityPopulation(long NonCityPopulation) {
-        this.NonCityPopulation = NonCityPopulation;
+    public void setNonCityPopulation(long nonCityPopulation) {
+        this.nonCityPopulation = nonCityPopulation;
     }
 
     public String getCityPercent() {
-        return CityPercent;
+        return cityPercent;
     }
 
     public void setCityPercent(String CityPercent) {
-        this.CityPercent = CityPercent;
+        this.cityPercent = CityPercent;
     }
 
     public String getNonCityPercentage() {
-        return NonCityPercentage;
+        return nonCityPercentage;
     }
 
-    public void setNonCityPercentage(String NonCityPercentage) {
-        this.NonCityPercentage = NonCityPercentage;
+    public void setNonCityPercentage(String nonCityPercentage) {
+        this.nonCityPercentage = nonCityPercentage;
     }
 
     /**
@@ -74,11 +74,11 @@ public class CountryPopulation {
     @Override
     public String toString() {
         return String.format("%-47s %-20s %-20s %-12s %-20s %-11s",
-                CountryName,
-                TotalPopulation,
-                CityPopulation,
-                CityPercent,
-                NonCityPopulation,
-                NonCityPercentage);
+                countryName,
+                totalPopulation,
+                cityPopulation,
+                cityPercent,
+                nonCityPopulation,
+                nonCityPercentage);
     }
 }
