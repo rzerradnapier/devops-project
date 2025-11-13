@@ -1,8 +1,9 @@
 name: A workflow for devops-project App
-on:
-  push:
-    branches:
-      - master
+on: push
+
+permissions:
+  contents: write
+
 jobs:
   UnitTests:
     name: Unit Tests
