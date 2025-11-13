@@ -18,7 +18,7 @@ public class Continent {
 
     /**
      * Gets the name of the continent.
-     * @return the continent name
+     * @return the continent name.
      */
     public String getContinent() { return continent;}
 
