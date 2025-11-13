@@ -59,23 +59,25 @@ public class ContinentReportService {
      */
 
     public void printContinentPopulationReport() {
+        // Calls the method to retrieve the list of Continent objects
         List<Continent> continentList = getContinentPopulationReport();
-
-        if (continentList.isEmpty()) {
-            System.out.println("No continent population data found.");
-            return;
-        }
 
         System.out.println("===============================================================================================================================================================================================");
         System.out.println("|                                                                 USE CASE: 23 Produce a Population Report for Continents                                                                   |");
         System.out.println("===============================================================================================================================================================================================");
-        System.out.printf("| %-15s | %-24s | %-9s | %-24s | %-9s | %-18s |%n",
-                "Continent", "Non-City Population", "% Non-City", "City Population", "% City", "Total Population");
-        System.out.println("-----------------|--------------------------|-----------|--------------------------|-----------|--------------------|");
 
+        if (continentList == null || continentList.isEmpty()) {
+            // error message
+            System.err.println("Error: No continent population data found.");
+            return;
+        }
+
+        // Print the details of the continents
         for (Continent continent : continentList) {
+            // Calls the toString() method
             System.out.println(continent.toString());
         }
+
         System.out.println("===============================================================================================================================================================================================");
     }
 
