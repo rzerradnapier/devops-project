@@ -116,16 +116,16 @@ public class Continent {
      *
      * @return a formatted string.
      */
+
     @Override
     public String toString() {
-        return String.format(
-                "| %-15s | %,-24d | %8.2f%% | %,-24d | %8.2f%% | %,-18d |",
-                continent,
-                nonCityPopulation,
-                nonCityPopulationPercentage,
-                cityPopulation,
-                cityPopulationPercentage,
-                totalPopulation
-        );
+        return "Continent {\t" +
+                "  name='" + continent + "',\t" +
+                "  totalPopulation=" + totalPopulation + ",\t" +
+                "  cityPopulation=" + cityPopulation + ",\t" +
+                "  nonCityPopulation=" + nonCityPopulation + ",\t" +
+                "  cityPopPercentage=" + cityPopulationPercentage + "%,\t" +
+                "  nonCityPopPercentage=" + nonCityPopulationPercentage + "%\t" +
+                '}';
     }
 }
