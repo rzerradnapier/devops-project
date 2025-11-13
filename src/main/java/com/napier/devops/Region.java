@@ -8,7 +8,7 @@ package com.napier.devops;
  */
 
 public class Region {
-    private String NameofRegion;
+    private String nameofRegion;
     private long totalPopulation;
     private long cityPopulation;
     private float cityPopulationPercentage;
@@ -17,10 +17,10 @@ public class Region {
 
     // Constructor, Getters, and Setters
 
-    public String getNameofRegion() { return NameofRegion;}
+    public String getNameofRegion() { return nameofRegion;}
 
 
-    public void setNameofRegion(String regionName) { this.NameofRegion = regionName;}
+    public void setNameofRegion(String regionName) { this.nameofRegion = regionName;}
 
 
     public long gettotalPopulation() { return totalPopulation;}
@@ -63,7 +63,7 @@ public class Region {
 
         return String.format(
                 "| %-25s | %,16d | %,18d | %17.2f%% | %,18d | %17.2f%% |",
-                NameofRegion,
+                nameofRegion,
                 totalPopulation,
                 cityPopulation,
                 cityPopulationPercentage,
