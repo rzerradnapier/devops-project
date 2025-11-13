@@ -17,40 +17,35 @@ public class Region {
 
     // Constructor, Getters, and Setters
 
-    public String getNameofRegion() { return nameofRegion;}
+
+    public String getNameOfRegion() { return nameofRegion;}
+
+    public void setNameOfRegion(String nameofRegion) { this.nameofRegion = nameofRegion;}
 
 
-    public void setNameofRegion(String regionName) { this.nameofRegion = regionName;}
+    public long getTotalPopulation() { return totalPopulation;}
+
+    public void setTotalPopulation(long totalPopulation) { this.totalPopulation = totalPopulation;}
 
 
-    public long gettotalPopulation() { return totalPopulation;}
+    public long getCityPopulation() { return cityPopulation;}
+
+    public void setCityPopulation(long cityPopulation) { this.cityPopulation = cityPopulation;}
 
 
-    public void settotalPopulation(long totalPopulation) { this.totalPopulation = totalPopulation;}
+    public float getCityPopulationPercentage() { return cityPopulationPercentage;}
+
+    public void setCityPopulationPercentage(float cityPopulationPercentage) { this.cityPopulationPercentage = cityPopulationPercentage;}
 
 
-    public long getcityPopulation() { return cityPopulation;}
+    public long getNonCityPopulation() { return nonCityPopulation;}
+
+    public void setNonCityPopulation(long nonCityPopulation) { this.nonCityPopulation = nonCityPopulation;}
 
 
-    public void setcityPopulation(long cityPopulation) { this.cityPopulation = cityPopulation;}
+    public float getNonCityPopulationPercentage() { return nonCityPopulationPercentage;}
 
-
-    public float getcityPopulationPercentage() { return cityPopulationPercentage;}
-
-
-    public void setcityPopulationPercentage(float cityPopulationPercentage) { this.cityPopulationPercentage = cityPopulationPercentage;}
-
-
-    public long getnonCityPopulation() { return nonCityPopulation;}
-
-
-    public void setnonCityPopulation(long nonCityPopulation) { this.nonCityPopulation = nonCityPopulation;}
-
-
-    public float getnonCityPopulationPercentage() { return nonCityPopulationPercentage;}
-
-
-    public void setnonCityPopulationPercentage(float nonCityPopulationPercentage) { this.nonCityPopulationPercentage = nonCityPopulationPercentage;}
+    public void setNonCityPopulationPercentage(float nonCityPopulationPercentage) { this.nonCityPopulationPercentage = nonCityPopulationPercentage;}
 
     /**
      * Returns a formatted string representation of the Region Population details.
