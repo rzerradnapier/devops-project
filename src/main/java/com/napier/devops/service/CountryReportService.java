@@ -1,7 +1,6 @@
 package com.napier.devops.service;
 
 import com.napier.devops.Country;
-import com.napier.devops.CountryPopulation;
 
 import java.sql.*;
 import java.sql.Connection;
