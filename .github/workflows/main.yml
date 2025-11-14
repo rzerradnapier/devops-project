@@ -42,15 +42,6 @@ jobs:
           docker stop countries
           docker rm countries
           docker image rm database
-      - name: Generate JaCoCo Badge
-        uses: cicirello/jacoco-badge-generator@v2
-        with:
-          jacoco-csv-file: target/site/jacoco/jacoco.csv
-      - name: Commit the badge
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-            commit_message: "Update JaCoCo coverage badge"
-            file_pattern: ".github/badges/jacoco.svg"
       - name: CodeCov
         uses: codecov/codecov-action@v5
         with:
