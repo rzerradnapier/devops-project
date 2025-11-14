@@ -64,12 +64,13 @@ public class PopulationReportPojo {
     public String toString() {
         return String.format(
                 """
-                        Population Report for %s:
-                        Total Population: %d
-                        Living in Cities: %d (%.2f%%)
-                        Not Living in Cities: %d (%.2f%%)""",
+                Population Report for %s:
+                Total Population: %,d
+                Living in Cities: %,d (%.2f%%)
+                Not Living in Cities: %,d (%.2f%%)""",
                 name, totalPopulation, populationInCities, percentageInCities,
                 populationNotInCities, percentageNotInCities
         );
     }
+
 }

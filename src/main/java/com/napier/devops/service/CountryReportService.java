@@ -8,9 +8,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Service class for country-related reporting functionality.
@@ -380,18 +382,20 @@ public class CountryReportService {
             return;
         }
 
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+
         System.out.println("========================================");
         System.out.println("       REGION POPULATION REPORT         ");
         System.out.println("========================================");
         System.out.println("Region: " + report.getName());
-        System.out.println("Total Population: " + report.getTotalPopulation());
-        System.out.println("Population in Cities: " + report.getPopulationInCities() +
+        System.out.println("Total Population: " + nf.format(report.getTotalPopulation()));
+        System.out.println("Population in Cities: " + nf.format(report.getPopulationInCities()) +
                 " (" + String.format("%.2f", report.getPercentageInCities()) + "%)");
-        System.out.println("Population Not in Cities: " + report.getPopulationNotInCities() +
+        System.out.println("Population Not in Cities: " + nf.format(report.getPopulationNotInCities()) +
                 " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
         System.out.println("========================================");
-
     }
+
 
     /**
      * USE CASE 29: Produce a Population Report for a Country.
@@ -420,7 +424,7 @@ public class CountryReportService {
                 """;
 
         try (PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
-                PreparedStatement stmtCity = connection.prepareStatement(cityQuery)) {
+             PreparedStatement stmtCity = connection.prepareStatement(cityQuery)) {
             // Get total population
             stmtTotal.setString(1, countryName);
             try (ResultSet rsTotal = stmtTotal.executeQuery()) {
@@ -476,17 +480,18 @@ public class CountryReportService {
             return;
         }
 
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+
         System.out.println("========================================");
         System.out.println("        COUNTRY POPULATION REPORT       ");
         System.out.println("========================================");
         System.out.println("Country: " + report.getName());
-        System.out.println("Total Population: " + report.getTotalPopulation());
-        System.out.println("Population in Cities: " + report.getPopulationInCities() +
+        System.out.println("Total Population: " + nf.format(report.getTotalPopulation()));
+        System.out.println("Population in Cities: " + nf.format(report.getPopulationInCities()) +
                 " (" + String.format("%.2f", report.getPercentageInCities()) + "%)");
-        System.out.println("Population Not in Cities: " + report.getPopulationNotInCities() +
+        System.out.println("Population Not in Cities: " + nf.format(report.getPopulationNotInCities()) +
                 " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
         System.out.println("========================================");
-
     }
 
 
@@ -503,14 +508,14 @@ public class CountryReportService {
         String totalWorldQuery = "SELECT SUM(Population) AS world_population FROM country";
 
         String languagesQuery = """
-            SELECT Language,
-                   SUM(country.Population * countrylanguage.Percentage / 100) AS speakers
-            FROM countrylanguage
-            INNER JOIN country ON country.Code = countrylanguage.CountryCode
-            WHERE Language IN ('Chinese', 'English', 'Hindi', 'Spanish', 'Arabic')
-            GROUP BY Language
-            ORDER BY speakers DESC
-            """;
+                SELECT Language,
+                       SUM(country.Population * countrylanguage.Percentage / 100) AS speakers
+                FROM countrylanguage
+                INNER JOIN country ON country.Code = countrylanguage.CountryCode
+                WHERE Language IN ('Chinese', 'English', 'Hindi', 'Spanish', 'Arabic')
+                GROUP BY Language
+                ORDER BY speakers DESC
+                """;
 
         try (PreparedStatement stmtWorldPop = connection.prepareStatement(totalWorldQuery);
              PreparedStatement stmtLanguages = connection.prepareStatement(languagesQuery)) {
@@ -570,6 +575,8 @@ public class CountryReportService {
             return;
         }
 
+        NumberFormat nf = NumberFormat.getInstance(Locale.US); // ensures commas
+
         System.out.println("===============================================================");
         System.out.println("           MAJOR LANGUAGES SPEAKERS REPORT                     ");
         System.out.println("===============================================================");
@@ -577,14 +584,14 @@ public class CountryReportService {
         System.out.println("---------------------------------------------------------------");
 
         for (LanguageReportPojo report : reports) {
-            System.out.printf("%-15s %-20d %-15.2f%n",
+            String formattedSpeakers = nf.format(report.getSpeakers());
+            System.out.printf("%-15s %-20s %-15.2f%n",
                     report.getLanguage(),
-                    report.getSpeakers(),
+                    formattedSpeakers,
                     report.getPercentageOfWorld());
         }
 
         System.out.println("===============================================================");
-
     }
 
 

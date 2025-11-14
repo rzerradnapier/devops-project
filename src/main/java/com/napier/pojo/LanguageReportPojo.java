@@ -1,5 +1,8 @@
 package com.napier.pojo;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 /**
  * POJO class to represent language report data.
  *
@@ -47,7 +50,10 @@ public class LanguageReportPojo {
 
     @Override
     public String toString() {
-        return String.format("%-10s | %,15d | %6.2f%% of world population",
-                language, speakers, percentageOfWorld);
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+        String formattedSpeakers = nf.format(speakers);
+
+        return String.format("%-10s | %15s | %6.2f%% of world population",
+                language, formattedSpeakers, percentageOfWorld);
     }
 }

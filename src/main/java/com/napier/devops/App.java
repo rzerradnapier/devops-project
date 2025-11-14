@@ -157,7 +157,7 @@ public class App {
         appIns.countryReportService.printRegionPopulationReport(DEFAULT_REGION);
 
         System.out.println("\n=== USE CASE 29: Produce a Population Report for a Country. ===");
-        appIns.countryReportService.printCountryPopulationReport(DEFAULT_CONTINENT);
+        appIns.countryReportService.printCountryPopulationReport(DEFAULT_COUNTRY_NAME);
 
         System.out.println("\n=== USE CASE 30: Retrieve the Population of a District. ===");
         appIns.cityReportService.printDistrictPopulationReport(DEFAULT_DISTRICT);
