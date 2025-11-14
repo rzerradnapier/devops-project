@@ -6,6 +6,7 @@
 
 [![Releases](https://img.shields.io/github/release/rzerradnapier/devops-project/all.svg?style=flat-square)](https://github.com/rzerradnapier/devops-project/releases)
 
+![Coverage](.github/badges/jacoco.svg)
 ---
 
 ### Develop branch

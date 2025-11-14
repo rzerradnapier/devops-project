@@ -34,14 +34,23 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Integration Tests and CodeCov
+      - name: Integration Tests with code coverage
         run: |
           docker build -t database ./db 
           docker run --name countries -dp 33060:3306 database
-          mvn -Dtest=com.napier.devops.AppIntegrationTest test
+          mvn clean test
           docker stop countries
           docker rm countries
           docker image rm database
+      - name: Generate JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+            jacoco-csv-path: target/site/jacoco/jacoco.csv
+      - name: Commit the badge
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+            commit_message: "Update JaCoCo coverage badge"
+            file_pattern: ".github/badges/jacoco.svg"
       - name: CodeCov
         uses: codecov/codecov-action@v5
         with:
