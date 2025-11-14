@@ -8,7 +8,7 @@
 
 ![Coverage](.github/badges/jacoco.svg)
 
-[![codecov](https://codecov.io/gh/USER/REPO/graph/badge.svg?token=fe6a60e6-f33a-4890-a401-eef9b758cb58)](https://codecov.io/gh/rzerradnapier/devops-project)
+[![codecov](https://codecov.io/gh/rzerradnapier/devops-project/graph/badge.svg?token=fe6a60e6-f33a-4890-a401-eef9b758cb58)](https://codecov.io/gh/rzerradnapier/devops-project)
 
 ---
 
