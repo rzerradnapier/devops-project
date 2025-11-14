@@ -7,6 +7,9 @@
 [![Releases](https://img.shields.io/github/release/rzerradnapier/devops-project/all.svg?style=flat-square)](https://github.com/rzerradnapier/devops-project/releases)
 
 ![Coverage](.github/badges/jacoco.svg)
+
+[![codecov](https://codecov.io/gh/USER/REPO/graph/badge.svg?token=fe6a60e6-f33a-4890-a401-eef9b758cb58)](https://codecov.io/gh/rzerradnapier/devops-project)
+
 ---
 
 ### Develop branch
