@@ -153,6 +153,21 @@ public class App {
         System.out.println("\n=== USE CASE 22: produce a report of the top N most populated capital cities in a region where N is provided ===");
         appIns.cityReportService.printTopCapitalCitiesByRegion(DEFAULT_REGION, DEFAULT_N);
 
+        System.out.println("\n=== USE CASE 28: Retrieve the Population of a Region ===");
+        appIns.countryReportService.printRegionPopulationReport(DEFAULT_REGION);
+
+        System.out.println("\n=== USE CASE 29: Produce a Population Report for a Country. ===");
+        appIns.countryReportService.printCountryPopulationReport(DEFAULT_COUNTRY_NAME);
+
+        System.out.println("\n=== USE CASE 30: Retrieve the Population of a District. ===");
+        appIns.cityReportService.printDistrictPopulationReport(DEFAULT_DISTRICT);
+
+        System.out.println("\n=== USE CASE 31: Produce a Population Report for a City. ===");
+        appIns.cityReportService.printCityPopulationReport(DEFAULT_CITY_NAME);
+
+        System.out.println("\n=== USE CASE 32: Produce a Report on Speakers of Major Languages. ===");
+        appIns.countryReportService.printMajorLanguageReport();
+
         System.out.println("Get country by code USA");
         // Get country by code USA
         Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);

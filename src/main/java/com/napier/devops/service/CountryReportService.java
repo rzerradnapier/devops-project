@@ -1,13 +1,18 @@
 package com.napier.devops.service;
 
 import com.napier.devops.Country;
+import com.napier.pojo.LanguageReportPojo;
+import com.napier.pojo.PopulationReportPojo;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Service class for country-related reporting functionality.
@@ -294,4 +299,300 @@ public class CountryReportService {
         }
         return topNCountryList;
     }
+
+
+    /**
+     * USE CASE 28: Produce a Population Report for a Region.
+     *
+     * @param regionName Name of the region
+     * @return A PopulationReportPojo object containing population breakdown, or null if not found.
+     */
+    public PopulationReportPojo getRegionPopulationReport(String regionName) {
+        long totalPopulation = 0;
+        long cityPopulation = 0;
+
+        if (regionName == null || regionName.trim().isEmpty()) {
+            System.err.println("Error: Region name cannot be null or empty.");
+            return null;
+        }
+
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName(regionName);
+
+        // Queries
+        String totalQuery = "SELECT SUM(population) AS total_population FROM country WHERE region = ?";
+        String cityQuery = """
+                SELECT SUM(city.population) AS city_population
+                FROM city
+                INNER JOIN country ON city.CountryCode = country.Code
+                WHERE country.Region = ?
+                """;
+
+        try (PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+             PreparedStatement stmtCity = connection.prepareStatement(cityQuery)) {
+            // Total population
+            stmtTotal.setString(1, regionName);
+            try (ResultSet rsTotal = stmtTotal.executeQuery()) {
+                if (rsTotal.next()) {
+                    totalPopulation = rsTotal.getLong("total_population");
+                }
+            }
+
+            // City population
+            stmtCity.setString(1, regionName);
+            try (ResultSet rsCity = stmtCity.executeQuery()) {
+                if (rsCity.next()) {
+                    cityPopulation = rsCity.getLong("city_population");
+                }
+            }
+
+            // Derived values
+            long nonCityPopulation = totalPopulation - cityPopulation;
+            double cityPercentage = totalPopulation > 0
+                    ? ((cityPopulation * 100.0) / totalPopulation)
+                    : 0.0;
+            double nonCityPercentage = 100.0 - cityPercentage;
+
+            // Fill report
+            report.setTotalPopulation(totalPopulation);
+            report.setPopulationInCities(cityPopulation);
+            report.setPopulationNotInCities(nonCityPopulation);
+            report.setPercentageInCities(cityPercentage);
+            report.setPercentageNotInCities(nonCityPercentage);
+
+            return report;
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error retrieving population report: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * USE CASE 28: Produce a Population Report for a Region.
+     * Prints and returns the population report for a given region.
+     *
+     * @param defaultRegion Name of the region
+     */
+    public void printRegionPopulationReport(String defaultRegion) {
+        PopulationReportPojo report = getRegionPopulationReport(defaultRegion);
+
+        if (report == null) {
+            System.err.println("Error: No population data found for region: " + defaultRegion);
+            return;
+        }
+
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+
+        System.out.println("========================================");
+        System.out.println("       REGION POPULATION REPORT         ");
+        System.out.println("========================================");
+        System.out.println("Region: " + report.getName());
+        System.out.println("Total Population: " + nf.format(report.getTotalPopulation()));
+        System.out.println("Population in Cities: " + nf.format(report.getPopulationInCities()) +
+                " (" + String.format("%.2f", report.getPercentageInCities()) + "%)");
+        System.out.println("Population Not in Cities: " + nf.format(report.getPopulationNotInCities()) +
+                " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
+        System.out.println("========================================");
+    }
+
+
+    /**
+     * USE CASE 29: Produce a Population Report for a Country.
+     *
+     * @param countryName Name of the country
+     * @return A PopulationReport object containing population breakdown, or null if not found.
+     */
+    public PopulationReportPojo getCountryPopulationReport(String countryName) {
+        long totalPopulation = 0;
+        long cityPopulation = 0;
+
+        if (countryName == null || countryName.trim().isEmpty()) {
+            System.err.println("Error: Country name cannot be null or empty.");
+            return null;
+        }
+
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName(countryName);
+
+        String totalQuery = "SELECT Population FROM country WHERE Name = ?";
+        String cityQuery = """
+                SELECT SUM(city.Population) AS city_population
+                FROM city
+                INNER JOIN country ON city.CountryCode = country.Code
+                WHERE country.Name = ?
+                """;
+
+        try (PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+             PreparedStatement stmtCity = connection.prepareStatement(cityQuery)) {
+            // Get total population
+            stmtTotal.setString(1, countryName);
+            try (ResultSet rsTotal = stmtTotal.executeQuery()) {
+                if (rsTotal.next()) {
+                    totalPopulation = rsTotal.getLong("Population");
+                }
+            }
+
+            // Get city population
+            stmtCity.setString(1, countryName);
+            try (ResultSet rsCity = stmtCity.executeQuery()) {
+                if (rsCity.next()) {
+                    cityPopulation = rsCity.getLong("city_population");
+                }
+            }
+
+            // Derived calculations
+            long nonCityPopulation = totalPopulation - cityPopulation;
+
+            double cityPercentage = totalPopulation > 0
+                    ? ((cityPopulation * 100.0) / totalPopulation)
+                    : 0.0;
+
+            double nonCityPercentage = 100.0 - cityPercentage;
+
+            // Fill report
+            report.setTotalPopulation(totalPopulation);
+            report.setPopulationInCities(cityPopulation);
+            report.setPopulationNotInCities(nonCityPopulation);
+            report.setPercentageInCities(cityPercentage);
+            report.setPercentageNotInCities(nonCityPercentage);
+
+            return report;
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error retrieving population report: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+    /**
+     * USE CASE 29: Produce a Population Report for a Country.
+     * Prints and returns the population report for a given country.
+     *
+     * @param countryName Name of the country
+     */
+    public void printCountryPopulationReport(String countryName) {
+        PopulationReportPojo report = getCountryPopulationReport(countryName);
+
+        if (report == null) {
+            System.err.println("Error: No population data found for country: " + countryName);
+            return;
+        }
+
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+
+        System.out.println("========================================");
+        System.out.println("        COUNTRY POPULATION REPORT       ");
+        System.out.println("========================================");
+        System.out.println("Country: " + report.getName());
+        System.out.println("Total Population: " + nf.format(report.getTotalPopulation()));
+        System.out.println("Population in Cities: " + nf.format(report.getPopulationInCities()) +
+                " (" + String.format("%.2f", report.getPercentageInCities()) + "%)");
+        System.out.println("Population Not in Cities: " + nf.format(report.getPopulationNotInCities()) +
+                " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
+        System.out.println("========================================");
+    }
+
+
+    /**
+     * USE CASE 32: Produce a Report on Speakers of Major Languages.
+     * Retrieves the number of people who speak Chinese, English, Hindi, Spanish, and Arabic,
+     * ordered from greatest to smallest, including the percentage of the world population.
+     *
+     * @return A list of LanguageReportPojo objects ordered by number of speakers (descending).
+     */
+    public List<LanguageReportPojo> getMajorLanguageReport() {
+        List<LanguageReportPojo> languageReports = new ArrayList<>();
+
+        String totalWorldQuery = "SELECT SUM(Population) AS world_population FROM country";
+
+        String languagesQuery = """
+                SELECT Language,
+                       SUM(country.Population * countrylanguage.Percentage / 100) AS speakers
+                FROM countrylanguage
+                INNER JOIN country ON country.Code = countrylanguage.CountryCode
+                WHERE Language IN ('Chinese', 'English', 'Hindi', 'Spanish', 'Arabic')
+                GROUP BY Language
+                ORDER BY speakers DESC
+                """;
+
+        try (PreparedStatement stmtWorldPop = connection.prepareStatement(totalWorldQuery);
+             PreparedStatement stmtLanguages = connection.prepareStatement(languagesQuery)) {
+
+            long worldPopulation = 0;
+
+            // 1. Get total world population
+            try (ResultSet rsWorldPop = stmtWorldPop.executeQuery()) {
+                if (rsWorldPop.next()) {
+                    worldPopulation = rsWorldPop.getLong("world_population");
+                }
+            }
+
+            // Validate world population
+            if (worldPopulation == 0) {
+                System.err.println("Error: Could not determine world population.");
+                return languageReports;
+            }
+
+            // 2. Get speakers for the five major languages
+            try (ResultSet rsLanguages = stmtLanguages.executeQuery()) {
+                while (rsLanguages.next()) {
+                    String language = rsLanguages.getString("Language");
+                    long speakers = rsLanguages.getLong("speakers");
+
+                    double percentage = (speakers > 0 && worldPopulation > 0)
+                            ? ((speakers * 100.0) / worldPopulation)
+                            : 0.0;
+
+                    LanguageReportPojo report = new LanguageReportPojo();
+                    report.setLanguage(language);
+                    report.setSpeakers(speakers);
+                    report.setWorldPopulation(worldPopulation);
+                    report.setPercentageOfWorld(percentage);
+
+                    languageReports.add(report);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error retrieving major language report: " + e.getMessage());
+            return Collections.emptyList();
+        }
+
+        return languageReports;
+    }
+
+
+    /**
+     * USE CASE 32: Produce a Report on Speakers of Major Languages.
+     */
+    public void printMajorLanguageReport() {
+        List<LanguageReportPojo> reports = getMajorLanguageReport();
+
+        if (reports == null || reports.isEmpty()) {
+            System.err.println("Error: No language report data found.");
+            return;
+        }
+
+        NumberFormat nf = NumberFormat.getInstance(Locale.US); // ensures commas
+
+        System.out.println("===============================================================");
+        System.out.println("           MAJOR LANGUAGES SPEAKERS REPORT                     ");
+        System.out.println("===============================================================");
+        System.out.printf("%-15s %-20s %-15s%n", "Language", "Speakers", "% of World Pop");
+        System.out.println("---------------------------------------------------------------");
+
+        for (LanguageReportPojo report : reports) {
+            String formattedSpeakers = nf.format(report.getSpeakers());
+            System.out.printf("%-15s %-20s %-15.2f%n",
+                    report.getLanguage(),
+                    formattedSpeakers,
+                    report.getPercentageOfWorld());
+        }
+
+        System.out.println("===============================================================");
+    }
+
+
 }
