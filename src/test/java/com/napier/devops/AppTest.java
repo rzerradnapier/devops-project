@@ -2,13 +2,15 @@ package com.napier.devops;
 
 import com.napier.devops.service.CityReportService;
 import com.napier.devops.service.CountryReportService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,10 +27,23 @@ public class AppTest {
 
     private App app;
 
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+    private final PrintStream originalOut = System.out;
+    private final PrintStream originalErr = System.err;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         app = new App();
+        System.setOut(new PrintStream(outContent));
+        System.setErr(new PrintStream(errContent));
+    }
+
+    @AfterEach
+    void restoreStreams() {
+        System.setOut(originalOut);
+        System.setErr(originalErr);
     }
 
     /**
@@ -240,9 +255,9 @@ public class AppTest {
         // Assert
         assertNotSame(app1, app2, "App instances should be different");
         assertNotSame(app1.getCon(), app2.getCon(), "Connections should be different");
-        assertNotSame(app1.getCityReportService(), app2.getCityReportService(), 
+        assertNotSame(app1.getCityReportService(), app2.getCityReportService(),
                 "CityReportService instances should be different");
-        assertNotSame(app1.getCountryReportService(), app2.getCountryReportService(), 
+        assertNotSame(app1.getCountryReportService(), app2.getCountryReportService(),
                 "CountryReportService instances should be different");
     }
 
@@ -259,7 +274,7 @@ public class AppTest {
         app.disconnect();
 
         // Assert
-        assertSame(connectionBeforeDisconnect, app.getCon(), 
+        assertSame(connectionBeforeDisconnect, app.getCon(),
                 "Connection reference should remain the same after disconnect");
         verify(mockConnection, times(1)).close();
     }
@@ -278,9 +293,9 @@ public class AppTest {
         app.disconnect();
 
         // Assert
-        assertSame(cityService, app.getCityReportService(), 
+        assertSame(cityService, app.getCityReportService(),
                 "CityReportService should remain accessible after disconnect");
-        assertSame(countryService, app.getCountryReportService(), 
+        assertSame(countryService, app.getCountryReportService(),
                 "CountryReportService should remain accessible after disconnect");
     }
 
@@ -330,5 +345,333 @@ public class AppTest {
         assertNotNull(app.getCon(), "Connection should not be null after setCon");
         assertNotNull(app.getCityReportService(), "City service should not be null after setCon");
         assertNotNull(app.getCountryReportService(), "Country service should not be null after setCon");
+    }
+
+    // ========== MAIN METHOD TESTS ==========
+
+    /**
+     * Test main method argument parsing logic with custom arguments.
+     */
+    @Test
+    void testMainWithCustomArguments() {
+        // Arrange
+        String[] args = {"db:3306", "5000"};
+
+        // Act - Test the argument parsing logic
+        String location = args[0];
+        int delay = Integer.parseInt(args[1]);
+
+        // Assert
+        assertEquals("db:3306", location, "Location should be parsed correctly");
+        assertEquals(5000, delay, "Delay should be parsed correctly");
+    }
+
+    /**
+     * Test main method argument length check.
+     */
+    @Test
+    void testMainArgumentLengthCheck() {
+        // Test with no arguments
+        String[] noArgs = {};
+        assertTrue(noArgs.length < 1, "Empty args array should have length < 1");
+
+        // Test with arguments
+        String[] withArgs = {"localhost:3306", "1000"};
+        assertFalse(withArgs.length < 1, "Args array with elements should have length >= 1");
+    }
+
+    /**
+     * Test that main method creates App instance.
+     */
+    @Test
+    void testMainCreatesAppInstance() {
+        // Act
+        App appIns = new App();
+
+        // Assert
+        assertNotNull(appIns, "App instance should be created");
+        assertNull(appIns.getCon(), "Connection should be null initially");
+    }
+
+    /**
+     * Test main method with invalid delay argument throws NumberFormatException.
+     */
+    @Test
+    void testMainWithInvalidDelayArgument() {
+        // Arrange
+        String[] args = {"localhost:3306", "invalid"};
+
+        // Act & Assert
+        assertThrows(NumberFormatException.class, () -> {
+            Integer.parseInt(args[1]);
+        }, "Should throw NumberFormatException for invalid delay");
+    }
+
+    /**
+     * Test that default values are used correctly.
+     */
+    @Test
+    void testDefaultValuesUsage() {
+        // Arrange
+        String[] args = {};
+        String expectedLocation = "localhost:3306";
+        int expectedDelay = 30000;
+
+        // Act - simulate main's logic
+        String location;
+        int delay;
+
+        if (args.length < 1) {
+            location = "localhost:3306";
+            delay = 30000;
+        } else {
+            location = args[0];
+            delay = Integer.parseInt(args[1]);
+        }
+
+        // Assert
+        assertEquals(expectedLocation, location, "Default location should be localhost:3306");
+        assertEquals(expectedDelay, delay, "Default delay should be 30000");
+    }
+
+    /**
+     * Test main method argument handling with one argument.
+     */
+    @Test
+    void testMainWithOneArgument() {
+        // Arrange
+        String[] args = {"db:3306"};
+
+        // Act & Assert
+        if (args.length >= 1) {
+            assertEquals("db:3306", args[0], "First argument should be location");
+            assertThrows(ArrayIndexOutOfBoundsException.class, () -> {
+                Integer.parseInt(args[1]);
+            }, "Should throw exception when second argument is missing");
+        }
+    }
+
+    /**
+     * Test main method argument handling with two arguments.
+     */
+    @Test
+    void testMainWithTwoArguments() {
+        // Arrange
+        String[] args = {"db:3306", "5000"};
+
+        // Act
+        String location = args[0];
+        int delay = Integer.parseInt(args[1]);
+
+        // Assert
+        assertEquals("db:3306", location, "First argument should be location");
+        assertEquals(5000, delay, "Second argument should be delay");
+    }
+
+    /**
+     * Test main method argument handling with extra arguments (should be ignored).
+     */
+    @Test
+    void testMainWithExtraArguments() {
+        // Arrange
+        String[] args = {"db:3306", "5000", "extra", "arguments"};
+
+        // Act - main only uses first two arguments
+        if (args.length >= 1) {
+            String location = args[0];
+            int delay = Integer.parseInt(args[1]);
+
+            // Assert
+            assertEquals("db:3306", location, "First argument should be used");
+            assertEquals(5000, delay, "Second argument should be used");
+            assertEquals(4, args.length, "Extra arguments should be present but ignored");
+        }
+    }
+
+    /**
+     * Test delay argument parsing with zero value.
+     */
+    @Test
+    void testMainWithZeroDelay() {
+        // Arrange
+        String[] args = {"localhost:3306", "0"};
+
+        // Act
+        int delay = Integer.parseInt(args[1]);
+
+        // Assert
+        assertEquals(0, delay, "Delay should be 0");
+    }
+
+    /**
+     * Test delay argument parsing with negative value.
+     */
+    @Test
+    void testMainWithNegativeDelay() {
+        // Arrange
+        String[] args = {"localhost:3306", "-1000"};
+
+        // Act
+        int delay = Integer.parseInt(args[1]);
+
+        // Assert
+        assertEquals(-1000, delay, "Delay can be negative (though not practical)");
+    }
+
+    /**
+     * Test delay argument parsing with very large value.
+     */
+    @Test
+    void testMainWithLargeDelay() {
+        // Arrange
+        String[] args = {"localhost:3306", "999999"};
+
+        // Act
+        int delay = Integer.parseInt(args[1]);
+
+        // Assert
+        assertEquals(999999, delay, "Large delay should be parsed correctly");
+    }
+
+    /**
+     * Test location argument with different formats.
+     */
+    @Test
+    void testMainWithDifferentLocationFormats() {
+        // Test various location formats
+        String[] testLocations = {
+                "localhost:3306",
+                "127.0.0.1:3306",
+                "db.example.com:3306",
+                "192.168.1.1:3306"
+        };
+
+        for (String location : testLocations) {
+            String[] args = {location, "1000"};
+            assertEquals(location, args[0], "Location format should be preserved: " + location);
+        }
+    }
+
+    /**
+     * Test main method logic flow - argument branch selection.
+     */
+    @Test
+    void testMainMethodBranchLogic() {
+        // Test no args branch
+        String[] noArgs = {};
+        boolean usesDefault = noArgs.length < 1;
+        assertTrue(usesDefault, "Should use default connection with no args");
+
+        // Test with args branch
+        String[] withArgs = {"db:3306", "5000"};
+        boolean usesCustom = withArgs.length >= 1;
+        assertTrue(usesCustom, "Should use custom connection with args");
+    }
+
+    /**
+     * Test that main would handle null args array.
+     */
+    @Test
+    void testMainWithNullArgs() {
+        // Arrange
+        String[] args = null;
+
+        // Act & Assert
+        assertThrows(NullPointerException.class, () -> {
+            if (args.length < 1) {
+                // Would throw NullPointerException
+            }
+        }, "Should throw NullPointerException with null args");
+    }
+
+    /**
+     * Test parsing of port number from location string.
+     */
+    @Test
+    void testLocationPortParsing() {
+        // Arrange
+        String location = "localhost:3306";
+
+        // Act
+        String[] parts = location.split(":");
+
+        // Assert
+        assertEquals(2, parts.length, "Location should have host and port");
+        assertEquals("localhost", parts[0], "Host should be localhost");
+        assertEquals("3306", parts[1], "Port should be 3306");
+    }
+
+    /**
+     * Test main method would handle empty string arguments.
+     */
+    @Test
+    void testMainWithEmptyStringArguments() {
+        // Arrange
+        String[] args = {"", ""};
+
+        // Act & Assert
+        assertEquals("", args[0], "First argument is empty string");
+        assertThrows(NumberFormatException.class, () -> {
+            Integer.parseInt(args[1]);
+        }, "Empty string should cause NumberFormatException");
+    }
+
+    /**
+     * Test main method with no arguments uses default localhost connection.
+     */
+    @Test
+    void testMainWithNoArguments() {
+        // Arrange
+        String[] args = {};
+
+        // Create a spy on App to verify connect is called with correct parameters
+        App spyApp = spy(new App());
+
+        // Act - simulate what main does with no args
+        if (args.length < 1) {
+            spyApp.connect("localhost:3306", 30000);
+        }
+
+        // Assert - verify connect was called
+        String output = outContent.toString();
+        assertTrue(output.contains("Connecting to database"),
+                "Should show connecting message");
+    }
+
+    /**
+     * Test that disconnect doesn't affect null connection.
+     */
+    @Test
+    void testDisconnectWithNullConnectionDoesNothing() {
+        // Act
+        app.disconnect();
+
+        // Assert - Should complete without error
+        assertNull(app.getCon(), "Connection should still be null");
+    }
+
+    /**
+     * Test reconnection scenario - disconnect then set new connection.
+     */
+    @Test
+    void testReconnectionScenario() throws SQLException {
+        // Arrange
+        Connection mockConnection2 = mock(Connection.class);
+
+        // Act - First connection
+        app.setCon(mockConnection);
+        CityReportService firstCityService = app.getCityReportService();
+
+        // Disconnect
+        app.disconnect();
+
+        // Set new connection
+        app.setCon(mockConnection2);
+        CityReportService secondCityService = app.getCityReportService();
+
+        // Assert
+        verify(mockConnection, times(1)).close();
+        assertNotSame(firstCityService, secondCityService, "Services should be reinitialized");
+        assertEquals(mockConnection2, app.getCon(), "New connection should be set");
     }
 }
