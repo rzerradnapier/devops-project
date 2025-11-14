@@ -45,7 +45,8 @@ jobs:
       - name: Generate JaCoCo Badge
         uses: cicirello/jacoco-badge-generator@v2
         with:
-            jacoco-csv-path: target/site/jacoco/jacoco.csv
+          jacoco-csv-file: target/site/jacoco/jacoco.csv
+          coverage-format: line
       - name: Commit the badge
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
