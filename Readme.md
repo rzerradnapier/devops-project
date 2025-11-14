@@ -149,6 +149,11 @@ The following are in place:
 | 20 | produce a report of the top N most populated capital cities in the world where N is provided        | ✅   | ![all countries organized by population descending](screenshots/use-case-20.png) |
 | 21 | produce a report of the top N most populated capital cities in a continent where N is provided      | ✅   | ![all countries organized by population descending](screenshots/use-case-21.png) |
 | 22 | produce a report of the top N most populated capital cities in a region where N is provided         | ✅   | ![all countries organized by population descending](screenshots/use-case-22.png) |
+| 28 | Retrieve the Population of a Region                                                                 | ✅   | ![all countries organized by population descending](screenshots/use-case-22.png) |
+| 29 | Retrieve the Population of a Country                                                                | ✅   | ![all countries organized by population descending](screenshots/use-case-22.png) |
+| 30 | Retrieve the Population of a District                                                               | ✅   | ![all countries organized by population descending](screenshots/use-case-22.png) |
+| 31 | Retrieve the Population of a City                                                                   | ✅   | ![all countries organized by population descending](screenshots/use-case-22.png) |
+| 32 | Produce a Report on Speakers of Major Languages                                                     | ✅   | ![all countries organized by population descending](screenshots/use-case-22.png) |
 
 
 

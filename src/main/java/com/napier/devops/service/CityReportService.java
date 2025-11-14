@@ -954,37 +954,39 @@ public class CityReportService {
         PopulationReportPojo report = new PopulationReportPojo();
         report.setName(districtName);
 
-        try {
-            // Get total population of the district
-            String totalQuery = "SELECT SUM(Population) AS population FROM city WHERE district = ?";
-            PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+        String totalQuery = "SELECT SUM(Population) AS population FROM city WHERE district = ?";
+        String cityQuery = """
+                SELECT SUM(Population) AS city_population
+                FROM city
+                WHERE district = ?
+                """;
+
+        try (
+                PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+                PreparedStatement stmtCity = connection.prepareStatement(cityQuery)
+        ) {
+            // Total population in district
             stmtTotal.setString(1, districtName);
-            ResultSet rsTotal = stmtTotal.executeQuery();
-
-            if (rsTotal.next()) {
-                totalPopulation = rsTotal.getLong("population");
+            try (ResultSet rsTotal = stmtTotal.executeQuery()) {
+                if (rsTotal.next()) {
+                    totalPopulation = rsTotal.getLong("population");
+                }
             }
 
-            // Get population living in cities (in a district, that’s just total city population)
-            String cityQuery = """
-                        SELECT SUM(Population) AS city_population
-                        FROM city
-                        WHERE district = ?
-                    """;
-            PreparedStatement stmtCity = connection.prepareStatement(cityQuery);
+            // City population in district (same as total)
             stmtCity.setString(1, districtName);
-            ResultSet rsCity = stmtCity.executeQuery();
-
-            if (rsCity.next()) {
-                cityPopulation = rsCity.getLong("city_population");
+            try (ResultSet rsCity = stmtCity.executeQuery()) {
+                if (rsCity.next()) {
+                    cityPopulation = rsCity.getLong("city_population");
+                }
             }
 
-            // Calculate non-city population (for a district, this is 0 — all are cities)
             long nonCityPopulation = totalPopulation - cityPopulation;
 
             double cityPercentage = totalPopulation > 0
                     ? ((cityPopulation * 100.0) / totalPopulation)
                     : 0.0;
+
             double nonCityPercentage = 100.0 - cityPercentage;
 
             report.setTotalPopulation(totalPopulation);
@@ -998,14 +1000,6 @@ public class CityReportService {
         } catch (SQLException e) {
             System.err.println("SQL Error retrieving population report for district: " + e.getMessage());
             return null;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException closeEx) {
-                    System.err.println("Error closing resources: " + closeEx.getMessage());
-                }
-            }
         }
     }
 
@@ -1056,40 +1050,39 @@ public class CityReportService {
         PopulationReportPojo report = new PopulationReportPojo();
         report.setName(cityName);
 
-        PreparedStatement stmtTotal = null;
-        PreparedStatement stmtCity = null;
-        ResultSet rsTotal = null;
-        ResultSet rsCity = null;
+        String totalQuery = "SELECT Population FROM city WHERE Name = ?";
+        String cityQuery = """
+                SELECT Population AS city_population
+                FROM city
+                WHERE Name = ?
+                """;
 
-        try {
-            // Get total population for the city
-            String totalQuery = "SELECT Population FROM city WHERE Name = ?";
-            stmtTotal = connection.prepareStatement(totalQuery);
+        try (
+                PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+                PreparedStatement stmtCity = connection.prepareStatement(cityQuery)
+        ) {
+            // Total population (same as city population for a single city)
             stmtTotal.setString(1, cityName);
-            rsTotal = stmtTotal.executeQuery();
-
-            if (rsTotal.next()) {
-                totalPopulation = rsTotal.getLong("population");
+            try (ResultSet rsTotal = stmtTotal.executeQuery()) {
+                if (rsTotal.next()) {
+                    totalPopulation = rsTotal.getLong("Population");
+                }
             }
 
-            // For a single city, the population living in the city *is itself*
-            String cityQuery = """
-                        SELECT Population AS city_population
-                        FROM city
-                        WHERE Name = ?
-                    """;
-            stmtCity = connection.prepareStatement(cityQuery);
+            // City population (same as total)
             stmtCity.setString(1, cityName);
-            rsCity = stmtCity.executeQuery();
-
-            if (rsCity.next()) {
-                cityPopulation = rsCity.getLong("city_population");
+            try (ResultSet rsCity = stmtCity.executeQuery()) {
+                if (rsCity.next()) {
+                    cityPopulation = rsCity.getLong("city_population");
+                }
             }
 
             long nonCityPopulation = totalPopulation - cityPopulation;
+
             double cityPercentage = totalPopulation > 0
                     ? ((cityPopulation * 100.0) / totalPopulation)
                     : 0.0;
+
             double nonCityPercentage = 100.0 - cityPercentage;
 
             report.setTotalPopulation(totalPopulation);
@@ -1103,15 +1096,9 @@ public class CityReportService {
         } catch (SQLException e) {
             System.err.println("SQL Error retrieving population report for city: " + e.getMessage());
             return null;
-        } finally {
-            try {
-                if (connection != null)
-                    connection.close();
-            } catch (SQLException closeEx) {
-                System.err.println("Error closing resources: " + closeEx.getMessage());
-            }
         }
     }
+
 
     /**
      * USE CASE 31: Produce a Population Report for a City.

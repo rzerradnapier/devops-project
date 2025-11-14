@@ -550,13 +550,7 @@ public class CountryReportServiceTest {
         when(totalRS.getLong("Population")).thenReturn(1000000L);
 
         // Mock city population query
-        String cityQuery = """
-                    SELECT SUM(city.Population) AS city_population
-                    FROM city
-                    INNER JOIN country ON city.CountryCode = country.Code
-                    WHERE country.Name = ?
-                """;
-        when(mockConnection.prepareStatement(cityQuery))
+        when(mockConnection.prepareStatement(contains("AS city_population")))
                 .thenReturn(cityStmt);
         when(cityStmt.executeQuery()).thenReturn(cityRS);
         when(cityRS.next()).thenReturn(true);

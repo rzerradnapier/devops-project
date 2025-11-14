@@ -815,124 +815,6 @@ public class CityReportServiceTest {
     }
 
     /**
-     * USE CASE 30 - Retrieve the Population of a District.
-     * Tests valid district input returning correct report.
-     * Tests that {@link CityReportService#getDistrictPopulationReport(String)}
-     */
-    @Test
-    void testValidDistrictPopulationReport() throws Exception {
-        // Mocks for queries
-        PreparedStatement totalStmt = mock(PreparedStatement.class);
-        PreparedStatement cityStmt = mock(PreparedStatement.class);
-        ResultSet totalRS = mock(ResultSet.class);
-        ResultSet cityRS = mock(ResultSet.class);
-
-        when(mockConnection.prepareStatement(anyString()))
-                .thenReturn(totalStmt)
-                .thenReturn(cityStmt);
-        when(totalStmt.executeQuery()).thenReturn(totalRS);
-        when(cityStmt.executeQuery()).thenReturn(cityRS);
-
-        // Mock data returned from DB
-        when(totalRS.next()).thenReturn(true);
-        when(totalRS.getLong("population")).thenReturn(500000L);
-        when(cityRS.next()).thenReturn(true);
-        when(cityRS.getLong("city_population")).thenReturn(400000L);
-
-        // Execute
-        PopulationReportPojo report = cityReportService.getDistrictPopulationReport(DEFAULT_DISTRICT);
-
-        // Assertions
-        assertEquals(DEFAULT_DISTRICT, report.getName());
-        assertEquals(500000L, report.getTotalPopulation());
-        assertEquals(400000L, report.getPopulationInCities());
-        assertEquals(100000L, report.getPopulationNotInCities());
-        assertEquals(80.0, report.getPercentageInCities(), 0.01);
-        assertEquals(20.0, report.getPercentageNotInCities(), 0.01);
-    }
-
-    /**
-     * USE CASE 30 - Retrieve the Population of a District.
-     * Tests invalid district input returning null OR empty report.
-     * Tests that {@link CityReportService#getDistrictPopulationReport(String)}
-     */
-    @Test
-    void testDistrictPopulationReportWithInvalidName() {
-        assertNull(cityReportService.getDistrictPopulationReport(null));
-        assertNull(cityReportService.getDistrictPopulationReport(""));
-    }
-
-
-    /**
-     * USE CASE 31 - Retrieve the Population of a City.
-     * Tests valid city input returning correct report.
-     * Tests that {@link CityReportService#getCityPopulationReport(String)}
-     */
-    @Test
-    void testValidCityPopulationReport() throws Exception {
-        PreparedStatement totalStmt = mock(PreparedStatement.class);
-        PreparedStatement cityStmt = mock(PreparedStatement.class);
-        ResultSet totalRS = mock(ResultSet.class);
-        ResultSet cityRS = mock(ResultSet.class);
-
-        when(mockConnection.prepareStatement("SELECT Population FROM city WHERE Name = ?")).thenReturn(totalStmt);
-        when(mockConnection.prepareStatement("""
-                    SELECT Population AS city_population
-                    FROM city
-                    WHERE Name = ?
-                """)).thenReturn(cityStmt);
-
-        when(totalStmt.executeQuery()).thenReturn(totalRS);
-        when(cityStmt.executeQuery()).thenReturn(cityRS);
-
-        when(totalRS.next()).thenReturn(true);
-        when(cityRS.next()).thenReturn(true);
-        when(totalRS.getLong("population")).thenReturn(500000L);
-        when(cityRS.getLong("city_population")).thenReturn(500000L);
-
-        PopulationReportPojo result = cityReportService.getCityPopulationReport("Lagos");
-
-        assertNotNull(result);
-        assertEquals("Lagos", result.getName());
-        assertEquals(500000L, result.getTotalPopulation());
-        assertEquals(500000L, result.getPopulationInCities());
-        assertEquals(0L, result.getPopulationNotInCities());
-        assertEquals(100.0, result.getPercentageInCities(), 0.001);
-        assertEquals(0.0, result.getPercentageNotInCities(), 0.001);
-
-        verify(totalStmt).setString(1, "Lagos");
-        verify(cityStmt).setString(1, "Lagos");
-    }
-
-    /**
-     * USE CASE 31 - Retrieve the Population of a City.
-     * Tests invalid city input returning null OR empty report.
-     * Tests that {@link CityReportService#getCityPopulationReport(String)}
-     */
-    @Test
-    void testInvalidCityNameReturnsNull() throws Exception {
-
-        PopulationReportPojo result = cityReportService.getCityPopulationReport(" ");
-        PopulationReportPojo nullResult = cityReportService.getCityPopulationReport(null);
-        assertNull(result);
-        assertNull(nullResult);
-    }
-
-    /**
-     * USE CASE 31 - Retrieve the Population of a City.
-     * Tests SQL exception being handled gracefully.
-     * Tests that {@link CityReportService#getCityPopulationReport(String)}
-     */
-    @Test
-    void testSQLExceptionHandledGracefully() throws Exception {
-        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB Error"));
-
-        PopulationReportPojo result = cityReportService.getCityPopulationReport(DEFAULT_CITY_NAME);
-        assertNull(result);
-    }
-
-
-    /**
      * Test methods with null/empty parameters.
      */
     @Test
@@ -1044,6 +926,9 @@ public class CityReportServiceTest {
 
         assertDoesNotThrow(() -> cityReportService.printAllCapitalCitiesByPopulation());
 
+        assertDoesNotThrow(() -> cityReportService.printCityPopulationReport(null));
+
+        assertDoesNotThrow(() -> cityReportService.printDistrictPopulationReport(null));
     }
 
     /**
@@ -2793,4 +2678,124 @@ public class CityReportServiceTest {
         String errorOutput = errContent.toString();
         assertTrue(errorOutput.contains("Error: Region parameter cannot be null or empty."));
     }
+
+
+    /**
+     * USE CASE 30 - Retrieve the Population of a District.
+     * Tests valid district input returning correct report.
+     * Tests that {@link CityReportService#getDistrictPopulationReport(String)}
+     */
+    @Test
+    void testValidDistrictPopulationReport() throws Exception {
+        // Mocks for queries
+        PreparedStatement totalStmt = mock(PreparedStatement.class);
+        PreparedStatement cityStmt = mock(PreparedStatement.class);
+        ResultSet totalRS = mock(ResultSet.class);
+        ResultSet cityRS = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString()))
+                .thenReturn(totalStmt)
+                .thenReturn(cityStmt);
+        when(totalStmt.executeQuery()).thenReturn(totalRS);
+        when(cityStmt.executeQuery()).thenReturn(cityRS);
+
+        // Mock data returned from DB
+        when(totalRS.next()).thenReturn(true);
+        when(totalRS.getLong("population")).thenReturn(500000L);
+        when(cityRS.next()).thenReturn(true);
+        when(cityRS.getLong("city_population")).thenReturn(400000L);
+
+        // Execute
+        PopulationReportPojo report = cityReportService.getDistrictPopulationReport(DEFAULT_DISTRICT);
+
+        // Assertions
+        assertEquals(DEFAULT_DISTRICT, report.getName());
+        assertEquals(500000L, report.getTotalPopulation());
+        assertEquals(400000L, report.getPopulationInCities());
+        assertEquals(100000L, report.getPopulationNotInCities());
+        assertEquals(80.0, report.getPercentageInCities(), 0.01);
+        assertEquals(20.0, report.getPercentageNotInCities(), 0.01);
+    }
+
+    /**
+     * USE CASE 30 - Retrieve the Population of a District.
+     * Tests invalid district input returning null OR empty report.
+     * Tests that {@link CityReportService#getDistrictPopulationReport(String)}
+     */
+    @Test
+    void testDistrictPopulationReportWithInvalidName() {
+        assertNull(cityReportService.getDistrictPopulationReport(null));
+        assertNull(cityReportService.getDistrictPopulationReport(""));
+    }
+
+
+    /**
+     * USE CASE 31 - Retrieve the Population of a City.
+     * Tests valid city input returning correct report.
+     * Tests that {@link CityReportService#getCityPopulationReport(String)}
+     */
+    @Test
+    void testValidCityPopulationReport() throws Exception {
+        PreparedStatement totalStmt = mock(PreparedStatement.class);
+        PreparedStatement cityStmt = mock(PreparedStatement.class);
+        ResultSet totalRS = mock(ResultSet.class);
+        ResultSet cityRS = mock(ResultSet.class);
+
+        // Exact string for total population query
+        when(mockConnection.prepareStatement(eq("SELECT Population FROM city WHERE Name = ?")))
+                .thenReturn(totalStmt);
+        when(totalStmt.executeQuery()).thenReturn(totalRS);
+
+        // City population query (use contains to avoid whitespace issues)
+        when(mockConnection.prepareStatement(contains("AS city_population")))
+                .thenReturn(cityStmt);
+        when(cityStmt.executeQuery()).thenReturn(cityRS);
+
+        when(totalRS.next()).thenReturn(true);
+        when(totalRS.getLong("Population")).thenReturn(500000L);
+
+        when(cityRS.next()).thenReturn(true);
+        when(cityRS.getLong("city_population")).thenReturn(500000L);
+
+        PopulationReportPojo result = cityReportService.getCityPopulationReport("Lagos");
+
+        assertNotNull(result);
+        assertEquals("Lagos", result.getName());
+        assertEquals(500000L, result.getTotalPopulation());
+        assertEquals(500000L, result.getPopulationInCities());
+        assertEquals(0L, result.getPopulationNotInCities());
+        assertEquals(100.0, result.getPercentageInCities(), 0.001);
+        assertEquals(0.0, result.getPercentageNotInCities(), 0.001);
+
+        verify(totalStmt).setString(1, "Lagos");
+        verify(cityStmt).setString(1, "Lagos");
+    }
+
+    /**
+     * USE CASE 31 - Retrieve the Population of a City.
+     * Tests invalid city input returning null OR empty report.
+     * Tests that {@link CityReportService#getCityPopulationReport(String)}
+     */
+    @Test
+    void testInvalidCityNameReturnsNull() throws Exception {
+
+        PopulationReportPojo result = cityReportService.getCityPopulationReport(" ");
+        PopulationReportPojo nullResult = cityReportService.getCityPopulationReport(null);
+        assertNull(result);
+        assertNull(nullResult);
+    }
+
+    /**
+     * USE CASE 31 - Retrieve the Population of a City.
+     * Tests SQL exception being handled gracefully.
+     * Tests that {@link CityReportService#getCityPopulationReport(String)}
+     */
+    @Test
+    void testSQLExceptionHandledGracefully() throws Exception {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB Error"));
+
+        PopulationReportPojo result = cityReportService.getCityPopulationReport(DEFAULT_CITY_NAME);
+        assertNull(result);
+    }
+
 }

@@ -317,42 +317,41 @@ public class CountryReportService {
         PopulationReportPojo report = new PopulationReportPojo();
         report.setName(regionName);
 
-        try {
-            // Get total population of the region
-            String totalQuery = "SELECT SUM(population) AS total_population FROM country WHERE region = ?";
-            PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+        // Queries
+        String totalQuery = "SELECT SUM(population) AS total_population FROM country WHERE region = ?";
+        String cityQuery = """
+                SELECT SUM(city.population) AS city_population
+                FROM city
+                INNER JOIN country ON city.CountryCode = country.Code
+                WHERE country.Region = ?
+                """;
+
+        try (PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+             PreparedStatement stmtCity = connection.prepareStatement(cityQuery)) {
+            // Total population
             stmtTotal.setString(1, regionName);
-            ResultSet rsTotal = stmtTotal.executeQuery();
-
-            if (rsTotal.next()) {
-                totalPopulation = rsTotal.getLong("total_population");
+            try (ResultSet rsTotal = stmtTotal.executeQuery()) {
+                if (rsTotal.next()) {
+                    totalPopulation = rsTotal.getLong("total_population");
+                }
             }
 
-            // Get population living in cities within the region
-            String cityQuery = """
-                        SELECT SUM(city.population) AS city_population
-                        FROM city
-                        INNER JOIN country ON city.CountryCode = country.Code
-                        WHERE country.Region = ?
-                    """;
-            PreparedStatement stmtCity = connection.prepareStatement(cityQuery);
+            // City population
             stmtCity.setString(1, regionName);
-            ResultSet rsCity = stmtCity.executeQuery();
-
-            if (rsCity.next()) {
-                cityPopulation = rsCity.getLong("city_population");
+            try (ResultSet rsCity = stmtCity.executeQuery()) {
+                if (rsCity.next()) {
+                    cityPopulation = rsCity.getLong("city_population");
+                }
             }
 
-            // Compute derived values
+            // Derived values
             long nonCityPopulation = totalPopulation - cityPopulation;
             double cityPercentage = totalPopulation > 0
                     ? ((cityPopulation * 100.0) / totalPopulation)
                     : 0.0;
-
-            // Calculate non-city percentage
             double nonCityPercentage = 100.0 - cityPercentage;
 
-            // Fill the report
+            // Fill report
             report.setTotalPopulation(totalPopulation);
             report.setPopulationInCities(cityPopulation);
             report.setPopulationNotInCities(nonCityPopulation);
@@ -364,23 +363,21 @@ public class CountryReportService {
         } catch (SQLException e) {
             System.err.println("SQL Error retrieving population report: " + e.getMessage());
             return null;
-        } finally {
-            disconnect();
         }
     }
 
     /**
      * USE CASE 28: Produce a Population Report for a Region.
      * Prints and returns the population report for a given region.
+     *
      * @param defaultRegion Name of the region
-     * @return The PopulationReportPojo containing the population details for the region, or null if not found.
      */
-    public PopulationReportPojo printRegionPopulationReport(String defaultRegion) {
+    public void printRegionPopulationReport(String defaultRegion) {
         PopulationReportPojo report = getRegionPopulationReport(defaultRegion);
 
         if (report == null) {
             System.err.println("Error: No population data found for region: " + defaultRegion);
-            return null;
+            return;
         }
 
         System.out.println("========================================");
@@ -394,7 +391,6 @@ public class CountryReportService {
                 " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
         System.out.println("========================================");
 
-        return report;
     }
 
     /**
@@ -415,42 +411,42 @@ public class CountryReportService {
         PopulationReportPojo report = new PopulationReportPojo();
         report.setName(countryName);
 
-        try {
+        String totalQuery = "SELECT Population FROM country WHERE Name = ?";
+        String cityQuery = """
+                SELECT SUM(city.Population) AS city_population
+                FROM city
+                INNER JOIN country ON city.CountryCode = country.Code
+                WHERE country.Name = ?
+                """;
+
+        try (PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
+                PreparedStatement stmtCity = connection.prepareStatement(cityQuery)) {
             // Get total population
-            String totalQuery = "SELECT Population FROM country WHERE Name = ?";
-            PreparedStatement stmtTotal = connection.prepareStatement(totalQuery);
             stmtTotal.setString(1, countryName);
-            ResultSet rsTotal = stmtTotal.executeQuery();
-
-            if (rsTotal.next()) {
-                totalPopulation = rsTotal.getLong("Population");
+            try (ResultSet rsTotal = stmtTotal.executeQuery()) {
+                if (rsTotal.next()) {
+                    totalPopulation = rsTotal.getLong("Population");
+                }
             }
 
-            // Get population living in cities
-            String cityQuery = """
-                        SELECT SUM(city.Population) AS city_population
-                        FROM city
-                        INNER JOIN country ON city.CountryCode = country.Code
-                        WHERE country.Name = ?
-                    """;
-            PreparedStatement stmtCity = connection.prepareStatement(cityQuery);
+            // Get city population
             stmtCity.setString(1, countryName);
-            ResultSet rsCity = stmtCity.executeQuery();
-
-
-            if (rsCity.next()) {
-                cityPopulation = rsCity.getLong("city_population");
+            try (ResultSet rsCity = stmtCity.executeQuery()) {
+                if (rsCity.next()) {
+                    cityPopulation = rsCity.getLong("city_population");
+                }
             }
 
-            // Calculate non-city population
+            // Derived calculations
             long nonCityPopulation = totalPopulation - cityPopulation;
 
-            // Calculate percentages safely to avoid division by zero
             double cityPercentage = totalPopulation > 0
                     ? ((cityPopulation * 100.0) / totalPopulation)
                     : 0.0;
+
             double nonCityPercentage = 100.0 - cityPercentage;
 
+            // Fill report
             report.setTotalPopulation(totalPopulation);
             report.setPopulationInCities(cityPopulation);
             report.setPopulationNotInCities(nonCityPopulation);
@@ -462,23 +458,22 @@ public class CountryReportService {
         } catch (SQLException e) {
             System.err.println("SQL Error retrieving population report: " + e.getMessage());
             return null;
-        } finally {
-            disconnect();
         }
     }
+
 
     /**
      * USE CASE 29: Produce a Population Report for a Country.
      * Prints and returns the population report for a given country.
+     *
      * @param countryName Name of the country
-     * @return The PopulationReportPojo containing the population details for the country, or null if not found.
      */
-    public PopulationReportPojo printCountryPopulationReport(String countryName) {
+    public void printCountryPopulationReport(String countryName) {
         PopulationReportPojo report = getCountryPopulationReport(countryName);
 
         if (report == null) {
             System.err.println("Error: No population data found for country: " + countryName);
-            return null;
+            return;
         }
 
         System.out.println("========================================");
@@ -492,9 +487,7 @@ public class CountryReportService {
                 " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
         System.out.println("========================================");
 
-        return report;
     }
-
 
 
     /**
@@ -507,59 +500,59 @@ public class CountryReportService {
     public List<LanguageReportPojo> getMajorLanguageReport() {
         List<LanguageReportPojo> languageReports = new ArrayList<>();
 
-        try {
+        String totalWorldQuery = "SELECT SUM(Population) AS world_population FROM country";
+
+        String languagesQuery = """
+            SELECT Language,
+                   SUM(country.Population * countrylanguage.Percentage / 100) AS speakers
+            FROM countrylanguage
+            INNER JOIN country ON country.Code = countrylanguage.CountryCode
+            WHERE Language IN ('Chinese', 'English', 'Hindi', 'Spanish', 'Arabic')
+            GROUP BY Language
+            ORDER BY speakers DESC
+            """;
+
+        try (PreparedStatement stmtWorldPop = connection.prepareStatement(totalWorldQuery);
+             PreparedStatement stmtLanguages = connection.prepareStatement(languagesQuery)) {
+
             long worldPopulation = 0;
 
-            //1. Get total world population
-            String totalWorldQuery = "SELECT SUM(Population) AS world_population FROM country";
-            PreparedStatement stmtWorldPop = connection.prepareStatement(totalWorldQuery);
-            ResultSet rsWorldPop = stmtWorldPop.executeQuery();
-            if (rsWorldPop.next()) {
-                worldPopulation = rsWorldPop.getLong("world_population");
+            // 1. Get total world population
+            try (ResultSet rsWorldPop = stmtWorldPop.executeQuery()) {
+                if (rsWorldPop.next()) {
+                    worldPopulation = rsWorldPop.getLong("world_population");
+                }
             }
 
-
+            // Validate world population
             if (worldPopulation == 0) {
                 System.err.println("Error: Could not determine world population.");
                 return languageReports;
             }
 
             // 2. Get speakers for the five major languages
-            String languagesQuery = """
-                        SELECT Language,
-                               SUM(country.Population * countrylanguage.Percentage / 100) AS speakers
-                        FROM countrylanguage
-                        INNER JOIN country ON country.Code = countrylanguage.CountryCode
-                        WHERE Language IN ('Chinese', 'English', 'Hindi', 'Spanish', 'Arabic')
-                        GROUP BY Language
-                        ORDER BY speakers DESC
-                    """;
+            try (ResultSet rsLanguages = stmtLanguages.executeQuery()) {
+                while (rsLanguages.next()) {
+                    String language = rsLanguages.getString("Language");
+                    long speakers = rsLanguages.getLong("speakers");
 
+                    double percentage = (speakers > 0 && worldPopulation > 0)
+                            ? ((speakers * 100.0) / worldPopulation)
+                            : 0.0;
 
-            PreparedStatement stmtLanguages = connection.prepareStatement(languagesQuery);
-            ResultSet rsLanguages = stmtLanguages.executeQuery();
-            while (rsLanguages.next()) {
-                String language = rsLanguages.getString("Language");
-                long speakers = rsLanguages.getLong("speakers");
+                    LanguageReportPojo report = new LanguageReportPojo();
+                    report.setLanguage(language);
+                    report.setSpeakers(speakers);
+                    report.setWorldPopulation(worldPopulation);
+                    report.setPercentageOfWorld(percentage);
 
-                double percentage = worldPopulation > 0
-                        ? ((speakers * 100.0) / worldPopulation)
-                        : 0.0;
-
-                LanguageReportPojo report = new LanguageReportPojo();
-                report.setLanguage(language);
-                report.setSpeakers(speakers);
-                report.setWorldPopulation(worldPopulation);
-                report.setPercentageOfWorld(percentage);
-
-                languageReports.add(report);
+                    languageReports.add(report);
+                }
             }
 
         } catch (SQLException e) {
             System.err.println("SQL Error retrieving major language report: " + e.getMessage());
             return Collections.emptyList();
-        } finally {
-            disconnect();
         }
 
         return languageReports;
@@ -568,16 +561,13 @@ public class CountryReportService {
 
     /**
      * USE CASE 32: Produce a Report on Speakers of Major Languages.
-     *
-     * @return A list of LanguageReportPojo objects containing each language, number of speakers,
-     *         and their percentage of the world population.
      */
-    public List<LanguageReportPojo> printMajorLanguageReport() {
+    public void printMajorLanguageReport() {
         List<LanguageReportPojo> reports = getMajorLanguageReport();
 
         if (reports == null || reports.isEmpty()) {
             System.err.println("Error: No language report data found.");
-            return Collections.emptyList();
+            return;
         }
 
         System.out.println("===============================================================");
@@ -595,19 +585,6 @@ public class CountryReportService {
 
         System.out.println("===============================================================");
 
-        return reports;
-    }
-
-
-    public void disconnect() {
-        if (connection != null) {
-            try {
-                // Close connection
-                connection.close();
-            } catch (Exception e) {
-                System.out.println("Error closing connection to database");
-            }
-        }
     }
 
 
