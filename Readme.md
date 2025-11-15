@@ -12,13 +12,22 @@
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=develop)
 
+[![codecov](https://codecov.io/gh/rzerradnapier/devops-project/branch/develop/graph/badge.svg)](https://codecov.io/gh/rzerradnapier/devops-project)
+
+
 ### Release branch
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=release)
 
+[![codecov](https://codecov.io/gh/rzerradnapier/devops-project/branch/release/graph/badge.svg)](https://codecov.io/gh/rzerradnapier/devops-project)
+
+
 ### Master branch
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=master)
+
+[![codecov](https://codecov.io/gh/rzerradnapier/devops-project/branch/master/graph/badge.svg)](https://codecov.io/gh/rzerradnapier/devops-project)
+
 
 ---
 

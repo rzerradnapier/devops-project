@@ -34,11 +34,11 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Integration Tests and CodeCov
+      - name: Integration Tests with code coverage
         run: |
           docker build -t database ./db 
           docker run --name countries -dp 33060:3306 database
-          mvn -Dtest=com.napier.devops.AppIntegrationTest test
+          mvn verify
           docker stop countries
           docker rm countries
           docker image rm database

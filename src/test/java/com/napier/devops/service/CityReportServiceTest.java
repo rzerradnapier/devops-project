@@ -98,6 +98,41 @@ public class CityReportServiceTest {
     }
 
     /**
+     * Test getAllCitiesByPopulationLargestToSmallest for empty result set.
+     */
+    @Test
+    void testGetAllCitiesByPopulationLargestToSmallest_EmptyResultSet() throws SQLException {
+        // Setup mock behavior for empty result set
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        when(mockResultSet.next()).thenReturn(false);
+
+        // Call the method
+        List<City> cities = cityReportService.getAllCitiesByPopulationLargestToSmallest();
+
+        // Verify
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+    /**
+     * Test getAllCitiesByPopulationLargestToSmallest handles SQL exceptions gracefully.
+     */
+    @Test
+    void testGetAllCitiesByPopulationLargestToSmallest_SQLExceptionHandledGracefully() throws SQLException {
+        // Setup mock to throw SQL exception
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        // Call the method
+        List<City> cities = cityReportService.getAllCitiesByPopulationLargestToSmallest();
+
+        // Verify
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+    /**
      * Test getAllCitiesInContinentByPopulationLargestToSmallest with mock data.
      * USE CASE 8 Test
      */
@@ -2796,6 +2831,96 @@ public class CityReportServiceTest {
 
         PopulationReportPojo result = cityReportService.getCityPopulationReport(DEFAULT_CITY_NAME);
         assertNull(result);
+    }
+
+    /**
+     * USE CASE 30 - printDistrictPopulationReport
+     * When a valid report is returned, it should print a nicely formatted district report
+     * and return the same report instance.
+     */
+    @Test
+    void testPrintDistrictPopulationReport_ValidReport() {
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName("California");
+        report.setTotalPopulation(500_000L);
+        report.setPopulationInCities(300_000L);
+        report.setPopulationNotInCities(200_000L);
+        report.setPercentageInCities(60.0);
+        report.setPercentageNotInCities(40.0);
+
+        doReturn(report).when(spyService).getDistrictPopulationReport("California");
+
+        PopulationReportPojo returned = spyService.printDistrictPopulationReport("California");
+
+        assertSame(report, returned, "printDistrictPopulationReport should return the same report instance");
+
+        String output = outContent.toString();
+        assertTrue(output.contains("DISTRICT POPULATION REPORT"));
+        assertTrue(output.contains("District: California"));
+        assertTrue(output.contains("Total Population: 500,000"));
+        assertTrue(output.contains("Population in Cities: 300,000 (60.00%)"));
+        assertTrue(output.contains("Population Not in Cities: 200,000 (40.00%)"));
+    }
+
+    /**
+     * USE CASE 30 - printDistrictPopulationReport
+     * When underlying getDistrictPopulationReport returns null,
+     * it should print an error and return null.
+     */
+    @Test
+    void testPrintDistrictPopulationReport_NoData() {
+        doReturn(null).when(spyService).getDistrictPopulationReport("UnknownDistrict");
+
+        PopulationReportPojo returned = spyService.printDistrictPopulationReport("UnknownDistrict");
+
+        assertNull(returned, "Should return null when no report is available");
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: No population data found for district: UnknownDistrict"));
+    }
+
+    /**
+     * USE CASE 31 - printCityPopulationReport
+     * When a valid report is returned, it should print a nicely formatted city report
+     * and return the same report instance.
+     */
+    @Test
+    void testPrintCityPopulationReport_ValidReport() {
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName("Lagos");
+        report.setTotalPopulation(8_000_000L);
+        report.setPopulationInCities(8_000_000L);
+        report.setPopulationNotInCities(0L);
+        report.setPercentageInCities(100.0);
+        report.setPercentageNotInCities(0.0);
+
+        doReturn(report).when(spyService).getCityPopulationReport("Lagos");
+
+        PopulationReportPojo returned = spyService.printCityPopulationReport("Lagos");
+
+        assertSame(report, returned, "printCityPopulationReport should return the same report instance");
+
+        String output = outContent.toString();
+        assertTrue(output.contains("CITY POPULATION REPORT"));
+        assertTrue(output.contains("City: Lagos"));
+        assertTrue(output.contains("Total Population: 8,000,000"));
+        assertTrue(output.contains("Population in City: 8,000,000 (100.00%)"));
+        assertTrue(output.contains("Population Not in City: 0 (0.00%)"));
+    }
+
+    /**
+     * USE CASE 31 - printCityPopulationReport
+     * When underlying getCityPopulationReport returns null,
+     * it should print an error and return null.
+     */
+    @Test
+    void testPrintCityPopulationReport_NoData() {
+        doReturn(null).when(spyService).getCityPopulationReport("UnknownCity");
+
+        PopulationReportPojo returned = spyService.printCityPopulationReport("UnknownCity");
+
+        assertNull(returned, "Should return null when no city report is available");
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: No population data found for city: UnknownCity"));
     }
 
 }
