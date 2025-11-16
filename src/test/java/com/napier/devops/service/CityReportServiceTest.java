@@ -3047,4 +3047,92 @@ public class CityReportServiceTest {
         assertTrue(output.contains("Total capitals found: 1"));
     }
 
+    /**
+     * USE CASE 18 - getAllCapitalCitiesInContinentByPopulation
+     * Test with SQL exception.
+     */
+    @Test
+    void testGetAllCapitalCitiesInContinentByPopulation_SQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        List<City> capitals = cityReportService.getAllCapitalCitiesInContinentByPopulation("Asia");
+
+        assertNotNull(capitals);
+        assertTrue(capitals.isEmpty());
+        String output = outContent.toString();
+        assertTrue(output.contains("Query failed: Database error"));
+    }
+
+    /**
+     * USE CASE 18 - printAllCapitalCitiesInContinentByPopulation
+     * Test with no data found.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInContinentByPopulation_NoData() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        cityReportService.printAllCapitalCitiesInContinentByPopulation("Antarctica");
+
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: No capital city data found for continent: Antarctica"));
+    }
+
+    /**
+     * USE CASE 18 - printAllCapitalCitiesInContinentByPopulation
+     * Test with null continent.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInContinentByPopulation_NullContinent() {
+        cityReportService.printAllCapitalCitiesInContinentByPopulation(null);
+
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: Continent parameter cannot be null or empty"));
+    }
+
+    /**
+     * USE CASE 19 - getAllCapitalCitiesInRegionByPopulation
+     * Test with SQL exception.
+     */
+    @Test
+    void testGetAllCapitalCitiesInRegionByPopulation_SQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        List<City> capitals = cityReportService.getAllCapitalCitiesInRegionByPopulation("Western Europe");
+
+        assertNotNull(capitals);
+        assertTrue(capitals.isEmpty());
+        String output = outContent.toString();
+        assertTrue(output.contains("Query failed: Database error"));
+    }
+
+    /**
+     * USE CASE 19 - printAllCapitalCitiesInRegionByPopulation
+     * Test with no data found.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInRegionByPopulation_NoData() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        cityReportService.printAllCapitalCitiesInRegionByPopulation("Unknown Region");
+
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: No capital city data found for region: Unknown Region"));
+    }
+
+    /**
+     * USE CASE 19 - printAllCapitalCitiesInRegionByPopulation
+     * Test with null region.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInRegionByPopulation_NullRegion() {
+        cityReportService.printAllCapitalCitiesInRegionByPopulation(null);
+
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: Region parameter cannot be null or empty"));
+    }
+
 }
