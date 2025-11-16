@@ -700,6 +700,140 @@ public class CityReportService {
     }
 
     /**
+     * USE CASE 18: Get all capital cities in a continent organized by population descending.
+     * Produce a Report on Capital Cities in a Continent by Population
+     *
+     * @param continent The continent to filter capital cities by
+     * @return A List of City objects containing details of all capital cities in the continent, ordered by population descending.
+     */
+    public List<City> getAllCapitalCitiesInContinentByPopulation(String continent) {
+        List<City> capitals = new ArrayList<>();
+
+        if (continent == null || continent.trim().isEmpty()) {
+            System.err.println("Error: Continent parameter cannot be null or empty.");
+            return capitals;
+        }
+
+        String sql = """
+                SELECT city.ID, city.Name AS CityName, city.District, city.CountryCode, city.Population
+                FROM city
+                INNER JOIN country ON country.Capital = city.ID
+                WHERE country.Continent = ?
+                ORDER BY city.Population DESC
+                """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, continent);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                City city = new City();
+                city.setId(rs.getInt("ID"));
+                city.setName(rs.getString("CityName"));
+                city.setDistrict(rs.getString("District"));
+                city.setCountryCode(rs.getString("CountryCode"));
+                city.setPopulation(rs.getInt("Population"));
+                capitals.add(city);
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+
+        return capitals;
+    }
+
+    /**
+     * Print all capital cities in a continent sorted by population in descending order.
+     * USE CASE 18: Produce a Report on Capital Cities in a Continent by Population
+     *
+     * @param continent The continent to filter capital cities by
+     */
+    public void printAllCapitalCitiesInContinentByPopulation(String continent) {
+        if (continent == null || continent.trim().isEmpty()) {
+            System.err.println("Error: Continent parameter cannot be null or empty.");
+            return;
+        }
+
+        List<City> cityList = getAllCapitalCitiesInContinentByPopulation(continent);
+
+        if (cityList == null || cityList.isEmpty()) {
+            System.err.println("Error: No capital city data found for continent: " + continent);
+        } else {
+            System.out.println("Report: All Capital Cities in " + continent + " by Population (Largest to Smallest)");
+            System.out.println("Total capitals found: " + cityList.size());
+            System.out.println("=".repeat(100));
+            cityList.forEach(city -> System.out.println(city.toString()));
+        }
+    }
+
+    /**
+     * USE CASE 19: Get all capital cities in a region organized by population descending.
+     * Produce a Report on Capital Cities in a Region by Population
+     *
+     * @param region The region to filter capital cities by
+     * @return A List of City objects containing details of all capital cities in the region, ordered by population descending.
+     */
+    public List<City> getAllCapitalCitiesInRegionByPopulation(String region) {
+        List<City> capitals = new ArrayList<>();
+
+        if (region == null || region.trim().isEmpty()) {
+            System.err.println("Error: Region parameter cannot be null or empty.");
+            return capitals;
+        }
+
+        String sql = """
+                SELECT city.ID, city.Name AS CityName, city.District, city.CountryCode, city.Population
+                FROM city
+                INNER JOIN country ON country.Capital = city.ID
+                WHERE country.Region = ?
+                ORDER BY city.Population DESC
+                """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, region);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                City city = new City();
+                city.setId(rs.getInt("ID"));
+                city.setName(rs.getString("CityName"));
+                city.setDistrict(rs.getString("District"));
+                city.setCountryCode(rs.getString("CountryCode"));
+                city.setPopulation(rs.getInt("Population"));
+                capitals.add(city);
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+
+        return capitals;
+    }
+
+    /**
+     * Print all capital cities in a region sorted by population in descending order.
+     * USE CASE 19: Produce a Report on Capital Cities in a Region by Population
+     *
+     * @param region The region to filter capital cities by
+     */
+    public void printAllCapitalCitiesInRegionByPopulation(String region) {
+        if (region == null || region.trim().isEmpty()) {
+            System.err.println("Error: Region parameter cannot be null or empty.");
+            return;
+        }
+
+        List<City> cityList = getAllCapitalCitiesInRegionByPopulation(region);
+
+        if (cityList == null || cityList.isEmpty()) {
+            System.err.println("Error: No capital city data found for region: " + region);
+        } else {
+            System.out.println("Report: All Capital Cities in " + region + " by Population (Largest to Smallest)");
+            System.out.println("Total capitals found: " + cityList.size());
+            System.out.println("=".repeat(100));
+            cityList.forEach(city -> System.out.println(city.toString()));
+        }
+    }
+
+    /**
      * USE CASE 20: Get top N capital cities in the world organized by population descending.
      * Produce a Report on Top N Capital Cities in the World
      *
