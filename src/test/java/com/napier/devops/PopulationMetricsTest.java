@@ -97,6 +97,7 @@ public class PopulationMetricsTest {
     /**
      * Test for setAll method.
      */
+
     @Test
     public void testSetAll() {
         String name = "Europe";
@@ -107,8 +108,14 @@ public class PopulationMetricsTest {
         double cityPerc = 66.67;
         double nonCityPerc = 33.33;
 
-        populationmetrics.setAll(name, type, total, city, nonCity, cityPerc, nonCityPerc);
+        // Act
+        PopulationMetrics result = populationmetrics.setAll(name, type, total, city, nonCity, cityPerc, nonCityPerc);
 
+        // Verify the chaining behavior
+
+        assertSame(populationmetrics, result);
+
+        // Verify all fields were set correctly
         assertEquals(name, populationmetrics.getNameOfArea());
         assertEquals(type, populationmetrics.getReportType());
         assertEquals(total, populationmetrics.getTotalPopulation());
