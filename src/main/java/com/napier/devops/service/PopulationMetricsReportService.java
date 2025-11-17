@@ -359,7 +359,7 @@ public class PopulationMetricsReportService {
 
         PopulationMetrics continent = getPopulationContinentReport(continentName);
 
-        // Define the separator line (or reuse a class-level constant if available)
+        // Define the separator line
         String separator = "=================================================================================================================================================";
 
         // Check if the object is null
