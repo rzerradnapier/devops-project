@@ -370,7 +370,7 @@ public class PopulationMetricsReportService {
 
         // Header
         System.out.println(separator);
-        // Modified header line to fit the style of the World Report
+        // Modified header line
         System.out.println("|                                      USE CASE 27: Continent Total Population Report (" + continentName + ")                                     |");
         System.out.println(separator);
 
