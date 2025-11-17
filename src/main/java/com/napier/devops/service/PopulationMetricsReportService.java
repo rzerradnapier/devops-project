@@ -150,13 +150,13 @@ public class PopulationMetricsReportService {
         System.out.println("=================================================================================================================================================");
         System.out.println("|                                  USE CASE: 24 Produce a Population Report for Regions                                                       |");
         System.out.println("=================================================================================================================================================");
-        System.out.printf("| %-25s | %16s | %18s | %18s | %18s | %18s |%n",
-                "Region", "Total Population", "City Population", "% City", "Non-City Population", "% Non-City");
-        System.out.println("|---------------------------|------------------|--------------------|--------------------|--------------------|--------------------|");
+
+
+
 
 
         for (PopulationMetrics rp : regionList) {
-
+            // Print the simple string format
             System.out.println(rp.toString());
         }
 
@@ -222,17 +222,11 @@ public class PopulationMetricsReportService {
         System.out.println("=================================================================================================================================================");
         System.out.println("|                                               USE CASE 25: Produce a Population Report for Countries                                            |");
         System.out.println("=================================================================================================================================================");
-        // Headers for the COUNTRY format
-        System.out.printf("| %-47s | %-18s | %-18s | %-12s | %-18s | %-11s |%n",
-                "Country Name", "Total Population", "City Population", "% City", "Non-City Population", "% Non-City");
-
-        System.out.println("|-------------------------------------------------|--------------------|--------------------|--------------|--------------------|-------------|");
 
 
         for (PopulationMetrics populationMetrics : countryPopulationList) {
 
-            // Simply call toString().
-
+            // Prints the data in the simple string format defined.
             System.out.println(populationMetrics.toString());
         }
         System.out.println("=================================================================================================================================================");
@@ -287,12 +281,14 @@ public class PopulationMetricsReportService {
 
         // Header
         System.out.println(separator);
-
         System.out.println("|                                                         USE CASE 26: World Population Report                                                          |");
         System.out.println(separator);
 
-        // Data Line
-        System.out.printf("| Total World Population: %-123s |\n", population);
+        //Structured string format
+        System.out.println("World {\t" +
+                "  name='The World',\t" +
+                "  totalPopulation=" + population + "\t" +
+                '}');
 
         // Footer
         System.out.println(separator);
@@ -353,9 +349,18 @@ public class PopulationMetricsReportService {
      *
      * @param continentName The name of the continent to display.
      */
+    /**
+     * Prints the Population of a Continent.
+     * Use Case 27 (Total Population Only).
+     *
+     * @param continentName The name of the continent to display.
+     */
     public void printPopulationContinentReport(String continentName) {
 
         PopulationMetrics continent = getPopulationContinentReport(continentName);
+
+        // Define the separator line (or reuse a class-level constant if available)
+        String separator = "=================================================================================================================================================";
 
         // Check if the object is null
         if (continent == null) {
@@ -364,7 +369,10 @@ public class PopulationMetricsReportService {
         }
 
         // Header
-        System.out.println("\n--- USE CASE 27: Continent Total Population Report (" + continentName + ") ---");
+        System.out.println(separator);
+        // Modified header line to fit the style of the World Report
+        System.out.println("|                                      USE CASE 27: Continent Total Population Report (" + continentName + ")                                     |");
+        System.out.println(separator);
 
         // Display ONLY the total population
         System.out.println("Continent {\t" +
@@ -372,6 +380,7 @@ public class PopulationMetricsReportService {
                 "  totalPopulation=" + continent.getTotalPopulation() + "\t" +
                 '}');
 
-        System.out.println("----------------------------------------------------------------------\n");
+        // Footer
+        System.out.println(separator);
     }
 }
