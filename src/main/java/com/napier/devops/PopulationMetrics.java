@@ -114,30 +114,24 @@ public class PopulationMetrics {
 
         switch (reportType) {
             case REGION:
-
-                return String.format(
-                        "| %-25s | %,16d | %,18d | %17.2f%% | %,18d | %17.2f%% |",
-                        nameOfArea,
-                        totalPopulation,
-                        cityPopulation,
-                        cityPopulationPercentage,
-                        nonCityPopulation,
-                        nonCityPopulationPercentage
-                );
+                return "Region {\t" +
+                        "  name='" + nameOfArea + "',\t" +
+                        "  totalPopulation=" + totalPopulation + ",\t" +
+                        "  cityPopulation=" + cityPopulation + ",\t" +
+                        "  nonCityPopulation=" + nonCityPopulation + ",\t" +
+                        "  cityPopPercentage=" + String.format("%.2f", cityPopulationPercentage) + "%,\t" +
+                        "  nonCityPopPercentage=" + String.format("%.2f", nonCityPopulationPercentage) + "%\t" +
+                        '}';
 
             case COUNTRY:
-
-                String cityPercentStr = String.format("%.2f%%", cityPopulationPercentage);
-                String nonCityPercentStr = String.format("%.2f%%", nonCityPopulationPercentage);
-
-                return String.format("%-47s %-20s %-20s %-12s %-20s %-11s",
-                        nameOfArea,
-                        totalPopulation,
-                        cityPopulation,
-                        cityPercentStr,
-                        nonCityPopulation,
-                        nonCityPercentStr
-                );
+                return "Country {\t" +
+                        "  name='" + nameOfArea + "',\t" +
+                        "  totalPopulation=" + totalPopulation + ",\t" +
+                        "  cityPopulation=" + cityPopulation + ",\t" +
+                        "  nonCityPopulation=" + nonCityPopulation + ",\t" +
+                        "  cityPopPercentage=" + String.format("%.2f", cityPopulationPercentage) + "%,\t" +
+                        "  nonCityPopPercentage=" + String.format("%.2f", nonCityPopulationPercentage) + "%\t" +
+                        '}';
 
             case CONTINENT:
 
@@ -146,8 +140,8 @@ public class PopulationMetrics {
                         "  totalPopulation=" + totalPopulation + ",\t" +
                         "  cityPopulation=" + cityPopulation + ",\t" +
                         "  nonCityPopulation=" + nonCityPopulation + ",\t" +
-                        "  cityPopPercentage=" + cityPopulationPercentage + "%,\t" +
-                        "  nonCityPopPercentage=" + nonCityPopulationPercentage + "%\t" +
+                        "  cityPopPercentage=" + String.format("%.2f", cityPopulationPercentage) + "%,\t" +
+                        "  nonCityPopPercentage=" + String.format("%.2f", nonCityPopulationPercentage) + "%\t" +
                         '}';
 
             default:

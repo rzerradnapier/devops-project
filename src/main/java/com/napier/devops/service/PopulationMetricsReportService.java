@@ -300,7 +300,7 @@ public class PopulationMetricsReportService {
 
 
     /**
-     * Executes a query to get the full population metrics for a specific continent.
+     * Executes a query to get the full population metrics for a specific continent USE CASE 27.
      */
     public PopulationMetrics getPopulationContinentReport(String continentName) {
 
@@ -349,7 +349,7 @@ public class PopulationMetricsReportService {
 
     /**
      * Prints the Population of a Continent.
-     * Use Case 27.
+     * Use Case 27 (Total Population Only).
      *
      * @param continentName The name of the continent to display.
      */
@@ -364,12 +364,14 @@ public class PopulationMetricsReportService {
         }
 
         // Header
-        System.out.println("\n--- USE CASE 27: Continent Population Report (" + continentName + ") ---");
+        System.out.println("\n--- USE CASE 27: Continent Total Population Report (" + continentName + ") ---");
 
-
-        System.out.println(continent);
+        // Display ONLY the total population
+        System.out.println("Continent {\t" +
+                "  name='" + continent.getNameOfArea() + "',\t" +
+                "  totalPopulation=" + continent.getTotalPopulation() + "\t" +
+                '}');
 
         System.out.println("----------------------------------------------------------------------\n");
     }
-
 }
