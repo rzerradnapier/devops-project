@@ -2,9 +2,8 @@ package com.napier.devops;
 
 import com.napier.devops.service.CityReportService;
 import com.napier.devops.service.CountryReportService;
-import com.napier.devops.service.ContinentReportService;
-import com.napier.devops.service.CountryPopulationReportService;
-import com.napier.devops.service.RegionReportService;
+import com.napier.devops.service.PopulationMetricsReportService;
+
 import java.sql.*;
 
 import static com.napier.constant.Constant.*;
@@ -32,12 +31,8 @@ public class App {
     /**
      * Service for continent-related reports.
      */
-    private ContinentReportService continentReportService;
+    private PopulationMetricsReportService populationMetricsReportService;
 
-
-    private RegionReportService RegionReportService;
-
-    private CountryPopulationReportService CountryPopulationReportService;
 
     /**
      * sets the con object of the app, this is useful for mock testing
@@ -49,9 +44,8 @@ public class App {
         // Initialize services when connection is set
         this.cityReportService = new CityReportService(con);
         this.countryReportService = new CountryReportService(con);
-        this.continentReportService = new ContinentReportService(con);
-        this.RegionReportService = new RegionReportService(con);
-        this.CountryPopulationReportService = new CountryPopulationReportService(con);
+        this.populationMetricsReportService = new PopulationMetricsReportService(con);
+
     }
 
     /**
@@ -86,22 +80,10 @@ public class App {
      *
      * @return ContinentReportService instance
      */
-    public ContinentReportService getContinentReportService() {
-        return this.continentReportService;
-    }
 
-    /**
-     * Gets the Region report service.
-     *
-     * @return RegionReportService instance
-     */
 
-    public RegionReportService getRegionReportService() {
-        return this.RegionReportService;
-    }
-
-    public CountryPopulationReportService getCountryPopulationReportService() {
-        return this.CountryPopulationReportService;
+    public PopulationMetricsReportService getPopulationMetricsReportService() {
+        return this.populationMetricsReportService;
     }
 
     public static void main(String[] args) {
@@ -196,27 +178,19 @@ public class App {
         System.out.println(sampleCountryDetails != null ? sampleCountryDetails.toString() : "No country details found");
 
         System.out.println("\n=== USE CASE 23: Produce a Population Report for Continents ===");
-        //Gets the population for each continent showing the total population, population living in cities (with
-        // %), and population not living in cities (with %).
-        appIns.continentReportService.printContinentPopulationReport();
+        appIns.getPopulationMetricsReportService().printContinentPopulationReport();
 
         System.out.println("\n=== USE CASE 24: Produce a Population Report for Regions ===");
-        // Gets the population for each region showing the total population, population living in cities (with %), and
-        // population not living in cities (with %).
-        appIns.RegionReportService.printRegionPopulationReport();
+        appIns.getPopulationMetricsReportService().printRegionPopulationReport();
 
         System.out.println("\n=== USE CASE 25: Produce a Population Report for Countries ===");
-        // Gets the population for each country showing the total population, population living in cities (with %), and population not
-        // living in cities (with %).
-        appIns.CountryPopulationReportService.printCountryPopulationReport();
+        appIns.getPopulationMetricsReportService().printCountryPopulationReport();
 
         System.out.println("\n=== USE CASE 26: Retrieve the Population of the World ===");
-        // Gets the total population of the world.
-        appIns.CountryPopulationReportService.printWorldPopulationReport();
+        appIns.getPopulationMetricsReportService().printWorldPopulationReport();
 
         System.out.println("\n=== USE CASE 27: Retrieve the Population of a Continent ===");
-        // Gets the total population of a Continent.
-        appIns.continentReportService.printPopulationContinentReport("Asia");
+        appIns.getPopulationMetricsReportService().printPopulationContinentReport("Asia");
 
     }
 
@@ -247,9 +221,7 @@ public class App {
                 // Initialize services after successful connection
                 this.cityReportService = new CityReportService(con);
                 this.countryReportService = new CountryReportService(con);
-                this.continentReportService = new ContinentReportService(con);
-                this.RegionReportService = new RegionReportService(con);
-                this.CountryPopulationReportService = new CountryPopulationReportService (con);
+                this.populationMetricsReportService = new PopulationMetricsReportService (con);
                 break;
             } catch (SQLException sql) {
                 System.out.println("Failed to connect to database attempt " + i);
