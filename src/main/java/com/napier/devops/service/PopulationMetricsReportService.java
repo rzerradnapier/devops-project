@@ -287,7 +287,7 @@ public class PopulationMetricsReportService {
 
         // Header
         System.out.println(separator);
-        // Title centered in the 149-character width
+
         System.out.println("|                                                         USE CASE 26: World Population Report                                                          |");
         System.out.println(separator);
 
