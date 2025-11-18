@@ -49,9 +49,9 @@ public class PopulationMetricsTest {
      */
     @Test
     public void testTotalPopulation() {
-        long pop = 7000000000L;
-        popmet.setTotalPopulation(pop);
-        assertEquals(pop, popmet.getTotalPopulation());
+        long population = 7000000000L;
+        popmet.setTotalPopulation(population);
+        assertEquals(population, popmet.getTotalPopulation());
     }
 
     /**
