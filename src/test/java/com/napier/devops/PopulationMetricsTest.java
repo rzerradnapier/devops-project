@@ -13,15 +13,15 @@ public class PopulationMetricsTest {
 
     // We will use this metrics instance for performing and testing operations on a PopulationMetrics object.
     // It is initialized in each test via the setUp method.
-    private PopulationMetrics populationmetrics;
+    private PopulationMetrics popmet;
 
     /**
-     * Set up the test data.
+     * Set up the data for testing.
      */
     @BeforeEach
     public void setUp() {
         // Initializing a new PopulationMetrics object before each test
-        populationmetrics = new PopulationMetrics();
+        popmet = new PopulationMetrics();
     }
 
     /**
@@ -30,8 +30,8 @@ public class PopulationMetricsTest {
     @Test
     public void testNameOfArea() {
         String name = "Asia";
-        populationmetrics.setNameOfArea(name);
-        assertEquals(name, populationmetrics.getNameOfArea());
+        popmet.setNameOfArea(name);
+        assertEquals(name, popmet.getNameOfArea());
     }
 
     /**
@@ -40,8 +40,8 @@ public class PopulationMetricsTest {
     @Test
     public void testReportType() {
         PopulationMetrics.ReportType type = PopulationMetrics.ReportType.CONTINENT;
-        populationmetrics.setReportType(type);
-        assertEquals(type, populationmetrics.getReportType());
+        popmet.setReportType(type);
+        assertEquals(type, popmet.getReportType());
     }
 
     /**
@@ -50,8 +50,8 @@ public class PopulationMetricsTest {
     @Test
     public void testTotalPopulation() {
         long pop = 7000000000L;
-        populationmetrics.setTotalPopulation(pop);
-        assertEquals(pop, populationmetrics.getTotalPopulation());
+        popmet.setTotalPopulation(pop);
+        assertEquals(pop, popmet.getTotalPopulation());
     }
 
     /**
@@ -59,9 +59,9 @@ public class PopulationMetricsTest {
      */
     @Test
     public void testCityPopulation() {
-        long pop = 5000000000L;
-        populationmetrics.setCityPopulation(pop);
-        assertEquals(pop, populationmetrics.getCityPopulation());
+        long population = 5000000000L;
+        popmet.setCityPopulation(population);
+        assertEquals(population, popmet.getCityPopulation());
     }
 
     /**
@@ -69,9 +69,9 @@ public class PopulationMetricsTest {
      */
     @Test
     public void testNonCityPopulation() {
-        long pop = 2000000000L;
-        populationmetrics.setNonCityPopulation(pop);
-        assertEquals(pop, populationmetrics.getNonCityPopulation());
+        long population = 2000000000L;
+        popmet.setNonCityPopulation(population);
+        assertEquals(population, popmet.getNonCityPopulation());
     }
 
     /**
@@ -79,9 +79,9 @@ public class PopulationMetricsTest {
      */
     @Test
     public void testCityPopulationPercentage() {
-        double percent = 71.43;
-        populationmetrics.setCityPopulationPercentage(percent);
-        assertEquals(percent, populationmetrics.getCityPopulationPercentage());
+        double percentage = 71.43;
+        popmet.setCityPopulationPercentage(percentage);
+        assertEquals(percentage, popmet.getCityPopulationPercentage());
     }
 
     /**
@@ -89,40 +89,41 @@ public class PopulationMetricsTest {
      */
     @Test
     public void testNonCityPopulationPercentage() {
-        double percent = 28.57;
-        populationmetrics.setNonCityPopulationPercentage(percent);
-        assertEquals(percent, populationmetrics.getNonCityPopulationPercentage());
+        double percentage = 28.57;
+        popmet.setNonCityPopulationPercentage(percentage);
+        assertEquals(percentage, popmet.getNonCityPopulationPercentage());
     }
 
     /**
-     * Test for setAll method.
+     * Test the setAll method and verify all fields are set correctly.
      */
 
     @Test
     public void testSetAll() {
+        // Test data
         String name = "Europe";
         PopulationMetrics.ReportType type = PopulationMetrics.ReportType.CONTINENT;
-        long total = 9000L;
-        long city = 6000L;
-        long nonCity = 3000L;
-        double cityPerc = 66.67;
-        double nonCityPerc = 33.33;
+        long totalpop = 9000L;
+        long citypop = 6000L;
+        long nonCitypop = 3000L;
+        double citypopPerc = 66.67;
+        double nonCitypopPerc = 33.33;
 
         // Act
-        PopulationMetrics result = populationmetrics.setAll(name, type, total, city, nonCity, cityPerc, nonCityPerc);
+        PopulationMetrics result = popmet.setAll(name, type, totalpop, citypop, nonCitypop, citypopPerc, nonCitypopPerc);
 
         // Verify the chaining behavior
 
-        assertSame(populationmetrics, result);
+        assertSame(popmet, result);
 
         // Verify all fields were set correctly
-        assertEquals(name, populationmetrics.getNameOfArea());
-        assertEquals(type, populationmetrics.getReportType());
-        assertEquals(total, populationmetrics.getTotalPopulation());
-        assertEquals(city, populationmetrics.getCityPopulation());
-        assertEquals(nonCity, populationmetrics.getNonCityPopulation());
-        assertEquals(cityPerc, populationmetrics.getCityPopulationPercentage());
-        assertEquals(nonCityPerc, populationmetrics.getNonCityPopulationPercentage());
+        assertEquals(name, popmet.getNameOfArea());
+        assertEquals(type, popmet.getReportType());
+        assertEquals(totalpop, popmet.getTotalPopulation());
+        assertEquals(citypop, popmet.getCityPopulation());
+        assertEquals(nonCitypop, popmet.getNonCityPopulation());
+        assertEquals(citypopPerc, popmet.getCityPopulationPercentage());
+        assertEquals(nonCitypopPerc, popmet.getNonCityPopulationPercentage());
     }
 
 
@@ -134,7 +135,7 @@ public class PopulationMetricsTest {
     @Test
     void testToString_Country() {
         // Arrange
-        populationmetrics.setAll("France", PopulationMetrics.ReportType.COUNTRY, 200L, 150L, 50L, 75.00, 25.00);
+        popmet.setAll("France", PopulationMetrics.ReportType.COUNTRY, 200L, 150L, 50L, 75.00, 25.00);
 
         String expected =
                 "Country {\t" +
@@ -147,7 +148,7 @@ public class PopulationMetricsTest {
                         "}";
 
         // Assert
-        assertEquals(expected, populationmetrics.toString());
+        assertEquals(expected, popmet.toString());
     }
 
     /**
@@ -156,7 +157,7 @@ public class PopulationMetricsTest {
     @Test
     public void testToString_Region() {
         // Arrange
-        populationmetrics.setAll("Caribbean", PopulationMetrics.ReportType.REGION, 3000L, 2000L, 1000L, 66.67, 33.33);
+        popmet.setAll("Caribbean", PopulationMetrics.ReportType.REGION, 3000L, 2000L, 1000L, 66.67, 33.33);
 
         String expected =
                 "Region {\t" +
@@ -169,7 +170,7 @@ public class PopulationMetricsTest {
                         "}";
 
         // Assert
-        assertEquals(expected, populationmetrics.toString());
+        assertEquals(expected, popmet.toString());
     }
 
     /**
@@ -178,7 +179,7 @@ public class PopulationMetricsTest {
     @Test
     public void testToString_Continent() {
         // Arrange
-        populationmetrics.setAll("Asia", PopulationMetrics.ReportType.CONTINENT, 7000000000L, 5000000000L, 2000000000, 71.43, 28.57);
+        popmet.setAll("Asia", PopulationMetrics.ReportType.CONTINENT, 7000000000L, 5000000000L, 2000000000, 71.43, 28.57);
 
         String expected =
                 "Continent {\t" +
@@ -191,7 +192,7 @@ public class PopulationMetricsTest {
                         "}";
 
         // Assert
-        assertEquals(expected, populationmetrics.toString());
+        assertEquals(expected, popmet.toString());
     }
 
 
@@ -201,11 +202,11 @@ public class PopulationMetricsTest {
      */
     @Test
     void toString_handlesNulls_consistently() {
-        populationmetrics.setNameOfArea("Unknown");
-        populationmetrics.setReportType(null); //triggers the default toString logic in the class
+        popmet.setNameOfArea("Unknown");
+        popmet.setReportType(null); //triggers the default toString logic in the class
 
         String expected = "PopulationMetrics { name='Unknown' }";
 
-        assertEquals(expected, populationmetrics.toString());
+        assertEquals(expected, popmet.toString());
     }
 }
