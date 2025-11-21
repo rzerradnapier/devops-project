@@ -127,7 +127,7 @@ public class PopulationMetricsTest {
     }
 
 
-// ToString Logic Tests (Coverage for Switch Statement)
+// Testing the ToString function to ensure all cases in the switch statement are covered
 
     /**
      * Test toString method to make sure it provides the right format for the COUNTRY type.
