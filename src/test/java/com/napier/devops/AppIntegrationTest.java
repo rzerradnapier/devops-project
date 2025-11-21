@@ -658,6 +658,143 @@ public class AppIntegrationTest {
     }
 
     /**
+     * Integration test for USE CASE 18: Produce a Report on Capital Cities in a Continent by Population
+     * This test verifies that the method correctly retrieves all capital cities in a continent
+     * and orders them in descending order by population.
+     */
+    @Test
+    void testGetAllCapitalCitiesInContinentByPopulation_UseCase18() {
+        // Test with Africa continent
+        String continent = "Africa";
+        List<City> capitalCities = app.getCityReportService().getAllCapitalCitiesInContinentByPopulation(continent);
+
+        // Verify the list is not null or empty
+        assertNotNull(capitalCities, "Capital city list should not be null");
+        assertFalse(capitalCities.isEmpty(), "Capital city list should not be empty for " + continent);
+
+        // Verify sorting — descending order by population
+        for (int i = 0; i < capitalCities.size() - 1; i++) {
+            int currentPop = capitalCities.get(i).getPopulation();
+            int nextPop = capitalCities.get(i + 1).getPopulation();
+            assertTrue(currentPop >= nextPop, "Capital cities should be sorted in descending order by population");
+        }
+
+        // Verify essential fields for first record
+        City topCapital = capitalCities.get(0);
+        assertNotNull(topCapital.getId(), "City ID should not be null");
+        assertNotNull(topCapital.getName(), "City name should not be null");
+        assertNotNull(topCapital.getCountryCode(), "City country code should not be null");
+        assertTrue(topCapital.getPopulation() > 0, "City population should be greater than zero");
+
+        // Test with Asia continent
+        List<City> asiaCapitals = app.getCityReportService().getAllCapitalCitiesInContinentByPopulation("Asia");
+        assertNotNull(asiaCapitals, "Asia capital city list should not be null");
+        assertFalse(asiaCapitals.isEmpty(), "Asia capital city list should not be empty");
+
+        // Verify sorting for Asia
+        for (int i = 0; i < asiaCapitals.size() - 1; i++) {
+            assertTrue(asiaCapitals.get(i).getPopulation() >= asiaCapitals.get(i + 1).getPopulation(),
+                    "Asia capital cities should be sorted in descending order by population");
+        }
+
+        // Test with Europe continent
+        List<City> europeCapitals = app.getCityReportService().getAllCapitalCitiesInContinentByPopulation("Europe");
+        assertNotNull(europeCapitals, "Europe capital city list should not be null");
+        assertFalse(europeCapitals.isEmpty(), "Europe capital city list should not be empty");
+
+        // Test with invalid continent
+        List<City> invalidCapitals = app.getCityReportService().getAllCapitalCitiesInContinentByPopulation("InvalidContinent");
+        assertNotNull(invalidCapitals, "Invalid continent should return empty list, not null");
+        assertTrue(invalidCapitals.isEmpty(), "Invalid continent should return empty list");
+
+        // Test that all results are unique capital cities
+        Set<Integer> cityIds = capitalCities.stream()
+                .map(City::getId)
+                .collect(Collectors.toSet());
+        assertEquals(capitalCities.size(), cityIds.size(), "Each capital city should appear only once");
+
+        // Print summary to console
+        System.out.printf(
+                "USE CASE 18 - Total capital cities in %s: %d%nTop capital city: %s (%d)%n",
+                continent, capitalCities.size(), topCapital.getName(), topCapital.getPopulation()
+        );
+        System.out.printf("USE CASE 18 - Total capital cities in Asia: %d%n", asiaCapitals.size());
+        System.out.printf("USE CASE 18 - Total capital cities in Europe: %d%n", europeCapitals.size());
+    }
+
+    /**
+     * Integration test for USE CASE 19: Produce a Report on Capital Cities in a Region by Population
+     * This test verifies that the method correctly retrieves all capital cities in a region
+     * and orders them in descending order by population.
+     */
+    @Test
+    void testGetAllCapitalCitiesInRegionByPopulation_UseCase19() {
+        // Test with Western Europe region
+        String region = "Western Europe";
+        List<City> capitalCities = app.getCityReportService().getAllCapitalCitiesInRegionByPopulation(region);
+
+        // Verify the list is not null or empty
+        assertNotNull(capitalCities, "Capital city list should not be null");
+        assertFalse(capitalCities.isEmpty(), "Capital city list should not be empty for " + region);
+
+        // Verify sorting — descending order by population
+        for (int i = 0; i < capitalCities.size() - 1; i++) {
+            int currentPop = capitalCities.get(i).getPopulation();
+            int nextPop = capitalCities.get(i + 1).getPopulation();
+            assertTrue(currentPop >= nextPop, "Capital cities should be sorted in descending order by population");
+        }
+
+        // Verify essential fields for first record
+        City topCapital = capitalCities.get(0);
+        assertNotNull(topCapital.getId(), "City ID should not be null");
+        assertNotNull(topCapital.getName(), "City name should not be null");
+        assertNotNull(topCapital.getCountryCode(), "City country code should not be null");
+        assertTrue(topCapital.getPopulation() > 0, "City population should be greater than zero");
+
+        // Test with South America region
+        List<City> southAmericaCapitals = app.getCityReportService().getAllCapitalCitiesInRegionByPopulation("South America");
+        assertNotNull(southAmericaCapitals, "South America capital city list should not be null");
+        assertFalse(southAmericaCapitals.isEmpty(), "South America capital city list should not be empty");
+
+        // Verify sorting for South America
+        for (int i = 0; i < southAmericaCapitals.size() - 1; i++) {
+            assertTrue(southAmericaCapitals.get(i).getPopulation() >= southAmericaCapitals.get(i + 1).getPopulation(),
+                    "South America capital cities should be sorted in descending order by population");
+        }
+
+        // Test with Eastern Asia region
+        List<City> easternAsiaCapitals = app.getCityReportService().getAllCapitalCitiesInRegionByPopulation("Eastern Asia");
+        assertNotNull(easternAsiaCapitals, "Eastern Asia capital city list should not be null");
+        assertFalse(easternAsiaCapitals.isEmpty(), "Eastern Asia capital city list should not be empty");
+
+        // Test with invalid region
+        List<City> invalidCapitals = app.getCityReportService().getAllCapitalCitiesInRegionByPopulation("InvalidRegion");
+        assertNotNull(invalidCapitals, "Invalid region should return empty list, not null");
+        assertTrue(invalidCapitals.isEmpty(), "Invalid region should return empty list");
+
+        // Test that all results are unique capital cities
+        Set<Integer> cityIds = capitalCities.stream()
+                .map(City::getId)
+                .collect(Collectors.toSet());
+        assertEquals(capitalCities.size(), cityIds.size(), "Each capital city should appear only once");
+
+        // Verify that each city has required fields populated
+        capitalCities.stream().limit(5).forEach(city -> {
+            assertNotNull(city.getName(), "Capital name should not be null");
+            assertNotNull(city.getCountryCode(), "Capital country code should not be null");
+            assertTrue(city.getPopulation() >= 0, "Population should be non-negative");
+        });
+
+        // Print summary to console
+        System.out.printf(
+                "USE CASE 19 - Total capital cities in %s: %d%nTop capital city: %s (%d)%n",
+                region, capitalCities.size(), topCapital.getName(), topCapital.getPopulation()
+        );
+        System.out.printf("USE CASE 19 - Total capital cities in South America: %d%n", southAmericaCapitals.size());
+        System.out.printf("USE CASE 19 - Total capital cities in Eastern Asia: %d%n", easternAsiaCapitals.size());
+    }
+
+    /**
      * USE CASE 28: Retrieve the Population of a Region.
      * This test checks if the method correctly handles a valid region name.
      */
