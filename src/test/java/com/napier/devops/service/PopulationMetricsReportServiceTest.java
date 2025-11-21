@@ -61,8 +61,8 @@ public class PopulationMetricsReportServiceTest {
 
 
     /**
+     * USE CASE 23
      * Test getContinentPopulationReport with mock data.
-     * USE CASE 23 Test
      */
     @Test
     void testGetContinentPopulationReport() throws SQLException {
@@ -108,8 +108,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
-     * Test how the getContinentPopulationReport method handles a database error (SQLException).
-     * USE CASE 23 Test
+     * USE CASE 23
+     * Verify that the getContinentPopulationReport method correctly handles a database exception (SQLException).
      */
     @Test
     void testGetContinentPopulationReport_SQLException() throws SQLException {
@@ -123,8 +123,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
-     * Test printing of Continent Population Report.
-     * USE CASE 23 Test
+     * USE CASE 23
+     * Test the printing of a Continent Population Report.
      */
     @Test
     void testPrintContinentPopulationReport_ValidList() {
@@ -145,8 +145,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
+     * USE CASE 24
      * Test getRegionPopulationReport with mock data.
-     * USE CASE 24 Test
      */
     @Test
     void testGetRegionPopulationReport() throws SQLException {
@@ -182,8 +182,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
+     * USE CASE 24
      * Test printing of Region Population Report.
-     * USE CASE 24 Test
      */
     @Test
     void testPrintRegionPopulationReport_ValidList() {
@@ -202,8 +202,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
+     * USE CASE 25
      * Test getCountryPopulationReport with mock data.
-     * USE CASE 25 Test
      */
     @Test
     void testGetCountryPopulationReport() throws SQLException {
@@ -238,8 +238,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
-     * Test printing of Country Population Report.
-     * USE CASE 25 Test
+     * USE CASE 25
+     * Test the printing of a Country Population Report.
      */
     @Test
     void testPrintCountryPopulationReport_ValidList() {
@@ -257,8 +257,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
+     *  USE CASE 26
      * Test getWorldPopulationReport with mock data.
-     * USE CASE 26 Test
      */
     @Test
     void testGetWorldPopulationReport() throws SQLException {
@@ -273,8 +273,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
+     * USE CASE 26
      * Test printing of World Population Report.
-     * USE CASE 26 Test
      */
     @Test
     void testPrintWorldPopulationReport() {
@@ -288,8 +288,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
-     * Test failure to retrieve world population.
-     * USE CASE 26 Test
+     * USE CASE 26
+     * Test unsuccessful retrieval of world population.
      */
     @Test
     void testPrintWorldPopulationReport_Error() {
@@ -302,8 +302,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
+     * USE CASE 27
      * Test getPopulationContinentReport with PreparedStatement.
-     * USE CASE 27 Test
      */
     @Test
     void testGetPopulationContinentReport() throws SQLException {
@@ -333,8 +333,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
-     * Test getPopulationContinentReport when data is not found.
-     * USE CASE 27 Test
+     * USE CASE 27
+     * Test getPopulationContinentReport when it cannot find the data.
      */
     @Test
     void testGetPopulationContinentReport_NotFound() throws SQLException {
@@ -346,8 +346,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
-     * Test printing of Single Continent Population Report.
-     * USE CASE 27 Test
+     * USE CASE 27
+     * Test PrintPopulationContinentReport with mock data.
      */
     @Test
     void testPrintPopulationContinentReport_Success() {
@@ -366,8 +366,8 @@ public class PopulationMetricsReportServiceTest {
     }
 
     /**
-     * Test printing of Single Continent Population Report when null.
-     * USE CASE 27 Test
+     * USE CASE 27
+     *Test the printing of a continent population report when the data is null.
      */
     @Test
     void testPrintPopulationContinentReport_Null() {
