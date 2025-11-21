@@ -807,6 +807,198 @@ public class AppIntegrationTest {
         System.out.println("USE CASE 22 - Largest capital city in " + region + ": " + firstCity.getName() +
                 " with population: " + firstCity.getPopulation());
     }
+    /**
+     * Integration test for Use Case 23: Population Report for Continents.
+     * This test verifies that we can get the city/non-city population breakdown for every continent.
+     */
+    @Test
+    void testGetContinentPopulationReport_UseCase23() {
+        List<PopulationMetrics> continents = app.getPopulationMetricsReportService().getContinentPopulationReport();
 
+        // Check list is valid
+        assertNotNull(continents);
+        assertFalse(continents.isEmpty(), "Continent report should not be null");
+
+        // Retrieve Asia
+        PopulationMetrics continent = continents.stream()
+                .filter(m -> "Asia".equals(m.getNameOfArea()))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(continent, "Asia should exist in the continent report");
+
+
+        // Verify the required identifying fields
+        assertNotNull(continent.getNameOfArea(), "Area name which is the Continent should not be null");
+        assertEquals(PopulationMetrics.ReportType.CONTINENT, continent.getReportType(), "Report type should be CONTINENT");
+
+        // Verify all population metrics are non-negative
+        assertTrue(continent.getTotalPopulation() >= 0, "Total population should be non-negative");
+        assertTrue(continent.getCityPopulation() >= 0, "City population should be non-negative");
+        assertTrue(continent.getNonCityPopulation() >= 0, "Non-City population should be non-negative");
+
+        // Verify percentages are within the valid range between 0 and 100
+        assertTrue(continent.getCityPopulationPercentage() >= 0.0 && continent.getCityPopulationPercentage() <= 100.0,
+                "City population percentage must be between 0 and 100");
+        assertTrue(continent.getNonCityPopulationPercentage() >= 0.0 && continent.getNonCityPopulationPercentage() <= 100.0,
+                "Non-City population percentage must be between 0 and 100");
+
+
+
+
+        // Total Population must be > than or = to City Population
+        assertTrue(continent.getTotalPopulation() >= continent.getCityPopulation(),
+                "Total population should be >= city population");
+
+       // Verify Total = City population + NonCity population
+        long totalPop = continent.getCityPopulation() + continent.getNonCityPopulation();
+        assertEquals(continent.getTotalPopulation(), totalPop, "Total Population = City + NonCity");
+
+        // Verify the percentages sum to approximately 100
+        double percentage = continent.getCityPopulationPercentage() + continent.getNonCityPopulationPercentage();
+        assertEquals(100.0, percentage, 0.01, "The sum of the Percentage should be 100%");
+    }
+
+
+    /**
+     * Integration test for Use Case 24: Population Report for Regions.
+     * This test verifies that we can get the city/non-city population breakdown for every region.
+     */
+    @Test
+    void testGetRegionPopulationReport_UseCase24() {
+        List<PopulationMetrics> regions = app.getPopulationMetricsReportService().getRegionPopulationReport();
+
+        // Check list is valid
+        assertNotNull(regions);
+        assertFalse(regions.isEmpty(), "Region report list should not be null or empty");
+
+        // retrieve Western Europe
+        PopulationMetrics region = regions.stream()
+                .filter(m -> "Western Europe".equals(m.getNameOfArea()))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(region, "Western Europe should be present in the region report");
+
+
+        // Verify the required identifying fields
+        assertNotNull(region.getNameOfArea(), "Area name which is the Region should not be null");
+        assertEquals(PopulationMetrics.ReportType.REGION, region.getReportType(), "Report type should be REGION");
+
+        // Verify all population metrics are non-negative
+        assertTrue(region.getTotalPopulation() >= 0, "Total population should be non-negative");
+        assertTrue(region.getCityPopulation() >= 0, "City population should be non-negative");
+        assertTrue(region.getNonCityPopulation() >= 0, "Non-City population should be non-negative");
+
+        // Verify percentages are within the valid range between 0 and 100
+        assertTrue(region.getCityPopulationPercentage() >= 0.0 && region.getCityPopulationPercentage() <= 100.0,
+                "City population percentage must be between 0 and 100");
+        assertTrue(region.getNonCityPopulationPercentage() >= 0.0 && region.getNonCityPopulationPercentage() <= 100.0,
+                "Non-City population percentage must be between 0 and 100");
+
+
+
+        // Total Population must be > than or = to City Population
+        assertTrue(region.getTotalPopulation() >= region.getCityPopulation(),
+                "Total population should be >= city population");
+
+        // Verify Total = City population + NonCity population
+        long totalPop = region.getCityPopulation() + region.getNonCityPopulation();
+        assertEquals(region.getTotalPopulation(), totalPop, "Total Population = City + NonCity");
+
+        // Verify the percentages sum to approximately 100
+        double percentage = region.getCityPopulationPercentage() + region.getNonCityPopulationPercentage();
+        assertEquals(100.0, percentage, 0.01, "The sum of the Percentage should be 100%");
+    }
+
+    /**
+     * Integration test for Use Case 25: Population Report for Countries.
+     * This test verifies country-level population metrics.
+     */
+    @Test
+    void testGetCountryPopulationReport_UseCase25() {
+        List<PopulationMetrics> countries = app.getPopulationMetricsReportService().getCountryPopulationReport();
+
+        assertNotNull(countries);
+        assertFalse(countries.isEmpty(), "Country report list should not be null or empty");
+
+        // retrieve France
+        PopulationMetrics country = countries.stream()
+                .filter(m -> "France".equals(m.getNameOfArea()))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(country, "France should be present in the country report");
+
+
+        // Verify required identifying fields are populated
+        assertNotNull(country.getNameOfArea(), "Area name which is the Country should not be null");
+        assertEquals(PopulationMetrics.ReportType.COUNTRY, country.getReportType(), "Report type should be COUNTRY");
+
+        // Verify all population metrics are non-negative
+        assertTrue(country.getTotalPopulation() >= 0, "Total population should be non-negative");
+        assertTrue(country.getCityPopulation() >= 0, "City population should be non-negative");
+        assertTrue(country.getNonCityPopulation() >= 0, "Non-City population should be non-negative");
+
+        // Verify that the percentages are within the valid range between 0 and 100
+        assertTrue(country.getCityPopulationPercentage() >= 0.0 && country.getCityPopulationPercentage() <= 100.0,
+                "City population percentage must be between 0 and 100");
+        assertTrue(country.getNonCityPopulationPercentage() >= 0.0 && country.getNonCityPopulationPercentage() <= 100.0,
+                "Non-City population percentage must be between 0 and 100");
+
+
+
+        // Total Population must be > than or = to City Population
+        assertTrue(country.getTotalPopulation() >= country.getCityPopulation(),
+                "Total population should be >= city population");
+
+        // Verify Total = City population + NonCity population
+        long totalPop = country.getCityPopulation() + country.getNonCityPopulation();
+        assertEquals(country.getTotalPopulation(), totalPop, "Total Population = City + NonCity");
+
+        // Verify the percentages sum to approximately 100
+        double percentage = country.getCityPopulationPercentage() + country.getNonCityPopulationPercentage();
+        assertEquals(100.0, percentage, 0.01, "The sum of the Percentage should be 100%");
+    }
+
+    /**
+     * Integration test for Use Case 26: Retrieve the Population of the World
+     * This test verifies that the total world population is retrieved, is positive, and falls within the expected range.
+     */
+    @Test
+    void testGetWorldPopulationReportRangeCheck_UseCase26() {
+        long pop = app.getPopulationMetricsReportService().getWorldPopulationReport();
+
+        // Ensure that reported population is more than 0.
+        assertTrue(pop > 0, "World population should be more than 0");
+
+        // Ensure the reported population is not a default error indicator or zero.
+        assertNotEquals(-1, pop, "World population should not return the error code -1");
+        assertNotEquals(0, pop, "World population should not return 0 if the database is populated");
+
+        // Check the range
+        final long MIN_REALISTIC_POPULATION = 3_500_000_000L;
+
+        assertTrue(pop > MIN_REALISTIC_POPULATION,
+                "World population must be greater than 3.5 billion to make sure every country is included.");
+    }
+
+    /**
+     * Integration test for Use Case 27: Retrieve the Population of a Continent.
+     * This test verifies retrieving metrics for a specific continent provided by argument.
+     */
+    @Test
+    void testGetPopulationContinentReport_UseCase27() {
+        // Test valid continent
+        PopulationMetrics validContinent = app.getPopulationMetricsReportService().getPopulationContinentReport("Asia");
+
+        assertNotNull(validContinent);
+        assertEquals("Asia", validContinent.getNameOfArea());
+        assertTrue(validContinent.getTotalPopulation() > 0);
+
+        // Test invalid continent
+        PopulationMetrics invalidContinent = app.getPopulationMetricsReportService().getPopulationContinentReport("Vinland");
+        assertNull(invalidContinent, "Querying a non-existent continent should return null");
+    }
 
 }
