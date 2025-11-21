@@ -606,7 +606,6 @@ public class AppIntegrationTest {
 
     /**
      * Integration test for USE CASE 17: Produce a Report on All Capital Cities in the World by Population.
-     *
      * This test verifies that the method correctly retrieves all capital cities
      * and orders them in descending order by population.
      */
