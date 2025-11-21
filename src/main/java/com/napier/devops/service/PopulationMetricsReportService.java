@@ -70,7 +70,6 @@ public class PopulationMetricsReportService {
 
         // Check if any data was returned
         if (continentList == null || continentList.isEmpty()) {
-            System.out.println("No continent population data found.");
             return;
         }
 
@@ -142,7 +141,6 @@ public class PopulationMetricsReportService {
         List<PopulationMetrics> regionList = getRegionPopulationReport();
 
         if (regionList == null || regionList.isEmpty()) {
-            System.out.println("No region population data found.");
             return;
         }
 
@@ -201,7 +199,6 @@ public class PopulationMetricsReportService {
                 countries.add(countryPopulation);
             }
         } catch (SQLException e) {
-            System.out.println("Query failed: " + e.getMessage());
         }
         return countries;
     }
@@ -215,7 +212,6 @@ public class PopulationMetricsReportService {
         List<PopulationMetrics> countryPopulationList = getCountryPopulationReport();
 
         if (countryPopulationList == null || countryPopulationList.isEmpty()) {
-            System.out.println("No country population data found.");
             return;
         }
 
@@ -256,7 +252,6 @@ public class PopulationMetricsReportService {
 
             }
         } catch (SQLException e) {
-            System.out.println("Query failed: " + e.getMessage());
 
         }
 
@@ -336,19 +331,11 @@ public class PopulationMetricsReportService {
                 }
             }
         } catch (SQLException e) {
-            // print error message
-            System.out.println("Query failed: " + e.getMessage());
             return null;
         }
         return continent; // return statement at the end of the method
     }
 
-    /**
-     * Prints the Population of a Continent.
-     * Use Case 27 (Total Population Only).
-     *
-     * @param continentName The name of the continent to display.
-     */
     /**
      * Prints the Population of a Continent.
      * Use Case 27 (Total Population Only).
