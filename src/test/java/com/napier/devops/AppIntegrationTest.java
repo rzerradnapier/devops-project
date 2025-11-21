@@ -1080,5 +1080,90 @@ public class AppIntegrationTest {
         assertNull(report, "Empty name should return null");
     }
 
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     * the Population Report for a District including population in cities and not in cities.
+     */
+    @Test
+    void testDistrictPopulationReport_Valid() {
+        PopulationReportPojo report = app.getCityReportService().getDistrictPopulationReport(DEFAULT_DISTRICT);
+
+        assertNotNull(report, "Report should not be null");
+        assertEquals(DEFAULT_DISTRICT, report.getName(), "District name should match");
+
+        // Logical consistency checks
+        assertTrue(report.getTotalPopulation() > 0, "Total population must be greater than 0");
+        assertTrue(report.getPopulationInCities() >= 0, "City population must be non-negative");
+        assertTrue(report.getPopulationNotInCities() >= 0, "Non-city population must be non-negative");
+
+        long sum = report.getPopulationInCities() + report.getPopulationNotInCities();
+        assertEquals(report.getTotalPopulation(), sum, "Sum of city + non-city = total");
+
+        double percentSum = report.getPercentageInCities() + report.getPercentageNotInCities();
+        assertTrue(Math.abs(percentSum - 100.0) < 0.5, "Percentages should roughly add to 100%");
+    }
+
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     * Testing with an invalid district name.
+     */
+    @Test
+    void testDistrictPopulationReport_InvalidDistrict() {
+        PopulationReportPojo report = app.getCityReportService().getDistrictPopulationReport(null);
+        assertNull(report, "Invalid district should return null or empty report");
+    }
+
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     * Testing with an empty district name.
+     */
+    @Test
+    void testDistrictPopulationReport_EmptyDistrict() {
+        PopulationReportPojo report = app.getCityReportService().getDistrictPopulationReport("");
+        assertNull(report, "Empty district should return null");
+    }
+
+
+    /**
+     * USE CASE 31: Retrieve the Population of a City.
+     * the Population Report for a City including population in cities and not in cities.
+     */
+    @Test
+    void testCityPopulationReport_ValidCity() {
+        PopulationReportPojo report = app.getCityReportService().getCityPopulationReport(DEFAULT_CITY_NAME);
+        assertNotNull(report);
+        assertEquals(DEFAULT_CITY_NAME, report.getName());
+        assertTrue(report.getTotalPopulation() > 0);
+        assertEquals(report.getTotalPopulation(), report.getPopulationInCities());
+        assertEquals(0, report.getPopulationNotInCities());
+        assertEquals(100.0, report.getPercentageInCities(), 0.001);
+    }
+
+    /**
+     * USE CASE 31: Retrieve the Population of a City.
+     */
+    @Test
+    void testCityPopulationReport_InvalidCity() {
+        PopulationReportPojo report = app.getCityReportService().getCityPopulationReport("Nonexistent City");
+        assertNotNull(report);
+        assertEquals("Nonexistent City", report.getName());
+        assertEquals(0, report.getTotalPopulation());
+    }
+
+    /**
+     * USE CASE 32: Produce a Report on Speakers of Major Languages.
+     * This test checks if the method correctly fetches the major languages report.
+     */
+    @Test
+    void testGetMajorLanguageReport() {
+        List<LanguageReportPojo> reports = app.getCountryReportService().getMajorLanguageReport();
+
+        assertNotNull(reports);
+        assertFalse(reports.isEmpty());
+        assertEquals(5, reports.size());
+        assertEquals("Chinese", reports.get(0).getLanguage()); // expected first
+        assertTrue(reports.get(0).getSpeakers() > reports.get(4).getSpeakers());
+    }
+
 
 }
