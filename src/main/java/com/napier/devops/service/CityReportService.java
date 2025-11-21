@@ -1,10 +1,13 @@
 package com.napier.devops.service;
 
 import com.napier.devops.City;
+import com.napier.pojo.PopulationReportPojo;
 
 import java.sql.*;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Service class for city-related reporting functionality.
@@ -65,11 +68,7 @@ public class CityReportService {
             return cities;
         }
 
-        String sql = "SELECT c.ID, c.Name, c.CountryCode, c.District, c.Population " +
-                "FROM city c " +
-                "JOIN country co ON c.CountryCode = co.Code " +
-                "WHERE co.Continent = ? " +
-                "ORDER BY c.Population DESC";
+        String sql = "SELECT c.ID, c.Name, c.CountryCode, c.District, c.Population " + "FROM city c " + "JOIN country co ON c.CountryCode = co.Code " + "WHERE co.Continent = ? " + "ORDER BY c.Population DESC";
 
         // Use PreparedStatement to prevent SQL injection and try-with-resources for automatic closing of resources
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
@@ -109,11 +108,7 @@ public class CityReportService {
             return cities;
         }
 
-        String sql = "SELECT c.ID, c.Name, c.CountryCode, c.District, c.Population " +
-                "FROM city c " +
-                "JOIN country co ON c.CountryCode = co.Code " +
-                "WHERE co.Region = ? " +
-                "ORDER BY c.Population DESC";
+        String sql = "SELECT c.ID, c.Name, c.CountryCode, c.District, c.Population " + "FROM city c " + "JOIN country co ON c.CountryCode = co.Code " + "WHERE co.Region = ? " + "ORDER BY c.Population DESC";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, region);
@@ -151,10 +146,7 @@ public class CityReportService {
             return cities;
         }
 
-        String sql = "SELECT ID, Name, CountryCode, District, Population " +
-                "FROM city " +
-                "WHERE CountryCode = ? " +
-                "ORDER BY Population DESC";
+        String sql = "SELECT ID, Name, CountryCode, District, Population " + "FROM city " + "WHERE CountryCode = ? " + "ORDER BY Population DESC";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, countryCode);
@@ -192,10 +184,7 @@ public class CityReportService {
             return cities;
         }
 
-        String sql = "SELECT ID, Name, CountryCode, District, Population " +
-                "FROM city " +
-                "WHERE District = ? " +
-                "ORDER BY Population DESC";
+        String sql = "SELECT ID, Name, CountryCode, District, Population " + "FROM city " + "WHERE District = ? " + "ORDER BY Population DESC";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, district);
@@ -233,10 +222,7 @@ public class CityReportService {
             return cities;
         }
 
-        String sql = "SELECT ID, Name, CountryCode, District, Population " +
-                "FROM city " +
-                "ORDER BY Population DESC " +
-                "LIMIT ?";
+        String sql = "SELECT ID, Name, CountryCode, District, Population " + "FROM city " + "ORDER BY Population DESC " + "LIMIT ?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, n);
@@ -676,8 +662,7 @@ public class CityReportService {
                     ORDER BY city.Population DESC
                 """;
 
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 City city = new City();
@@ -708,6 +693,140 @@ public class CityReportService {
             System.err.println("Error: No capital city data found.");
         } else {
             System.out.println("Report: All Capital Cities in the World by Population (Largest to Smallest)");
+            System.out.println("Total capitals found: " + cityList.size());
+            System.out.println("=".repeat(100));
+            cityList.forEach(city -> System.out.println(city.toString()));
+        }
+    }
+
+    /**
+     * USE CASE 18: Get all capital cities in a continent organized by population descending.
+     * Produce a Report on Capital Cities in a Continent by Population
+     *
+     * @param continent The continent to filter capital cities by
+     * @return A List of City objects containing details of all capital cities in the continent, ordered by population descending.
+     */
+    public List<City> getAllCapitalCitiesInContinentByPopulation(String continent) {
+        List<City> capitals = new ArrayList<>();
+
+        if (continent == null || continent.trim().isEmpty()) {
+            System.err.println("Error: Continent parameter cannot be null or empty.");
+            return capitals;
+        }
+
+        String sql = """
+                SELECT city.ID, city.Name AS CityName, city.District, city.CountryCode, city.Population
+                FROM city
+                INNER JOIN country ON country.Capital = city.ID
+                WHERE country.Continent = ?
+                ORDER BY city.Population DESC
+                """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, continent);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                City city = new City();
+                city.setId(rs.getInt("ID"));
+                city.setName(rs.getString("CityName"));
+                city.setDistrict(rs.getString("District"));
+                city.setCountryCode(rs.getString("CountryCode"));
+                city.setPopulation(rs.getInt("Population"));
+                capitals.add(city);
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+
+        return capitals;
+    }
+
+    /**
+     * Print all capital cities in a continent sorted by population in descending order.
+     * USE CASE 18: Produce a Report on Capital Cities in a Continent by Population
+     *
+     * @param continent The continent to filter capital cities by
+     */
+    public void printAllCapitalCitiesInContinentByPopulation(String continent) {
+        if (continent == null || continent.trim().isEmpty()) {
+            System.err.println("Error: Continent parameter cannot be null or empty.");
+            return;
+        }
+
+        List<City> cityList = getAllCapitalCitiesInContinentByPopulation(continent);
+
+        if (cityList == null || cityList.isEmpty()) {
+            System.err.println("Error: No capital city data found for continent: " + continent);
+        } else {
+            System.out.println("Report: All Capital Cities in " + continent + " by Population (Largest to Smallest)");
+            System.out.println("Total capitals found: " + cityList.size());
+            System.out.println("=".repeat(100));
+            cityList.forEach(city -> System.out.println(city.toString()));
+        }
+    }
+
+    /**
+     * USE CASE 19: Get all capital cities in a region organized by population descending.
+     * Produce a Report on Capital Cities in a Region by Population
+     *
+     * @param region The region to filter capital cities by
+     * @return A List of City objects containing details of all capital cities in the region, ordered by population descending.
+     */
+    public List<City> getAllCapitalCitiesInRegionByPopulation(String region) {
+        List<City> capitals = new ArrayList<>();
+
+        if (region == null || region.trim().isEmpty()) {
+            System.err.println("Error: Region parameter cannot be null or empty.");
+            return capitals;
+        }
+
+        String sql = """
+                SELECT city.ID, city.Name AS CityName, city.District, city.CountryCode, city.Population
+                FROM city
+                INNER JOIN country ON country.Capital = city.ID
+                WHERE country.Region = ?
+                ORDER BY city.Population DESC
+                """;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, region);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                City city = new City();
+                city.setId(rs.getInt("ID"));
+                city.setName(rs.getString("CityName"));
+                city.setDistrict(rs.getString("District"));
+                city.setCountryCode(rs.getString("CountryCode"));
+                city.setPopulation(rs.getInt("Population"));
+                capitals.add(city);
+            }
+        } catch (SQLException e) {
+            System.out.println("Query failed: " + e.getMessage());
+        }
+
+        return capitals;
+    }
+
+    /**
+     * Print all capital cities in a region sorted by population in descending order.
+     * USE CASE 19: Produce a Report on Capital Cities in a Region by Population
+     *
+     * @param region The region to filter capital cities by
+     */
+    public void printAllCapitalCitiesInRegionByPopulation(String region) {
+        if (region == null || region.trim().isEmpty()) {
+            System.err.println("Error: Region parameter cannot be null or empty.");
+            return;
+        }
+
+        List<City> cityList = getAllCapitalCitiesInRegionByPopulation(region);
+
+        if (cityList == null || cityList.isEmpty()) {
+            System.err.println("Error: No capital city data found for region: " + region);
+        } else {
+            System.out.println("Report: All Capital Cities in " + region + " by Population (Largest to Smallest)");
             System.out.println("Total capitals found: " + cityList.size());
             System.out.println("=".repeat(100));
             cityList.forEach(city -> System.out.println(city.toString()));
@@ -778,6 +897,7 @@ public class CityReportService {
             System.out.println("Total capitals found: " + cityList.size());
             System.out.println("=".repeat(100));
             cityList.forEach(city -> System.out.println(city.toString()));
+
         }
     }
 
@@ -931,6 +1051,191 @@ public class CityReportService {
             System.out.println("=".repeat(100));
             cityList.forEach(city -> System.out.println(city.toString()));
         }
+    }
+
+
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     *
+     * @param districtName Name of the district
+     * @return A PopulationReportPojo object containing population breakdown, or null if not found.
+     */
+    public PopulationReportPojo getDistrictPopulationReport(String districtName) {
+        long totalPopulation = 0;
+        long cityPopulation = 0;
+
+        if (districtName == null || districtName.trim().isEmpty()) {
+            System.err.println("Error: District name cannot be null or empty.");
+            return null;
+        }
+
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName(districtName);
+
+        String totalQuery = "SELECT SUM(Population) AS population FROM city WHERE district = ?";
+        String cityQuery = """
+                SELECT SUM(Population) AS city_population
+                FROM city
+                WHERE district = ?
+                """;
+
+        try (PreparedStatement stmtTotal = connection.prepareStatement(totalQuery); PreparedStatement stmtCity = connection.prepareStatement(cityQuery)) {
+            // Total population in district
+            stmtTotal.setString(1, districtName);
+            try (ResultSet rsTotal = stmtTotal.executeQuery()) {
+                if (rsTotal.next()) {
+                    totalPopulation = rsTotal.getLong("population");
+                }
+            }
+
+            // City population in district (same as total)
+            stmtCity.setString(1, districtName);
+            try (ResultSet rsCity = stmtCity.executeQuery()) {
+                if (rsCity.next()) {
+                    cityPopulation = rsCity.getLong("city_population");
+                }
+            }
+
+            long nonCityPopulation = totalPopulation - cityPopulation;
+
+            double cityPercentage = totalPopulation > 0 ? ((cityPopulation * 100.0) / totalPopulation) : 0.0;
+
+            double nonCityPercentage = 100.0 - cityPercentage;
+
+            report.setTotalPopulation(totalPopulation);
+            report.setPopulationInCities(cityPopulation);
+            report.setPopulationNotInCities(nonCityPopulation);
+            report.setPercentageInCities(cityPercentage);
+            report.setPercentageNotInCities(nonCityPercentage);
+
+            return report;
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error retrieving population report for district: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * USE CASE 30: Retrieve the Population of a District.
+     * Prints and returns the population report for a given district.
+     *
+     * @param districtName Name of the district
+     * @return The PopulationReportPojo containing the population details for the district, or null if not found.
+     */
+    public PopulationReportPojo printDistrictPopulationReport(String districtName) {
+        PopulationReportPojo report = getDistrictPopulationReport(districtName);
+
+        if (report == null) {
+            System.err.println("Error: No population data found for district: " + districtName);
+            return null;
+        }
+
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+
+        System.out.println("========================================");
+        System.out.println("        DISTRICT POPULATION REPORT      ");
+        System.out.println("========================================");
+        System.out.println("District: " + report.getName());
+        System.out.println("Total Population: " + nf.format(report.getTotalPopulation()));
+        System.out.println("Population in Cities: " + nf.format(report.getPopulationInCities()) + " (" + String.format("%.2f", report.getPercentageInCities()) + "%)");
+        System.out.println("Population Not in Cities: " + nf.format(report.getPopulationNotInCities()) + " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
+        System.out.println("========================================");
+
+        return report;
+    }
+
+
+    /**
+     * USE CASE 31: Produce a Population Report for a City.
+     *
+     * @param cityName Name of the city
+     * @return A PopulationReportPojo containing population breakdown, or null if not found.
+     */
+    public PopulationReportPojo getCityPopulationReport(String cityName) {
+        long totalPopulation = 0;
+        long cityPopulation = 0;
+
+        if (cityName == null || cityName.trim().isEmpty()) {
+            System.err.println("Error: City name cannot be null or empty.");
+            return null;
+        }
+
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName(cityName);
+
+        String totalQuery = "SELECT Population FROM city WHERE Name = ?";
+        String cityQuery = """
+                SELECT Population AS city_population
+                FROM city
+                WHERE Name = ?
+                """;
+
+        try (PreparedStatement stmtTotal = connection.prepareStatement(totalQuery); PreparedStatement stmtCity = connection.prepareStatement(cityQuery)) {
+            // Total population (same as city population for a single city)
+            stmtTotal.setString(1, cityName);
+            try (ResultSet rsTotal = stmtTotal.executeQuery()) {
+                if (rsTotal.next()) {
+                    totalPopulation = rsTotal.getLong("Population");
+                }
+            }
+
+            // City population (same as total)
+            stmtCity.setString(1, cityName);
+            try (ResultSet rsCity = stmtCity.executeQuery()) {
+                if (rsCity.next()) {
+                    cityPopulation = rsCity.getLong("city_population");
+                }
+            }
+
+            long nonCityPopulation = totalPopulation - cityPopulation;
+
+            double cityPercentage = totalPopulation > 0 ? ((cityPopulation * 100.0) / totalPopulation) : 0.0;
+
+            double nonCityPercentage = 100.0 - cityPercentage;
+
+            report.setTotalPopulation(totalPopulation);
+            report.setPopulationInCities(cityPopulation);
+            report.setPopulationNotInCities(nonCityPopulation);
+            report.setPercentageInCities(cityPercentage);
+            report.setPercentageNotInCities(nonCityPercentage);
+
+            return report;
+
+        } catch (SQLException e) {
+            System.err.println("SQL Error retrieving population report for city: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+    /**
+     * USE CASE 31: Produce a Population Report for a City.
+     * Prints and returns the population report for a given city.
+     *
+     * @param cityName Name of the city
+     * @return The PopulationReportPojo containing population details for the city, or null if not found.
+     */
+    public PopulationReportPojo printCityPopulationReport(String cityName) {
+        PopulationReportPojo report = getCityPopulationReport(cityName);
+
+        if (report == null) {
+            System.err.println("Error: No population data found for city: " + cityName);
+            return null;
+        }
+
+        NumberFormat nf = NumberFormat.getInstance(Locale.US);
+
+        System.out.println("=========================================");
+        System.out.println("            CITY POPULATION REPORT       ");
+        System.out.println("=========================================");
+        System.out.println("City: " + report.getName());
+        System.out.println("Total Population: " + nf.format(report.getTotalPopulation()));
+        System.out.println("Population in City: " + nf.format(report.getPopulationInCities()) + " (" + String.format("%.2f", report.getPercentageInCities()) + "%)");
+        System.out.println("Population Not in City: " + nf.format(report.getPopulationNotInCities()) + " (" + String.format("%.2f", report.getPercentageNotInCities()) + "%)");
+        System.out.println("========================================");
+
+        return report;
     }
 
 

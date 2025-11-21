@@ -1,6 +1,10 @@
 package com.napier.devops;
 
+import com.napier.constant.Constant;
+import com.napier.pojo.LanguageReportPojo;
+import com.napier.pojo.PopulationReportPojo;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -652,7 +656,6 @@ public class AppIntegrationTest {
         });
     }
 
-
     /**
      * Integration test for USE CASE 20: Produce a Report on Top N Capital Cities in the World
      * This test verifies that the method correctly retrieves and sorts the top N most populated capital cities.
@@ -999,5 +1002,83 @@ public class AppIntegrationTest {
         PopulationMetrics invalidContinent = app.getPopulationMetricsReportService().getPopulationContinentReport("Vinland");
         assertNull(invalidContinent, "Querying a non-existent continent should return null");
     }
+
+
+    /**
+     * USE CASE 28: Retrieve the Population of a Region.
+     * This test checks if the method correctly handles a valid region name.
+     */
+    @Test
+    void testRegionPopulationReportValid() {
+        PopulationReportPojo report = app.getCountryReportService().getRegionPopulationReport(DEFAULT_REGION);
+        assertNotNull(report);
+        assertTrue(report.getTotalPopulation() > 0);
+        assertTrue(report.getPercentageInCities() >= 0.0);
+    }
+
+    /**
+     * USE CASE 28: Retrieve the Population of a Region.
+     * This test checks if the method correctly handles an invalid region name.
+     */
+    @Test
+    void testRegionPopulationReportInvalid() {
+        PopulationReportPojo report = app.getCountryReportService().getRegionPopulationReport("UnknownRegion");
+        assertNotNull(report);
+        assertEquals(0, report.getTotalPopulation());
+    }
+
+    /**
+     * USE CASE 28: Retrieve the Population of a Region.
+     * This test checks if the method correctly handles an empty region name.
+     */
+    @Test
+    void testRegionPopulationReportEmptyName() {
+        PopulationReportPojo report = app.getCountryReportService().getRegionPopulationReport("");
+        assertNull(report);
+    }
+
+    /**
+     * USE CASE 29: Retrieve the Population of a Country
+     * the Population Report for a Country including population in cities and not in cities.
+     */
+    @Test
+    void testCountryPopulationReport_Valid() {
+        PopulationReportPojo report = app.getCountryReportService().getCountryPopulationReport(DEFAULT_COUNTRY_NAME);
+
+        assertNotNull(report, "Report should not be null");
+        assertEquals(DEFAULT_COUNTRY_NAME, report.getName(), "Country name should match");
+
+        // Logical consistency checks
+        assertTrue(report.getTotalPopulation() > 0, "Total population must be greater than 0");
+        assertTrue(report.getPopulationInCities() >= 0, "City population must be non-negative");
+        assertTrue(report.getPopulationNotInCities() >= 0, "Non-city population must be non-negative");
+
+        long sum = report.getPopulationInCities() + report.getPopulationNotInCities();
+        assertEquals(report.getTotalPopulation(), sum, "Sum of city + non-city = total");
+
+        double percentSum = report.getPercentageInCities() + report.getPercentageNotInCities();
+        assertTrue(Math.abs(percentSum - 100.0) < 0.5, "Percentages should roughly add to 100%");
+    }
+
+    /**
+     * USE CASE 29: Retrieve the Population of a Country
+     * Testing with an invalid country name.
+     */
+    @Test
+    void testCountryPopulationReport_InvalidCountry() {
+        PopulationReportPojo report = app.getCountryReportService().getCountryPopulationReport(null);
+        assertNull(report, "Invalid country should return null or empty report");
+    }
+
+    /**
+     * USE CASE 29: Retrieve the Population of a Country
+     * Testing with an empty country name.
+     */
+    @Test
+    void testCountryPopulationReport_EmptyName() {
+        PopulationReportPojo report = app.getCountryReportService().getCountryPopulationReport("");
+        assertNull(report, "Empty name should return null");
+    }
+
 
 }

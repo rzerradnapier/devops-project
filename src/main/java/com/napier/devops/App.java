@@ -162,6 +162,12 @@ public class App {
         System.out.println("\n=== USE CASE 17: Produce a Report on All Capital Cities in the World by Population ===");
         appIns.cityReportService.printAllCapitalCitiesByPopulation();
 
+        System.out.println("\n=== USE CASE 18: Produce a Report on Capital Cities in a Continent by Population ===");
+        appIns.cityReportService.printAllCapitalCitiesInContinentByPopulation(DEFAULT_CONTINENT);
+
+        System.out.println("\n=== USE CASE 19: Produce a Report on Capital Cities in a Region by Population ===");
+        appIns.cityReportService.printAllCapitalCitiesInRegionByPopulation(DEFAULT_REGION);
+
         System.out.println("\n=== USE CASE 20: produce a report of the top N most populated capital cities in the world where N is provided so that I can identify the most populated capitals globally ===");
         appIns.cityReportService.printTopCapitalCitiesByPopulation(DEFAULT_N);
 
@@ -170,6 +176,21 @@ public class App {
 
         System.out.println("\n=== USE CASE 22: produce a report of the top N most populated capital cities in a region where N is provided ===");
         appIns.cityReportService.printTopCapitalCitiesByRegion(DEFAULT_REGION, DEFAULT_N);
+
+        System.out.println("\n=== USE CASE 28: Retrieve the Population of a Region ===");
+        appIns.countryReportService.printRegionPopulationReport(DEFAULT_REGION);
+
+        System.out.println("\n=== USE CASE 29: Produce a Population Report for a Country. ===");
+        appIns.countryReportService.printCountryPopulationReport(DEFAULT_COUNTRY_NAME);
+
+        System.out.println("\n=== USE CASE 30: Retrieve the Population of a District. ===");
+        appIns.cityReportService.printDistrictPopulationReport(DEFAULT_DISTRICT);
+
+        System.out.println("\n=== USE CASE 31: Produce a Population Report for a City. ===");
+        appIns.cityReportService.printCityPopulationReport(DEFAULT_CITY_NAME);
+
+        System.out.println("\n=== USE CASE 32: Produce a Report on Speakers of Major Languages. ===");
+        appIns.countryReportService.printMajorLanguageReport();
 
         System.out.println("Get country by code USA");
         // Get country by code USA

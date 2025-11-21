@@ -10,4 +10,5 @@ public class Constant {
     public static final String DEFAULT_REGION = "South America";
     public static final int DEFAULT_N = 10;
     public static final String DEFAULT_DISTRICT = "California";
+    public static final String DEFAULT_CITY_NAME = "New York";
 }

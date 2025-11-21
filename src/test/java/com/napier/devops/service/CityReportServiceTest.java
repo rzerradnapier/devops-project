@@ -1,6 +1,7 @@
 package com.napier.devops.service;
 
 import com.napier.devops.City;
+import com.napier.pojo.PopulationReportPojo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -12,7 +13,7 @@ import java.io.PrintStream;
 import java.sql.*;
 import java.util.List;
 
-import static com.napier.constant.Constant.DEFAULT_N;
+import static com.napier.constant.Constant.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -94,6 +95,41 @@ public class CityReportServiceTest {
         // Verify cities are in descending order
         assertTrue(cities.get(0).getPopulation() >= cities.get(1).getPopulation());
         assertTrue(cities.get(1).getPopulation() >= cities.get(2).getPopulation());
+    }
+
+    /**
+     * Test getAllCitiesByPopulationLargestToSmallest for empty result set.
+     */
+    @Test
+    void testGetAllCitiesByPopulationLargestToSmallest_EmptyResultSet() throws SQLException {
+        // Setup mock behavior for empty result set
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        when(mockResultSet.next()).thenReturn(false);
+
+        // Call the method
+        List<City> cities = cityReportService.getAllCitiesByPopulationLargestToSmallest();
+
+        // Verify
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
+    }
+
+    /**
+     * Test getAllCitiesByPopulationLargestToSmallest handles SQL exceptions gracefully.
+     */
+    @Test
+    void testGetAllCitiesByPopulationLargestToSmallest_SQLExceptionHandledGracefully() throws SQLException {
+        // Setup mock to throw SQL exception
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        // Call the method
+        List<City> cities = cityReportService.getAllCitiesByPopulationLargestToSmallest();
+
+        // Verify
+        assertNotNull(cities);
+        assertTrue(cities.isEmpty());
     }
 
     /**
@@ -925,6 +961,9 @@ public class CityReportServiceTest {
 
         assertDoesNotThrow(() -> cityReportService.printAllCapitalCitiesByPopulation());
 
+        assertDoesNotThrow(() -> cityReportService.printCityPopulationReport(null));
+
+        assertDoesNotThrow(() -> cityReportService.printDistrictPopulationReport(null));
     }
 
     /**
@@ -2674,4 +2713,426 @@ public class CityReportServiceTest {
         String errorOutput = errContent.toString();
         assertTrue(errorOutput.contains("Error: Region parameter cannot be null or empty."));
     }
+
+
+    /**
+     * USE CASE 30 - Retrieve the Population of a District.
+     * Tests valid district input returning correct report.
+     * Tests that {@link CityReportService#getDistrictPopulationReport(String)}
+     */
+    @Test
+    void testValidDistrictPopulationReport() throws Exception {
+        // Mocks for queries
+        PreparedStatement totalStmt = mock(PreparedStatement.class);
+        PreparedStatement cityStmt = mock(PreparedStatement.class);
+        ResultSet totalRS = mock(ResultSet.class);
+        ResultSet cityRS = mock(ResultSet.class);
+
+        when(mockConnection.prepareStatement(anyString()))
+                .thenReturn(totalStmt)
+                .thenReturn(cityStmt);
+        when(totalStmt.executeQuery()).thenReturn(totalRS);
+        when(cityStmt.executeQuery()).thenReturn(cityRS);
+
+        // Mock data returned from DB
+        when(totalRS.next()).thenReturn(true);
+        when(totalRS.getLong("population")).thenReturn(500000L);
+        when(cityRS.next()).thenReturn(true);
+        when(cityRS.getLong("city_population")).thenReturn(400000L);
+
+        // Execute
+        PopulationReportPojo report = cityReportService.getDistrictPopulationReport(DEFAULT_DISTRICT);
+
+        // Assertions
+        assertEquals(DEFAULT_DISTRICT, report.getName());
+        assertEquals(500000L, report.getTotalPopulation());
+        assertEquals(400000L, report.getPopulationInCities());
+        assertEquals(100000L, report.getPopulationNotInCities());
+        assertEquals(80.0, report.getPercentageInCities(), 0.01);
+        assertEquals(20.0, report.getPercentageNotInCities(), 0.01);
+    }
+
+    /**
+     * USE CASE 30 - Retrieve the Population of a District.
+     * Tests invalid district input returning null OR empty report.
+     * Tests that {@link CityReportService#getDistrictPopulationReport(String)}
+     */
+    @Test
+    void testDistrictPopulationReportWithInvalidName() {
+        assertNull(cityReportService.getDistrictPopulationReport(null));
+        assertNull(cityReportService.getDistrictPopulationReport(""));
+    }
+
+
+    /**
+     * USE CASE 31 - Retrieve the Population of a City.
+     * Tests valid city input returning correct report.
+     * Tests that {@link CityReportService#getCityPopulationReport(String)}
+     */
+    @Test
+    void testValidCityPopulationReport() throws Exception {
+        PreparedStatement totalStmt = mock(PreparedStatement.class);
+        PreparedStatement cityStmt = mock(PreparedStatement.class);
+        ResultSet totalRS = mock(ResultSet.class);
+        ResultSet cityRS = mock(ResultSet.class);
+
+        // Exact string for total population query
+        when(mockConnection.prepareStatement(eq("SELECT Population FROM city WHERE Name = ?")))
+                .thenReturn(totalStmt);
+        when(totalStmt.executeQuery()).thenReturn(totalRS);
+
+        // City population query (use contains to avoid whitespace issues)
+        when(mockConnection.prepareStatement(contains("AS city_population")))
+                .thenReturn(cityStmt);
+        when(cityStmt.executeQuery()).thenReturn(cityRS);
+
+        when(totalRS.next()).thenReturn(true);
+        when(totalRS.getLong("Population")).thenReturn(500000L);
+
+        when(cityRS.next()).thenReturn(true);
+        when(cityRS.getLong("city_population")).thenReturn(500000L);
+
+        PopulationReportPojo result = cityReportService.getCityPopulationReport("Lagos");
+
+        assertNotNull(result);
+        assertEquals("Lagos", result.getName());
+        assertEquals(500000L, result.getTotalPopulation());
+        assertEquals(500000L, result.getPopulationInCities());
+        assertEquals(0L, result.getPopulationNotInCities());
+        assertEquals(100.0, result.getPercentageInCities(), 0.001);
+        assertEquals(0.0, result.getPercentageNotInCities(), 0.001);
+
+        verify(totalStmt).setString(1, "Lagos");
+        verify(cityStmt).setString(1, "Lagos");
+    }
+
+    /**
+     * USE CASE 31 - Retrieve the Population of a City.
+     * Tests invalid city input returning null OR empty report.
+     * Tests that {@link CityReportService#getCityPopulationReport(String)}
+     */
+    @Test
+    void testInvalidCityNameReturnsNull() throws Exception {
+
+        PopulationReportPojo result = cityReportService.getCityPopulationReport(" ");
+        PopulationReportPojo nullResult = cityReportService.getCityPopulationReport(null);
+        assertNull(result);
+        assertNull(nullResult);
+    }
+
+    /**
+     * USE CASE 31 - Retrieve the Population of a City.
+     * Tests SQL exception being handled gracefully.
+     * Tests that {@link CityReportService#getCityPopulationReport(String)}
+     */
+    @Test
+    void testSQLExceptionHandledGracefully() throws Exception {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("DB Error"));
+
+        PopulationReportPojo result = cityReportService.getCityPopulationReport(DEFAULT_CITY_NAME);
+        assertNull(result);
+    }
+
+    /**
+     * USE CASE 30 - printDistrictPopulationReport
+     * When a valid report is returned, it should print a nicely formatted district report
+     * and return the same report instance.
+     */
+    @Test
+    void testPrintDistrictPopulationReport_ValidReport() {
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName("California");
+        report.setTotalPopulation(500_000L);
+        report.setPopulationInCities(300_000L);
+        report.setPopulationNotInCities(200_000L);
+        report.setPercentageInCities(60.0);
+        report.setPercentageNotInCities(40.0);
+
+        doReturn(report).when(spyService).getDistrictPopulationReport("California");
+
+        PopulationReportPojo returned = spyService.printDistrictPopulationReport("California");
+
+        assertSame(report, returned, "printDistrictPopulationReport should return the same report instance");
+
+        String output = outContent.toString();
+        assertTrue(output.contains("DISTRICT POPULATION REPORT"));
+        assertTrue(output.contains("District: California"));
+        assertTrue(output.contains("Total Population: 500,000"));
+        assertTrue(output.contains("Population in Cities: 300,000 (60.00%)"));
+        assertTrue(output.contains("Population Not in Cities: 200,000 (40.00%)"));
+    }
+
+    /**
+     * USE CASE 30 - printDistrictPopulationReport
+     * When underlying getDistrictPopulationReport returns null,
+     * it should print an error and return null.
+     */
+    @Test
+    void testPrintDistrictPopulationReport_NoData() {
+        doReturn(null).when(spyService).getDistrictPopulationReport("UnknownDistrict");
+
+        PopulationReportPojo returned = spyService.printDistrictPopulationReport("UnknownDistrict");
+
+        assertNull(returned, "Should return null when no report is available");
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: No population data found for district: UnknownDistrict"));
+    }
+
+    /**
+     * USE CASE 31 - printCityPopulationReport
+     * When a valid report is returned, it should print a nicely formatted city report
+     * and return the same report instance.
+     */
+    @Test
+    void testPrintCityPopulationReport_ValidReport() {
+        PopulationReportPojo report = new PopulationReportPojo();
+        report.setName("Lagos");
+        report.setTotalPopulation(8_000_000L);
+        report.setPopulationInCities(8_000_000L);
+        report.setPopulationNotInCities(0L);
+        report.setPercentageInCities(100.0);
+        report.setPercentageNotInCities(0.0);
+
+        doReturn(report).when(spyService).getCityPopulationReport("Lagos");
+
+        PopulationReportPojo returned = spyService.printCityPopulationReport("Lagos");
+
+        assertSame(report, returned, "printCityPopulationReport should return the same report instance");
+
+        String output = outContent.toString();
+        assertTrue(output.contains("CITY POPULATION REPORT"));
+        assertTrue(output.contains("City: Lagos"));
+        assertTrue(output.contains("Total Population: 8,000,000"));
+        assertTrue(output.contains("Population in City: 8,000,000 (100.00%)"));
+        assertTrue(output.contains("Population Not in City: 0 (0.00%)"));
+    }
+
+    /**
+     * USE CASE 31 - printCityPopulationReport
+     * When underlying getCityPopulationReport returns null,
+     * it should print an error and return null.
+     */
+    @Test
+    void testPrintCityPopulationReport_NoData() {
+        doReturn(null).when(spyService).getCityPopulationReport("UnknownCity");
+
+        PopulationReportPojo returned = spyService.printCityPopulationReport("UnknownCity");
+
+        assertNull(returned, "Should return null when no city report is available");
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: No population data found for city: UnknownCity"));
+    }
+
+    /**
+     * USE CASE 18 - getAllCapitalCitiesInContinentByPopulation
+     * Test retrieving all capital cities in a continent ordered by population.
+     */
+    @Test
+    void testGetAllCapitalCitiesInContinentByPopulation() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1, 2);
+        when(mockResultSet.getString("CityName")).thenReturn("Tokyo", "Seoul");
+        when(mockResultSet.getString("CountryCode")).thenReturn("JPN", "KOR");
+        when(mockResultSet.getString("District")).thenReturn("Tokyo", "Seoul");
+        when(mockResultSet.getInt("Population")).thenReturn(7980000, 9981619);
+
+        List<City> capitals = cityReportService.getAllCapitalCitiesInContinentByPopulation("Asia");
+
+        assertNotNull(capitals);
+        assertEquals(2, capitals.size());
+        assertEquals("Tokyo", capitals.get(0).getName());
+        assertEquals("Seoul", capitals.get(1).getName());
+        verify(mockPreparedStatement).setString(1, "Asia");
+    }
+
+    /**
+     * USE CASE 18 - getAllCapitalCitiesInContinentByPopulation
+     * Test with null continent parameter.
+     */
+    @Test
+    void testGetAllCapitalCitiesInContinentByPopulation_NullContinent() {
+        List<City> capitals = cityReportService.getAllCapitalCitiesInContinentByPopulation(null);
+
+        assertNotNull(capitals);
+        assertTrue(capitals.isEmpty());
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: Continent parameter cannot be null or empty"));
+    }
+
+    /**
+     * USE CASE 18 - printAllCapitalCitiesInContinentByPopulation
+     * Test printing capital cities in a continent.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInContinentByPopulation() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1);
+        when(mockResultSet.getString("CityName")).thenReturn("Tokyo");
+        when(mockResultSet.getString("CountryCode")).thenReturn("JPN");
+        when(mockResultSet.getString("District")).thenReturn("Tokyo");
+        when(mockResultSet.getInt("Population")).thenReturn(7980000);
+
+        cityReportService.printAllCapitalCitiesInContinentByPopulation("Asia");
+
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: All Capital Cities in Asia by Population"));
+        assertTrue(output.contains("Total capitals found: 1"));
+    }
+
+    /**
+     * USE CASE 19 - getAllCapitalCitiesInRegionByPopulation
+     * Test retrieving all capital cities in a region ordered by population.
+     */
+    @Test
+    void testGetAllCapitalCitiesInRegionByPopulation() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        when(mockResultSet.next()).thenReturn(true, true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1, 2);
+        when(mockResultSet.getString("CityName")).thenReturn("London", "Paris");
+        when(mockResultSet.getString("CountryCode")).thenReturn("GBR", "FRA");
+        when(mockResultSet.getString("District")).thenReturn("England", "Île-de-France");
+        when(mockResultSet.getInt("Population")).thenReturn(7285000, 2125246);
+
+        List<City> capitals = cityReportService.getAllCapitalCitiesInRegionByPopulation("Western Europe");
+
+        assertNotNull(capitals);
+        assertEquals(2, capitals.size());
+        assertEquals("London", capitals.get(0).getName());
+        assertEquals("Paris", capitals.get(1).getName());
+        verify(mockPreparedStatement).setString(1, "Western Europe");
+    }
+
+    /**
+     * USE CASE 19 - getAllCapitalCitiesInRegionByPopulation
+     * Test with empty region parameter.
+     */
+    @Test
+    void testGetAllCapitalCitiesInRegionByPopulation_EmptyRegion() {
+        List<City> capitals = cityReportService.getAllCapitalCitiesInRegionByPopulation("");
+
+        assertNotNull(capitals);
+        assertTrue(capitals.isEmpty());
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: Region parameter cannot be null or empty"));
+    }
+
+    /**
+     * USE CASE 19 - printAllCapitalCitiesInRegionByPopulation
+     * Test printing capital cities in a region.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInRegionByPopulation() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+
+        when(mockResultSet.next()).thenReturn(true, false);
+        when(mockResultSet.getInt("ID")).thenReturn(1);
+        when(mockResultSet.getString("CityName")).thenReturn("London");
+        when(mockResultSet.getString("CountryCode")).thenReturn("GBR");
+        when(mockResultSet.getString("District")).thenReturn("England");
+        when(mockResultSet.getInt("Population")).thenReturn(7285000);
+
+        cityReportService.printAllCapitalCitiesInRegionByPopulation("Western Europe");
+
+        String output = outContent.toString();
+        assertTrue(output.contains("Report: All Capital Cities in Western Europe by Population"));
+        assertTrue(output.contains("Total capitals found: 1"));
+    }
+
+    /**
+     * USE CASE 18 - getAllCapitalCitiesInContinentByPopulation
+     * Test with SQL exception.
+     */
+    @Test
+    void testGetAllCapitalCitiesInContinentByPopulation_SQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        List<City> capitals = cityReportService.getAllCapitalCitiesInContinentByPopulation("Asia");
+
+        assertNotNull(capitals);
+        assertTrue(capitals.isEmpty());
+        String output = outContent.toString();
+        assertTrue(output.contains("Query failed: Database error"));
+    }
+
+    /**
+     * USE CASE 18 - printAllCapitalCitiesInContinentByPopulation
+     * Test with no data found.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInContinentByPopulation_NoData() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        cityReportService.printAllCapitalCitiesInContinentByPopulation("Antarctica");
+
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: No capital city data found for continent: Antarctica"));
+    }
+
+    /**
+     * USE CASE 18 - printAllCapitalCitiesInContinentByPopulation
+     * Test with null continent.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInContinentByPopulation_NullContinent() {
+        cityReportService.printAllCapitalCitiesInContinentByPopulation(null);
+
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: Continent parameter cannot be null or empty"));
+    }
+
+    /**
+     * USE CASE 19 - getAllCapitalCitiesInRegionByPopulation
+     * Test with SQL exception.
+     */
+    @Test
+    void testGetAllCapitalCitiesInRegionByPopulation_SQLException() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenThrow(new SQLException("Database error"));
+
+        List<City> capitals = cityReportService.getAllCapitalCitiesInRegionByPopulation("Western Europe");
+
+        assertNotNull(capitals);
+        assertTrue(capitals.isEmpty());
+        String output = outContent.toString();
+        assertTrue(output.contains("Query failed: Database error"));
+    }
+
+    /**
+     * USE CASE 19 - printAllCapitalCitiesInRegionByPopulation
+     * Test with no data found.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInRegionByPopulation_NoData() throws SQLException {
+        when(mockConnection.prepareStatement(anyString())).thenReturn(mockPreparedStatement);
+        when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
+        when(mockResultSet.next()).thenReturn(false);
+
+        cityReportService.printAllCapitalCitiesInRegionByPopulation("Unknown Region");
+
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: No capital city data found for region: Unknown Region"));
+    }
+
+    /**
+     * USE CASE 19 - printAllCapitalCitiesInRegionByPopulation
+     * Test with null region.
+     */
+    @Test
+    void testPrintAllCapitalCitiesInRegionByPopulation_NullRegion() {
+        cityReportService.printAllCapitalCitiesInRegionByPopulation(null);
+
+        String error = errContent.toString();
+        assertTrue(error.contains("Error: Region parameter cannot be null or empty"));
+    }
+
 }

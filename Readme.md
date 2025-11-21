@@ -8,6 +8,12 @@
 
 ---
 
+### Code Coverage
+
+[![codecov](https://codecov.io/github/rzerradnapier/devops-project/branch/develop/graph/badge.svg?token=S2GDMKVOKK)](https://codecov.io/github/rzerradnapier/devops-project)
+
+---
+
 ### Develop branch
 
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/rzerradnapier/devops-project/main.yml?branch=develop)
@@ -146,6 +152,8 @@ The following are in place:
 | 15 | Produce a Report on Top N Cities in a Country (Country = United States, N=10)                       | ✅   | ![all countries organized by population descending](screenshots/use-case-15.png) |
 | 16 | Produce a Report on Top N Cities in a District (District = California, N=10)                        | ✅   | ![all countries organized by population descending](screenshots/use-case-16.png) |
 | 17 | Produce a Report on All Capital Cities in the World by Population                                   | ✅   | ![all countries organized by population descending](screenshots/use-case-17.png) |
+| 18 | Produce a Report on Capital Cities in a Continent by Population                                     | ✅   | ![all countries organized by population descending](screenshots/use-case-18.png) |
+| 19 | Produce a Report on Capital Cities in a Region by Population                                        | ✅   | ![all countries organized by population descending](screenshots/use-case-19.png) |
 | 20 | produce a report of the top N most populated capital cities in the world where N is provided        | ✅   | ![all countries organized by population descending](screenshots/use-case-20.png) |
 | 21 | produce a report of the top N most populated capital cities in a continent where N is provided      | ✅   | ![all countries organized by population descending](screenshots/use-case-21.png) |
 | 22 | produce a report of the top N most populated capital cities in a region where N is provided         | ✅   | ![all countries organized by population descending](screenshots/use-case-22.png) |
@@ -154,6 +162,11 @@ The following are in place:
 | 25 | Produce a Population Report for Countries                                                           | ✅   | ![all countries organized by population descending](screenshots/use-case-25.png) |
 | 26 | Retrieve the Population of the World                                                                | ✅   | ![all countries organized by population descending](screenshots/use-case-26.png) |
 | 27 | Retrieve the Population of a Continent                                                              | ✅   | ![all countries organized by population descending](screenshots/use-case-27.png) |
+| 28 | Retrieve the Population of a Region                                                                 | ✅   | ![all countries organized by population descending](screenshots/use-case-28.png) |
+| 29 | Retrieve the Population of a Country                                                                | ✅   | ![all countries organized by population descending](screenshots/use-case-29.png) |
+| 30 | Retrieve the Population of a District                                                               | ✅   | ![all countries organized by population descending](screenshots/use-case-30.png) |
+| 31 | Retrieve the Population of a City                                                                   | ✅   | ![all countries organized by population descending](screenshots/use-case-31.png) |
+| 32 | Produce a Report on Speakers of Major Languages                                                     | ✅   | ![all countries organized by population descending](screenshots/use-case-32.png) |
 
 
 
