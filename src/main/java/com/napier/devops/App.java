@@ -2,9 +2,9 @@ package com.napier.devops;
 
 import com.napier.devops.service.CityReportService;
 import com.napier.devops.service.CountryReportService;
+import com.napier.devops.service.PopulationMetricsReportService;
 
 import java.sql.*;
-import java.util.List;
 
 import static com.napier.constant.Constant.*;
 
@@ -17,16 +17,22 @@ public class App {
      * Connection to MySQL database.
      */
     private Connection con = null;
-    
+
     /**
      * Service for city-related reports.
      */
     private CityReportService cityReportService;
-    
+
     /**
      * Service for country-related reports.
      */
     private CountryReportService countryReportService;
+
+    /**
+     * Service for continent-related reports.
+     */
+    private PopulationMetricsReportService populationMetricsReportService;
+
 
     /**
      * sets the con object of the app, this is useful for mock testing
@@ -38,6 +44,8 @@ public class App {
         // Initialize services when connection is set
         this.cityReportService = new CityReportService(con);
         this.countryReportService = new CountryReportService(con);
+        this.populationMetricsReportService = new PopulationMetricsReportService(con);
+
     }
 
     /**
@@ -48,7 +56,7 @@ public class App {
     public Connection getCon() {
         return this.con;
     }
-    
+
     /**
      * Gets the city report service.
      *
@@ -57,7 +65,7 @@ public class App {
     public CityReportService getCityReportService() {
         return this.cityReportService;
     }
-    
+
     /**
      * Gets the country report service.
      *
@@ -67,6 +75,16 @@ public class App {
         return this.countryReportService;
     }
 
+    /**
+     * Gets the continent report service.
+     *
+     * @return ContinentReportService instance
+     */
+
+
+    public PopulationMetricsReportService getPopulationMetricsReportService() {
+        return this.populationMetricsReportService;
+    }
 
     public static void main(String[] args) {
         // Create new Application
@@ -179,6 +197,22 @@ public class App {
         Country sampleCountryDetails = appIns.countryReportService.getCountryByCode(DEFAULT_COUNTRY_CODE);
         // Display results
         System.out.println(sampleCountryDetails != null ? sampleCountryDetails.toString() : "No country details found");
+
+        System.out.println("\n=== USE CASE 23: Produce a Population Report for Continents ===");
+        appIns.getPopulationMetricsReportService().printContinentPopulationReport();
+
+        System.out.println("\n=== USE CASE 24: Produce a Population Report for Regions ===");
+        appIns.getPopulationMetricsReportService().printRegionPopulationReport();
+
+        System.out.println("\n=== USE CASE 25: Produce a Population Report for Countries ===");
+        appIns.getPopulationMetricsReportService().printCountryPopulationReport();
+
+        System.out.println("\n=== USE CASE 26: Retrieve the Population of the World ===");
+        appIns.getPopulationMetricsReportService().printWorldPopulationReport();
+
+        System.out.println("\n=== USE CASE 27: Retrieve the Population of a Continent ===");
+        appIns.getPopulationMetricsReportService().printPopulationContinentReport("Asia");
+
     }
 
 
@@ -208,6 +242,7 @@ public class App {
                 // Initialize services after successful connection
                 this.cityReportService = new CityReportService(con);
                 this.countryReportService = new CountryReportService(con);
+                this.populationMetricsReportService = new PopulationMetricsReportService (con);
                 break;
             } catch (SQLException sql) {
                 System.out.println("Failed to connect to database attempt " + i);
@@ -231,7 +266,4 @@ public class App {
             }
         }
     }
-
-
-
 }

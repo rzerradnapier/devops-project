@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class CountryTest {
 
-    // We will use this country instance for performing and testing operations on an country object.
+    // We will use this country instance for performing and testing operations on a country object.
     // It is initialized in each test via the setUp method.
     private Country country;
 

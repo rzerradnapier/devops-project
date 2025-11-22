@@ -157,6 +157,11 @@ The following are in place:
 | 20 | produce a report of the top N most populated capital cities in the world where N is provided        | ✅   | ![all countries organized by population descending](screenshots/use-case-20.png) |
 | 21 | produce a report of the top N most populated capital cities in a continent where N is provided      | ✅   | ![all countries organized by population descending](screenshots/use-case-21.png) |
 | 22 | produce a report of the top N most populated capital cities in a region where N is provided         | ✅   | ![all countries organized by population descending](screenshots/use-case-22.png) |
+| 23 | Produce a Population Report for Continents                                                          | ✅   | ![all countries organized by population descending](screenshots/use-case-23.png) |
+| 24 | Produce a Population Report for Regions                                                             | ✅   | ![all countries organized by population descending](screenshots/use-case-24.png) |
+| 25 | Produce a Population Report for Countries                                                           | ✅   | ![all countries organized by population descending](screenshots/use-case-25.png) |
+| 26 | Retrieve the Population of the World                                                                | ✅   | ![all countries organized by population descending](screenshots/use-case-26.png) |
+| 27 | Retrieve the Population of a Continent                                                              | ✅   | ![all countries organized by population descending](screenshots/use-case-27.png) |
 | 28 | Retrieve the Population of a Region                                                                 | ✅   | ![all countries organized by population descending](screenshots/use-case-28.png) |
 | 29 | Retrieve the Population of a Country                                                                | ✅   | ![all countries organized by population descending](screenshots/use-case-29.png) |
 | 30 | Retrieve the Population of a District                                                               | ✅   | ![all countries organized by population descending](screenshots/use-case-30.png) |
