@@ -131,6 +131,26 @@ The following are in place:
 
 ---
 
+---
+
+## 📋 Checklist Submission 2
+
+The following are in place:
+
+- ✅  Quality and coverage of unit tests.
+- ✅  Suitable integration tests defined.
+- ✅  Continuous integration working. and tests running on GitHub Actions.
+- ✅  Deployment working.
+- ✅  Bug reporting system set-up.
+- ✅  Badges for
+  - Build status for master.
+  - Build status for develop.
+  - Code coverage of tests for master.
+  - Release name.
+  - License.
+  
+---
+
 ## 🏁 Requirements Met
 
 | ID | Name                                                                                                | Met | Screenshot                                                                       |
