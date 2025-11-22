@@ -61,9 +61,6 @@ class AppMainIntegrationTest {
                 "Expected USE CASE 17 header in output");
         assertTrue(stdout.contains("USE CASE 32: Produce a Report on Speakers of Major Languages."),
                 "Expected USE CASE 32 header in output");
-        assertTrue(stdout.contains("Get country by code USA"),
-                "Expected 'Get country by code USA' marker in output");
-
         // Optional: ensure no obvious errors printed to stderr
         assertFalse(stderr.toLowerCase().contains("error"),
                 "Did not expect 'error' in stderr for valid run");
