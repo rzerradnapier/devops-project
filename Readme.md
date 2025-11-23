@@ -8,9 +8,15 @@
 
 ---
 
-### Code Coverage
+### Code Coverage Develop
 
 [![codecov](https://codecov.io/github/rzerradnapier/devops-project/branch/develop/graph/badge.svg?token=S2GDMKVOKK)](https://codecov.io/github/rzerradnapier/devops-project)
+
+---
+
+### Code Coverage Master
+
+[![codecov](https://codecov.io/github/rzerradnapier/devops-project/branch/master/graph/badge.svg?token=S2GDMKVOKK)](https://codecov.io/github/rzerradnapier/devops-project)
 
 ---
 
